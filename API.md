@@ -117,7 +117,28 @@ POST /api/auth/logout
 
 ## 📱 Mobile API (Public - No Auth Required)
 
-These APIs are designed for the mobile app. **Premium content URLs are hidden** and returned as `null`.
+These APIs are designed for the mobile app.
+
+### ⚠️ Premium Content Logic
+
+Each **stream link** has its own `is_premium` flag:
+
+| `is_premium` | `url` in Response |
+|--------------|-------------------|
+| `false` | Full URL shown ✅ |
+| `true` | `null` (hidden) 🔒 |
+
+**Example:**
+```json
+"stream_link": [
+  { "name": "FHD", "is_premium": false, "url": "https://example.com/fhd.m3u8" },
+  { "name": "4K Premium", "is_premium": true, "url": null }
+]
+```
+
+> **Note:** The premium flag is set **per stream** in the CMS, not per channel/match.
+
+---
 
 ### Get Channels
 ```

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { auth, firestore } from '@/lib/firebase-admin';
 
 // This endpoint returns premium stream URLs for authenticated premium users
 // The Flutter app should send Firebase ID token in the Authorization header
@@ -26,21 +27,32 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // TODO: Verify Firebase token and check premium subscription
-        // For now, we'll use a simple token check
-        // In production, use Firebase Admin SDK to verify the token
-
-        // Placeholder: Check if token is valid (implement Firebase verification)
-        const isPremiumUser = await verifyPremiumUser(token);
-
-        if (!isPremiumUser) {
+        // 1. Verify Firebase Token
+        let userId: string;
+        try {
+            const decodedToken = await auth.verifyIdToken(token);
+            userId = decodedToken.uid;
+        } catch (error) {
+            console.error('Firebase token verification error:', error);
             return NextResponse.json(
-                { success: false, error: 'User is not a premium subscriber' },
+                { success: false, error: 'Unauthorized: Invalid token' },
+                { status: 401 }
+            );
+        }
+
+        // 2. Check Subscription Status in Firestore
+        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userData = userDoc.data();
+        const isSubscribed = userData?.isSubscribed === true;
+
+        if (!isSubscribed) {
+            return NextResponse.json(
+                { success: false, error: 'Forbidden: User is not a premium subscriber' },
                 { status: 403 }
             );
         }
 
-        // Fetch the full data with premium URLs
+        // 3. Fetch the full data with premium URLs
         let data = null;
 
         switch (type) {
@@ -87,25 +99,4 @@ export async function POST(request: NextRequest) {
             { status: 500 }
         );
     }
-}
-
-// Placeholder function - implement Firebase verification
-async function verifyPremiumUser(token: string): Promise<boolean> {
-    // TODO: Implement actual Firebase token verification
-    // 1. Verify token with Firebase Admin SDK
-    // 2. Get user ID from token
-    // 3. Check Firestore for user's subscription status
-
-    // For testing, accept a specific test token
-    if (token === 'TEST_PREMIUM_TOKEN') {
-        return true;
-    }
-
-    // In production, implement proper verification:
-    // const decodedToken = await admin.auth().verifyIdToken(token);
-    // const userId = decodedToken.uid;
-    // const userDoc = await admin.firestore().collection('users').doc(userId).get();
-    // return userDoc.data()?.isPremium === true;
-
-    return false;
 }
