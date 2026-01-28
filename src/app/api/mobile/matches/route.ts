@@ -2,20 +2,28 @@ import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
 // Parse stream links - handles both Strapi Rich Text and new JSON format
-function parseStreamLinks(data: any): { name: string; url: string | null; is_premium: boolean }[] {
+function parseStreamLinks(data: any, defaultPremium: boolean): { name: string; url?: string | null; is_premium: boolean }[] {
     if (!data || !Array.isArray(data)) return [];
 
-    const streams: { name: string; url: string | null; is_premium: boolean }[] = [];
+    const streams: { name: string; url?: string | null; is_premium: boolean }[] = [];
 
     for (const item of data) {
         // New format: { name, url, is_premium }
         if (item.url && !item.type) {
             const isPremium = item.is_premium === true;
-            streams.push({
-                name: item.name || 'Stream',
-                url: isPremium ? null : item.url, // Hide if premium
-                is_premium: isPremium
-            });
+            if (isPremium) {
+                streams.push({
+                    name: item.name || 'Stream',
+                    is_premium: true
+                    // url is omitted entirely
+                });
+            } else {
+                streams.push({
+                    name: item.name || 'Stream',
+                    url: item.url,
+                    is_premium: false
+                });
+            }
         }
         // Old Strapi Rich Text format
         else if (item.type === 'paragraph' && item.children) {
@@ -28,12 +36,19 @@ function parseStreamLinks(data: any): { name: string; url: string | null; is_pre
 
                     if (!name && !child.url) continue;
 
-                    // For old data, default to not premium
-                    streams.push({
-                        name: name || 'Stream',
-                        url: child.url,
-                        is_premium: false
-                    });
+                    if (defaultPremium) {
+                        streams.push({
+                            name: name || 'Stream',
+                            is_premium: true
+                            // url is omitted entirely
+                        });
+                    } else {
+                        streams.push({
+                            name: name || 'Stream',
+                            url: child.url,
+                            is_premium: false
+                        });
+                    }
                 }
             }
         }
@@ -63,7 +78,7 @@ export async function GET() {
             commentator: match.commentator,
             champion: match.champion,
             is_premium: match.is_premium,
-            stream_link: parseStreamLinks(match.stream_link || []),
+            stream_link: parseStreamLinks(match.stream_link || [], match.is_premium === true),
             created_at: match.created_at
         }));
 
