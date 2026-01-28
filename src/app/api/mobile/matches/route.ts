@@ -1,61 +1,6 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
-
-// Parse stream links - handles both Strapi Rich Text and new JSON format
-function parseStreamLinks(data: any, defaultPremium: boolean): { name: string; url?: string | null; is_premium: boolean }[] {
-    if (!data || !Array.isArray(data)) return [];
-
-    const streams: { name: string; url?: string | null; is_premium: boolean }[] = [];
-
-    for (const item of data) {
-        // New format: { name, url, is_premium }
-        if (item.url && !item.type) {
-            const isPremium = item.is_premium === true;
-            if (isPremium) {
-                streams.push({
-                    name: item.name || 'Stream',
-                    is_premium: true
-                    // url is omitted entirely
-                });
-            } else {
-                streams.push({
-                    name: item.name || 'Stream',
-                    url: item.url,
-                    is_premium: false
-                });
-            }
-        }
-        // Old Strapi Rich Text format
-        else if (item.type === 'paragraph' && item.children) {
-            for (const child of item.children) {
-                if (child.type === 'link' && child.url) {
-                    let name = '';
-                    if (child.children && child.children.length > 0) {
-                        name = child.children.map((c: any) => c.text || '').join('').trim();
-                    }
-
-                    if (!name && !child.url) continue;
-
-                    if (defaultPremium) {
-                        streams.push({
-                            name: name || 'Stream',
-                            is_premium: true
-                            // url is omitted entirely
-                        });
-                    } else {
-                        streams.push({
-                            name: name || 'Stream',
-                            url: child.url,
-                            is_premium: false
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    return streams;
-}
+import { processStreams } from '@/lib/stream-utils';
 
 // GET /api/mobile/matches
 export async function GET() {
@@ -66,7 +11,7 @@ export async function GET() {
             ORDER BY created_at DESC
         `;
 
-        // Filter premium streams from each match
+        // Filter premium streams from each match (PUBLIC ACCESS = No URLs)
         const filteredMatches = matches.map(match => ({
             id: match.id,
             team_a: match.team_a,
@@ -78,7 +23,7 @@ export async function GET() {
             commentator: match.commentator,
             champion: match.champion,
             is_premium: match.is_premium,
-            stream_link: parseStreamLinks(match.stream_link || [], match.is_premium === true),
+            stream_link: processStreams(match.stream_link || [], 'public'),
             created_at: match.created_at
         }));
 

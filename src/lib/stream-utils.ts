@@ -53,3 +53,51 @@ export const extractStreamsFromData = (data: any): StreamItem[] => {
     findLinks(data);
     return found;
 };
+
+export type StreamAccessLevel = 'public' | 'user' | 'premium';
+
+// Central processing for all streams based on access level
+export const processStreams = (data: any, accessLevel: StreamAccessLevel): { name: string; url?: string | null; is_premium: boolean }[] => {
+    // 1. Extract raw streams from whatever messy format (Strapi/JSON)
+    const rawStreams = extractStreamsFromData(data);
+
+    // 2. Filter and Format based on Access Level
+    return rawStreams.map(stream => {
+        // PUBLIC: Hide ALL URLs
+        if (accessLevel === 'public') {
+            return {
+                name: stream.name,
+                is_premium: stream.is_premium,
+                // url omitted
+            };
+        }
+
+        // USER (Logged in but Free): Hide Premium URLs, Show Free URLs
+        if (accessLevel === 'user') {
+            if (stream.is_premium) {
+                return {
+                    name: stream.name,
+                    is_premium: true,
+                    // url omitted
+                };
+            } else {
+                return {
+                    name: stream.name,
+                    is_premium: false,
+                    url: stream.url
+                };
+            }
+        }
+
+        // PREMIUM: Show Everything
+        if (accessLevel === 'premium') {
+            return {
+                name: stream.name,
+                is_premium: stream.is_premium,
+                url: stream.url
+            };
+        }
+
+        return stream; // Should not happen
+    });
+};

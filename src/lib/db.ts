@@ -17,7 +17,7 @@ if (!connectionString) {
 const globalForDb = global as unknown as { sql: ReturnType<typeof postgres> };
 
 const sql = globalForDb.sql || postgres(connectionString, {
-    ssl: 'require',
+    ssl: { rejectUnauthorized: false }, // Allow Supabase Pooler w/o manual cert
     max: 10, // Limit pool size
     idle_timeout: 20,
     connect_timeout: 10,

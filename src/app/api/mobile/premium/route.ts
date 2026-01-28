@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { auth, firestore } from '@/lib/firebase-admin';
+import { processStreams, StreamAccessLevel } from '@/lib/stream-utils';
 
-// This endpoint returns premium stream URLs for authenticated premium users
+// This endpoint returns stream URLs based on user subscription
 // The Flutter app should send Firebase ID token in the Authorization header
 
 export async function POST(request: NextRequest) {
@@ -41,35 +42,46 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Check Subscription Status in Firestore
-        const userDoc = await firestore.collection('users').doc(userId).get();
-        const userData = userDoc.data();
-        const isSubscribed = userData?.isSubscribed === true;
-
-        if (!isSubscribed) {
-            return NextResponse.json(
-                { success: false, error: 'Forbidden: User is not a premium subscriber' },
-                { status: 403 }
-            );
+        // We now ALLOW non-subscribers to access, but we filter their content.
+        let isSubscribed = false;
+        try {
+            const userDoc = await firestore.collection('users').doc(userId).get();
+            const userData = userDoc.data();
+            isSubscribed = userData?.isSubscribed === true;
+        } catch (error) {
+            console.error('Error fetching user subscription:', error);
+            // Default to false (not subscribed) if error, but allow access to free content
         }
 
-        // 3. Fetch the full data with premium URLs
-        let data = null;
+        // Determine Access Level
+        const accessLevel: StreamAccessLevel = isSubscribed ? 'premium' : 'user';
+
+        // 3. Fetch the content
+        let data: any = null;
 
         switch (type) {
             case 'channel':
                 const [channel] = await sql`SELECT * FROM channels WHERE id = ${id}`;
-                data = channel;
+                if (channel) {
+                    channel.stream_link = processStreams(channel.stream_link || [], accessLevel);
+                    data = channel;
+                }
                 break;
             case 'match':
                 const [match] = await sql`SELECT * FROM matches WHERE id = ${id}`;
-                data = match;
+                if (match) {
+                    match.stream_link = processStreams(match.stream_link || [], accessLevel);
+                    data = match;
+                }
                 break;
             case 'goal':
                 const [goal] = await sql`SELECT * FROM goals WHERE id = ${id}`;
+                // Future: Add stream processing if goals have premium links
                 data = goal;
                 break;
             case 'news':
                 const [newsItem] = await sql`SELECT * FROM news WHERE id = ${id}`;
+                // Future: Add stream processing if news has premium links
                 data = newsItem;
                 break;
             default:
@@ -86,9 +98,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Return full data including premium URLs
+        // Return data with filtered URLs
         return NextResponse.json({
             success: true,
+            is_subscribed: isSubscribed, // Helpful for client debugging
             data: data
         });
 
