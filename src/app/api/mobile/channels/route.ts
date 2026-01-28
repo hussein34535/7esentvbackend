@@ -1,27 +1,41 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
-// Helper function to filter premium streams
-function filterPremiumStreams(streams: any[]) {
-    if (!streams || !Array.isArray(streams)) return [];
+// Parse Strapi Rich Text format and extract streams
+function parseStreamLinks(richText: any[]): { name: string; url: string | null; is_premium: boolean }[] {
+    if (!richText || !Array.isArray(richText)) return [];
 
-    return streams.map(stream => {
-        if (stream.is_premium) {
-            // Premium: return name only, hide URL
-            return {
-                name: stream.name,
-                is_premium: true,
-                url: null // Hide the actual URL
-            };
-        } else {
-            // Free: return everything
-            return {
-                name: stream.name,
-                is_premium: false,
-                url: stream.url
-            };
+    const streams: { name: string; url: string | null; is_premium: boolean }[] = [];
+
+    for (const paragraph of richText) {
+        if (paragraph.type === 'paragraph' && paragraph.children) {
+            for (const child of paragraph.children) {
+                if (child.type === 'link' && child.url) {
+                    // Get the link text (name)
+                    let name = '';
+                    if (child.children && child.children.length > 0) {
+                        name = child.children.map((c: any) => c.text || '').join('').trim();
+                    }
+
+                    // Skip empty links
+                    if (!name && !child.url) continue;
+
+                    // Check if premium (you can customize this logic)
+                    // For now, checking if name contains "premium" or "4k"
+                    const isPremium = name.toLowerCase().includes('premium') ||
+                        name.toLowerCase().includes('4k');
+
+                    streams.push({
+                        name: name || 'Stream',
+                        url: isPremium ? null : child.url, // Hide URL if premium
+                        is_premium: isPremium
+                    });
+                }
+            }
         }
-    });
+    }
+
+    return streams;
 }
 
 // GET /api/mobile/channels
@@ -48,7 +62,7 @@ export async function GET() {
             name: channel.name,
             logo: channel.logo,
             categories: channel.categories,
-            stream_link: filterPremiumStreams(channel.stream_link || []),
+            stream_link: parseStreamLinks(channel.stream_link || []),
             created_at: channel.created_at
         }));
 

@@ -1,27 +1,37 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
-// Helper function to filter premium streams
-function filterPremiumStreams(streams: any[]) {
-    if (!streams || !Array.isArray(streams)) return [];
+// Parse Strapi Rich Text format and extract streams
+function parseStreamLinks(richText: any[]): { name: string; url: string | null; is_premium: boolean }[] {
+    if (!richText || !Array.isArray(richText)) return [];
 
-    return streams.map(stream => {
-        if (stream.is_premium) {
-            // Premium: return name only, hide URL
-            return {
-                name: stream.name,
-                is_premium: true,
-                url: null // Hide the actual URL
-            };
-        } else {
-            // Free: return everything
-            return {
-                name: stream.name,
-                is_premium: false,
-                url: stream.url
-            };
+    const streams: { name: string; url: string | null; is_premium: boolean }[] = [];
+
+    for (const paragraph of richText) {
+        if (paragraph.type === 'paragraph' && paragraph.children) {
+            for (const child of paragraph.children) {
+                if (child.type === 'link' && child.url) {
+                    let name = '';
+                    if (child.children && child.children.length > 0) {
+                        name = child.children.map((c: any) => c.text || '').join('').trim();
+                    }
+
+                    if (!name && !child.url) continue;
+
+                    const isPremium = name.toLowerCase().includes('premium') ||
+                        name.toLowerCase().includes('4k');
+
+                    streams.push({
+                        name: name || 'Stream',
+                        url: isPremium ? null : child.url,
+                        is_premium: isPremium
+                    });
+                }
+            }
         }
-    });
+    }
+
+    return streams;
 }
 
 // GET /api/mobile/matches
@@ -45,7 +55,7 @@ export async function GET() {
             commentator: match.commentator,
             champion: match.champion,
             is_premium: match.is_premium,
-            stream_link: filterPremiumStreams(match.stream_link || []),
+            stream_link: parseStreamLinks(match.stream_link || []),
             created_at: match.created_at
         }));
 
