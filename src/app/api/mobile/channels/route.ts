@@ -1,34 +1,38 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
-// Parse Strapi Rich Text format and extract streams
-function parseStreamLinks(richText: any[]): { name: string; url: string | null; is_premium: boolean }[] {
-    if (!richText || !Array.isArray(richText)) return [];
+// Parse stream links - handles both Strapi Rich Text and new JSON format
+function parseStreamLinks(data: any): { name: string; url: string | null; is_premium: boolean }[] {
+    if (!data || !Array.isArray(data)) return [];
 
     const streams: { name: string; url: string | null; is_premium: boolean }[] = [];
 
-    for (const paragraph of richText) {
-        if (paragraph.type === 'paragraph' && paragraph.children) {
-            for (const child of paragraph.children) {
+    for (const item of data) {
+        // New format: { name, url, is_premium }
+        if (item.url && !item.type) {
+            const isPremium = item.is_premium === true;
+            streams.push({
+                name: item.name || 'Stream',
+                url: isPremium ? null : item.url, // Hide if premium
+                is_premium: isPremium
+            });
+        }
+        // Old Strapi Rich Text format
+        else if (item.type === 'paragraph' && item.children) {
+            for (const child of item.children) {
                 if (child.type === 'link' && child.url) {
-                    // Get the link text (name)
                     let name = '';
                     if (child.children && child.children.length > 0) {
                         name = child.children.map((c: any) => c.text || '').join('').trim();
                     }
 
-                    // Skip empty links
                     if (!name && !child.url) continue;
 
-                    // Check if premium (you can customize this logic)
-                    // For now, checking if name contains "premium" or "4k"
-                    const isPremium = name.toLowerCase().includes('premium') ||
-                        name.toLowerCase().includes('4k');
-
+                    // For old data, default to not premium (show everything)
                     streams.push({
                         name: name || 'Stream',
-                        url: isPremium ? null : child.url, // Hide URL if premium
-                        is_premium: isPremium
+                        url: child.url,
+                        is_premium: false
                     });
                 }
             }
@@ -56,7 +60,7 @@ export async function GET() {
             ORDER BY c.name ASC
         `;
 
-        // Filter premium streams from each channel
+        // Map channels with parsed streams
         const filteredChannels = channels.map(channel => ({
             id: channel.id,
             name: channel.name,

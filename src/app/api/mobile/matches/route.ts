@@ -1,15 +1,25 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
-// Parse Strapi Rich Text format and extract streams
-function parseStreamLinks(richText: any[]): { name: string; url: string | null; is_premium: boolean }[] {
-    if (!richText || !Array.isArray(richText)) return [];
+// Parse stream links - handles both Strapi Rich Text and new JSON format
+function parseStreamLinks(data: any): { name: string; url: string | null; is_premium: boolean }[] {
+    if (!data || !Array.isArray(data)) return [];
 
     const streams: { name: string; url: string | null; is_premium: boolean }[] = [];
 
-    for (const paragraph of richText) {
-        if (paragraph.type === 'paragraph' && paragraph.children) {
-            for (const child of paragraph.children) {
+    for (const item of data) {
+        // New format: { name, url, is_premium }
+        if (item.url && !item.type) {
+            const isPremium = item.is_premium === true;
+            streams.push({
+                name: item.name || 'Stream',
+                url: isPremium ? null : item.url, // Hide if premium
+                is_premium: isPremium
+            });
+        }
+        // Old Strapi Rich Text format
+        else if (item.type === 'paragraph' && item.children) {
+            for (const child of item.children) {
                 if (child.type === 'link' && child.url) {
                     let name = '';
                     if (child.children && child.children.length > 0) {
@@ -18,13 +28,11 @@ function parseStreamLinks(richText: any[]): { name: string; url: string | null; 
 
                     if (!name && !child.url) continue;
 
-                    const isPremium = name.toLowerCase().includes('premium') ||
-                        name.toLowerCase().includes('4k');
-
+                    // For old data, default to not premium
                     streams.push({
                         name: name || 'Stream',
-                        url: isPremium ? null : child.url,
-                        is_premium: isPremium
+                        url: child.url,
+                        is_premium: false
                     });
                 }
             }
