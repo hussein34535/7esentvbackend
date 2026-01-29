@@ -1,10 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
-import { processStreams } from '@/lib/stream-utils';
+import { processStreams, StreamAccessLevel } from '@/lib/stream-utils';
+
+const DEBUG_SECRET = 'GHWDpKHoAZdRn14eqjrNIJbaxOK2';
 
 // GET /api/mobile/channels
-export async function GET() {
+// Add ?secret=... to bypass premium protection (for debugging)
+export async function GET(request: NextRequest) {
     try {
+        // Check for debug secret
+        const secret = request.nextUrl.searchParams.get('secret');
+        const accessLevel: StreamAccessLevel = secret === DEBUG_SECRET ? 'premium' : 'public';
+
         const channels = await sql`
             SELECT c.*, 
                    COALESCE(
@@ -20,14 +27,14 @@ export async function GET() {
             ORDER BY c.name ASC
         `;
 
-        // Map channels with processStreams (PUBLIC ACCESS = No URLs)
+        // Map channels with processStreams
         const filteredChannels = channels.map(channel => {
             return {
                 id: channel.id,
                 name: channel.name,
                 logo: channel.logo,
                 categories: channel.categories,
-                stream_link: processStreams(channel.stream_link || [], 'public'),
+                stream_link: processStreams(channel.stream_link || [], accessLevel),
                 created_at: channel.created_at
             };
         });

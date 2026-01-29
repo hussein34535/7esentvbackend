@@ -1,17 +1,24 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
-import { processStreams } from '@/lib/stream-utils';
+import { processStreams, StreamAccessLevel } from '@/lib/stream-utils';
+
+const DEBUG_SECRET = 'GHWDpKHoAZdRn14eqjrNIJbaxOK2';
 
 // GET /api/mobile/matches
-export async function GET() {
+// Add ?secret=... to bypass premium protection (for debugging)
+export async function GET(request: NextRequest) {
     try {
+        // Check for debug secret
+        const secret = request.nextUrl.searchParams.get('secret');
+        const accessLevel: StreamAccessLevel = secret === DEBUG_SECRET ? 'premium' : 'public';
+
         const matches = await sql`
             SELECT * FROM matches 
             WHERE is_published = true
             ORDER BY created_at DESC
         `;
 
-        // Filter premium streams from each match (PUBLIC ACCESS = No URLs)
+        // Filter premium streams from each match
         const filteredMatches = matches.map(match => ({
             id: match.id,
             team_a: match.team_a,
@@ -23,7 +30,7 @@ export async function GET() {
             commentator: match.commentator,
             champion: match.champion,
             is_premium: match.is_premium,
-            stream_link: processStreams(match.stream_link || [], 'public'),
+            stream_link: processStreams(match.stream_link || [], accessLevel),
             created_at: match.created_at
         }));
 
