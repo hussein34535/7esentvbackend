@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getGoals, deleteGoal, bulkDeleteGoals } from '@/app/actions';
+import { getGoals, deleteGoal, bulkDeleteGoals, duplicateGoal } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Video, Calendar, Star, CheckSquare, Square, XSquare } from 'lucide-react';
+import { Plus, Trash2, Video, Calendar, Star, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Goal = Database['public']['Tables']['goals']['Row'];
@@ -39,6 +39,16 @@ export default function GoalsPage() {
         await deleteGoal(id);
         loadData();
         router.refresh();
+    };
+
+    const handleDuplicate = async (e: React.MouseEvent, id: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const result = await duplicateGoal(id);
+        if (result.success) {
+            loadData();
+            router.refresh();
+        }
     };
 
     const toggleSelect = (id: number) => {
@@ -143,8 +153,8 @@ export default function GoalsPage() {
                                     href={selectMode ? '#' : `/goals/${goal.id}`}
                                     onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(goal.id); } : undefined}
                                     className={`block group bg-slate-900 border rounded-xl overflow-hidden transition relative ${!goal.is_published ? 'opacity-60 grayscale-[0.5]' : ''} ${selectedIds.has(goal.id)
-                                            ? 'border-blue-500 bg-blue-500/10'
-                                            : 'border-slate-800 hover:border-blue-500/50'
+                                        ? 'border-blue-500 bg-blue-500/10'
+                                        : 'border-slate-800 hover:border-blue-500/50'
                                         }`}
                                 >
                                     {goal.is_premium && (
@@ -175,13 +185,22 @@ export default function GoalsPage() {
                                         <div className="flex justify-between items-center pt-4 border-t border-slate-800">
                                             <span className="text-xs text-slate-500 font-mono">ID: {goal.id}</span>
                                             {!selectMode && (
-                                                <button
-                                                    onClick={(e) => handleDelete(e, goal.id)}
-                                                    className="text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
-                                                    title="Delete Goal"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        onClick={(e) => handleDuplicate(e, goal.id)}
+                                                        className="text-blue-500 hover:bg-blue-500/10 p-2 rounded transition z-20 relative"
+                                                        title="Duplicate as Draft"
+                                                    >
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleDelete(e, goal.id)}
+                                                        className="text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
+                                                        title="Delete Goal"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>

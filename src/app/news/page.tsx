@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getNews, deleteNews, bulkDeleteNews } from '@/app/actions';
+import { getNews, deleteNews, bulkDeleteNews, duplicateNews } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Newspaper, Calendar, Star, CheckSquare, Square, XSquare } from 'lucide-react';
+import { Plus, Trash2, Newspaper, Calendar, Star, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type NewsItem = Database['public']['Tables']['news']['Row'];
@@ -39,6 +39,16 @@ export default function NewsPage() {
         await deleteNews(id);
         loadData();
         router.refresh();
+    };
+
+    const handleDuplicate = async (e: React.MouseEvent, id: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const result = await duplicateNews(id);
+        if (result.success) {
+            loadData();
+            router.refresh();
+        }
     };
 
     const toggleSelect = (id: number) => {
@@ -143,8 +153,8 @@ export default function NewsPage() {
                                     href={selectMode ? '#' : `/news/${item.id}`}
                                     onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(item.id); } : undefined}
                                     className={`block group bg-slate-900 border rounded-xl overflow-hidden transition relative ${!item.is_published ? 'opacity-60 grayscale-[0.5]' : ''} ${selectedIds.has(item.id)
-                                            ? 'border-orange-500 bg-orange-500/10'
-                                            : 'border-slate-800 hover:border-orange-500/50'
+                                        ? 'border-orange-500 bg-orange-500/10'
+                                        : 'border-slate-800 hover:border-orange-500/50'
                                         }`}
                                 >
                                     {item.is_premium && (
@@ -175,13 +185,22 @@ export default function NewsPage() {
                                         <div className="flex justify-between items-center pt-4 border-t border-slate-800">
                                             <span className="text-xs text-slate-500 font-mono">ID: {item.id}</span>
                                             {!selectMode && (
-                                                <button
-                                                    onClick={(e) => handleDelete(e, item.id)}
-                                                    className="text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
-                                                    title="Delete Article"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        onClick={(e) => handleDuplicate(e, item.id)}
+                                                        className="text-orange-500 hover:bg-orange-500/10 p-2 rounded transition z-20 relative"
+                                                        title="Duplicate as Draft"
+                                                    >
+                                                        <Copy className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => handleDelete(e, item.id)}
+                                                        className="text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
+                                                        title="Delete Article"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>

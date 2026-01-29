@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getCategories, deleteCategory, bulkDeleteCategories } from '@/app/actions';
+import { getCategories, deleteCategory, bulkDeleteCategories, duplicateCategory } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Hash, Star, CheckSquare, Square, XSquare } from 'lucide-react';
+import { Plus, Trash2, Hash, Star, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Category = Database['public']['Tables']['channel_categories']['Row'];
@@ -40,6 +40,16 @@ export default function CategoriesPage() {
         await deleteCategory(id);
         loadData();
         router.refresh();
+    };
+
+    const handleDuplicate = async (e: React.MouseEvent, id: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const result = await duplicateCategory(id);
+        if (result.success) {
+            loadData();
+            router.refresh();
+        }
     };
 
     const toggleSelect = (id: number) => {
@@ -147,8 +157,8 @@ export default function CategoriesPage() {
                                         href={selectMode ? '#' : `/categories/${cat.id}`}
                                         onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(cat.id); } : undefined}
                                         className={`group bg-slate-900 border rounded-xl p-6 transition relative block ${selectedIds.has(cat.id)
-                                                ? 'border-purple-500 bg-purple-500/10'
-                                                : 'border-slate-800 hover:border-purple-500/50'
+                                            ? 'border-purple-500 bg-purple-500/10'
+                                            : 'border-slate-800 hover:border-purple-500/50'
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-4">
@@ -162,12 +172,22 @@ export default function CategoriesPage() {
                                                     </span>
                                                 )}
                                                 {!selectMode && (
-                                                    <button
-                                                        onClick={(e) => handleDelete(e, cat.id)}
-                                                        className="text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            onClick={(e) => handleDuplicate(e, cat.id)}
+                                                            className="text-slate-600 hover:text-purple-500 hover:bg-purple-500/10 p-2 rounded transition z-20 relative"
+                                                            title="Duplicate"
+                                                        >
+                                                            <Copy className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleDelete(e, cat.id)}
+                                                            className="text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
+                                                            title="Delete"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>

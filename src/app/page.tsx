@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import MatchCard from '@/components/MatchCard';
-import { getMatches, deleteMatch, bulkDeleteMatches } from './actions';
+import { getMatches, deleteMatch, bulkDeleteMatches, duplicateMatch } from './actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, CheckSquare, Square, XSquare } from 'lucide-react';
+import { Plus, Trash2, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Match = Database['public']['Tables']['matches']['Row'];
@@ -44,6 +44,15 @@ export default function Home() {
     await deleteMatch(id);
     loadMatches();
     router.refresh();
+  };
+
+  const handleDuplicate = async (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    const result = await duplicateMatch(id);
+    if (result.success) {
+      loadMatches();
+      router.refresh();
+    }
   };
 
   const handleEditClick = (id: number) => {
@@ -169,13 +178,22 @@ export default function Home() {
                       <MatchCard match={match} onClick={() => handleEditClick(match.id)} />
                     </div>
                     {!selectMode && (
-                      <button
-                        onClick={(e) => handleDelete(e, match.id)}
-                        className="absolute top-2 right-2 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition z-30"
-                        title="Delete Match"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="absolute top-2 right-2 flex gap-1 z-30">
+                        <button
+                          onClick={(e) => handleDuplicate(e, match.id)}
+                          className="p-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"
+                          title="Duplicate as Draft"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDelete(e, match.id)}
+                          className="p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition"
+                          title="Delete Match"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}

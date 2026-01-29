@@ -290,3 +290,126 @@ export async function bulkDeleteGoals(ids: number[]) {
         return { success: true, deleted: ids.length };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
+
+// --- DUPLICATE (creates as draft) ---
+export async function duplicateMatch(id: number) {
+    try {
+        const match = await getMatch(id);
+        if (!match) return { success: false, error: 'Match not found' };
+
+        const result = await sql`
+            INSERT INTO matches (team_a, team_b, match_time, channel, commentator, champion, logo_a, logo_b, is_premium, is_published, stream_link, created_at, updated_at)
+            VALUES (
+                ${match.team_a + ' (Copy)'}, 
+                ${match.team_b}, 
+                ${match.match_time}, 
+                ${match.channel}, 
+                ${match.commentator}, 
+                ${match.champion}, 
+                ${match.logo_a ? JSON.stringify(match.logo_a) : null}::jsonb, 
+                ${match.logo_b ? JSON.stringify(match.logo_b) : null}::jsonb, 
+                ${match.is_premium}, 
+                false, 
+                ${match.stream_link ? JSON.stringify(match.stream_link) : null}::jsonb, 
+                now(), 
+                now()
+            )
+            RETURNING id
+        `;
+        revalidatePath('/');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function duplicateChannel(id: number) {
+    try {
+        const channel = await getChannel(id);
+        if (!channel) return { success: false, error: 'Channel not found' };
+
+        const result = await sql`
+            INSERT INTO channels (name, stream_link, created_at, updated_at)
+            VALUES (
+                ${channel.name + ' (Copy)'}, 
+                ${channel.stream_link ? JSON.stringify(channel.stream_link) : null}::jsonb, 
+                now(), 
+                now()
+            )
+            RETURNING id
+        `;
+
+        // Copy category relations
+        const categories = (channel as any).categories || [];
+        for (const cat of categories) {
+            if (cat.id) {
+                await sql`INSERT INTO _rel_channels_categories (channel_id, category_id) VALUES (${result[0].id}, ${cat.id})`;
+            }
+        }
+
+        revalidatePath('/channels');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function duplicateCategory(id: number) {
+    try {
+        const cat = await getCategory(id);
+        if (!cat) return { success: false, error: 'Category not found' };
+
+        const result = await sql`
+            INSERT INTO channel_categories (name, is_premium, sort_order, created_at, updated_at)
+            VALUES (${cat.name + ' (Copy)'}, ${cat.is_premium}, ${cat.sort_order}, now(), now())
+            RETURNING id
+        `;
+        revalidatePath('/categories');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function duplicateNews(id: number) {
+    try {
+        const news = await getNewsItem(id);
+        if (!news) return { success: false, error: 'News not found' };
+
+        const result = await sql`
+            INSERT INTO news (title, image, link, is_premium, is_published, date, created_at, updated_at)
+            VALUES (
+                ${news.title + ' (Copy)'}, 
+                ${news.image ? JSON.stringify(news.image) : null}::jsonb, 
+                ${news.link ? JSON.stringify(news.link) : null}::jsonb, 
+                ${news.is_premium}, 
+                false, 
+                ${news.date}, 
+                now(), 
+                now()
+            )
+            RETURNING id
+        `;
+        revalidatePath('/news');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function duplicateGoal(id: number) {
+    try {
+        const goal = await getGoal(id);
+        if (!goal) return { success: false, error: 'Goal not found' };
+
+        const result = await sql`
+            INSERT INTO goals (title, image, url, is_premium, is_published, time, created_at, updated_at)
+            VALUES (
+                ${goal.title + ' (Copy)'}, 
+                ${goal.image ? JSON.stringify(goal.image) : null}::jsonb, 
+                ${goal.url ? JSON.stringify(goal.url) : null}::jsonb, 
+                ${goal.is_premium}, 
+                false, 
+                ${goal.time}, 
+                now(), 
+                now()
+            )
+            RETURNING id
+        `;
+        revalidatePath('/goals');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
