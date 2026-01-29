@@ -247,3 +247,46 @@ export async function deleteNews(id: number) {
     try { await sql`DELETE FROM news WHERE id = ${id}`; revalidatePath('/news'); return { success: true }; }
     catch (e: any) { return { success: false, error: e.message }; }
 }
+
+// --- BULK DELETE ---
+export async function bulkDeleteChannels(ids: number[]) {
+    try {
+        await sql`DELETE FROM _rel_channels_categories WHERE channel_id = ANY(${ids}::bigint[])`;
+        await sql`DELETE FROM channels WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/channels');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function bulkDeleteCategories(ids: number[]) {
+    try {
+        await sql`DELETE FROM _rel_channels_categories WHERE category_id = ANY(${ids}::bigint[])`;
+        await sql`DELETE FROM channel_categories WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/categories');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function bulkDeleteMatches(ids: number[]) {
+    try {
+        await sql`DELETE FROM matches WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/matches');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function bulkDeleteNews(ids: number[]) {
+    try {
+        await sql`DELETE FROM news WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/news');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function bulkDeleteGoals(ids: number[]) {
+    try {
+        await sql`DELETE FROM goals WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/goals');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
