@@ -36,7 +36,26 @@
 
 ---
 
-## 2. حذف مباريات (Bulk Delete)
+## 2. إضافة خبر جديد (Create News)
+
+يتم إرسال طلب `POST` إلى الرابط التالي:
+`POST /api/admin/news`
+
+### جسم الطلب (Request Body - JSON):
+```json
+{
+  "secret": "7esen",
+  "title": "عنوان الخبر هنا",
+  "image": { "url": "https://..." },
+  "link": { "url": "https://..." },
+  "is_premium": false,
+  "is_published": true
+}
+```
+
+---
+
+## 3. حذف بيانات (Bulk Delete)
 
 يتم إرسال طلب `POST` إلى الرابط التالي:
 `POST /api/admin/delete`
