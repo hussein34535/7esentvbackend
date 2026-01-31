@@ -1,13 +1,26 @@
 const postgres = require('postgres');
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '../.env' });
 
-const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+const sql = postgres(process.env.DATABASE_URL);
 
 async function check() {
-    const matches = await sql`SELECT id, team_a, team_b, created_at FROM matches`;
-    console.log(`Found ${matches.length} matches.`);
-    matches.forEach(m => console.log(`- [${m.id}] ${m.team_a} vs ${m.team_b} (${m.created_at})`));
-    process.exit(0);
+    try {
+        console.log('Checking payment_methods table...');
+        const columns = await sql`
+            SELECT column_name, data_type 
+            FROM information_schema.columns 
+            WHERE table_name = 'payment_methods';
+        `;
+        console.log('Columns:', columns);
+
+        const rows = await sql`SELECT * FROM payment_methods`;
+        console.log('Rows count:', rows.length);
+        console.log('Full Data:', JSON.stringify(rows, null, 2));
+    } catch (e) {
+        console.error('Error during check:', e);
+    } finally {
+        await sql.end();
+    }
 }
 
 check();

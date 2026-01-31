@@ -9,8 +9,13 @@ export async function GET() {
             WHERE is_active = true 
             ORDER BY id ASC
         `;
-        return NextResponse.json(methods);
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch payment methods' }, { status: 500 });
+        return NextResponse.json(methods || []);
+    } catch (error: any) {
+        console.error('Payment Methods API Error:', error);
+        return NextResponse.json({
+            error: 'Failed to fetch payment methods',
+            details: error.message,
+            hint: 'Check if DATABASE_URL is correct in the server environment'
+        }, { status: 500 });
     }
 }
