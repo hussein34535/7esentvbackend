@@ -204,3 +204,16 @@ drop policy if exists "Allow public all" on payment_methods; create policy "Allo
 -- Users Policies
 drop policy if exists "Allow public read" on users; create policy "Allow public read" on users for select using (true);
 drop policy if exists "Allow public all" on users; create policy "Allow public all" on users for all using (true) with check (true);
+
+-- 11. ANALYTICS
+create table if not exists daily_stats (
+  date date primary key, -- YYYY-MM-DD
+  active_users integer default 0,
+  new_users integer default 0,
+  total_requests integer default 0,
+  updated_at timestamptz default now()
+);
+
+-- Analytics Policies
+drop policy if exists "Allow public read" on daily_stats; create policy "Allow public read" on daily_stats for select using (true);
+drop policy if exists "Allow public all" on daily_stats; create policy "Allow public all" on daily_stats for all using (true) with check (true);
