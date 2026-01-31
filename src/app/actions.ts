@@ -516,8 +516,17 @@ export async function addSubscription(email: string, durationDays: number, planI
 
         const uid = userRecord.uid;
 
-        // 2. Calculate new end date
-        const endDate = new Date();
+        // 2. Calculate new end date (Cumulative)
+        const currentUser = await sql`SELECT subscription_end FROM users WHERE id = ${uid}`;
+        let baseDate = new Date();
+        if (currentUser.length > 0 && currentUser[0].subscription_end) {
+            const existingEnd = new Date(currentUser[0].subscription_end);
+            if (existingEnd > baseDate) {
+                baseDate = existingEnd;
+            }
+        }
+
+        const endDate = new Date(baseDate);
         endDate.setDate(endDate.getDate() + durationDays);
 
         // 3. Update PostgreSQL
@@ -642,8 +651,17 @@ export async function getPaymentRequests() {
 
 export async function approvePaymentRequest(id: string, userId: string, durationDays: number, planId: number) {
     try {
-        // 1. Activate User Subscription
-        const endDate = new Date();
+        // 1. Activate User Subscription (Cumulative)
+        const currentUser = await sql`SELECT subscription_end FROM users WHERE id = ${userId}`;
+        let baseDate = new Date();
+        if (currentUser.length > 0 && currentUser[0].subscription_end) {
+            const existingEnd = new Date(currentUser[0].subscription_end);
+            if (existingEnd > baseDate) {
+                baseDate = existingEnd;
+            }
+        }
+
+        const endDate = new Date(baseDate);
         endDate.setDate(endDate.getDate() + durationDays);
 
         await sql`
