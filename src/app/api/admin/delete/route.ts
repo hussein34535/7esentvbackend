@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 
-const ADMIN_SECRET = 'GHWDpKHoAZdRn14eqjrNIJbaxOK2';
+const ADMIN_SECRET = '7esen';
 
 // POST /api/admin/delete - Bulk delete items
 export async function POST(request: NextRequest) {

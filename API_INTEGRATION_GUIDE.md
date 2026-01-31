@@ -5,7 +5,7 @@
 ## بيانات المصادقة (Authentication)
 جميع الطلبات إلى روابط الـ Admin تتطلب إرسال `secret` التابع للمسؤول.
 
-- **Admin Secret:** `GHWDpKHoAZdRn14eqjrNIJbaxOK2`
+- **Admin Secret:** `7esen`
 
 ---
 
@@ -17,7 +17,7 @@
 ### جسم الطلب (Request Body - JSON):
 ```json
 {
-  "secret": "GHWDpKHoAZdRn14eqjrNIJbaxOK2",
+  "secret": "7esen",
   "team_a": "الأهلي",
   "team_b": "الزمالك",
   "match_time": "20:00",
@@ -44,7 +44,7 @@
 ### جسم الطلب (Request Body - JSON):
 ```json
 {
-  "secret": "GHWDpKHoAZdRn14eqjrNIJbaxOK2",
+  "secret": "7esen",
   "type": "matches",
   "ids": [1, 2, 3]
 }
@@ -59,7 +59,7 @@
 `GET /api/mobile/matches`
 
 وفي حالة رغبتك في جلب الروابط حتى لو كنت غير مشترك (لأغراض التطوير)، أضف الـ secret كـ query parameter:
-`GET /api/mobile/matches?secret=GHWDpKHoAZdRn14eqjrNIJbaxOK2`
+`GET /api/mobile/matches?secret=7esen`
 
 ---
 

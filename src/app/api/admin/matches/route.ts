@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
-const ADMIN_SECRET = 'GHWDpKHoAZdRn14eqjrNIJbaxOK2';
+const ADMIN_SECRET = '7esen';
 
 // POST /api/admin/matches - Create a match
 export async function POST(request: NextRequest) {

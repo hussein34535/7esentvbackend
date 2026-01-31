@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { processStreams, StreamAccessLevel } from '@/lib/stream-utils';
 
-const DEBUG_SECRET = 'GHWDpKHoAZdRn14eqjrNIJbaxOK2';
+const DEBUG_SECRET = '7esen';
 
 // GET /api/mobile/channels
 // Add ?secret=... to bypass premium protection (for debugging)

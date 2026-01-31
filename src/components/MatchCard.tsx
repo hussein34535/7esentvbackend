@@ -17,6 +17,15 @@ export default function MatchCard({ match, onClick }: MatchCardProps) {
         return timeStr.slice(0, 5);
     };
 
+    const getLogoUrl = (logo: any) => {
+        if (!logo) return null;
+        if (Array.isArray(logo)) return logo[0]?.url;
+        return logo.url;
+    };
+
+    const logoAUrl = getLogoUrl(match.logo_a);
+    const logoBUrl = getLogoUrl(match.logo_b);
+
     return (
         <div
             onClick={onClick}
@@ -38,8 +47,8 @@ export default function MatchCard({ match, onClick }: MatchCardProps) {
                     <div className="flex flex-col items-center flex-1 min-w-0">
                         <div className="w-10 h-10 md:w-16 md:h-16 relative mb-1 md:mb-2 bg-slate-700/50 rounded-full flex items-center justify-center p-1.5 md:p-2 border border-slate-600/30">
                             {/* Use Cloudinary URL if available, else placeholder */}
-                            {match.logo_a?.url ? (
-                                <img src={match.logo_a.url} alt={match.team_a} className="w-full h-full object-contain" />
+                            {logoAUrl ? (
+                                <img src={logoAUrl} alt={match.team_a} className="w-full h-full object-contain" />
                             ) : (
                                 <div className="text-base md:text-xl font-bold text-slate-500">{match.team_a[0]}</div>
                             )}
@@ -56,8 +65,8 @@ export default function MatchCard({ match, onClick }: MatchCardProps) {
                     {/* Team B */}
                     <div className="flex flex-col items-center flex-1 min-w-0">
                         <div className="w-10 h-10 md:w-16 md:h-16 relative mb-1 md:mb-2 bg-slate-700/50 rounded-full flex items-center justify-center p-1.5 md:p-2 border border-slate-600/30">
-                            {match.logo_b?.url ? (
-                                <img src={match.logo_b.url} alt={match.team_b} className="w-full h-full object-contain" />
+                            {logoBUrl ? (
+                                <img src={logoBUrl} alt={match.team_b} className="w-full h-full object-contain" />
                             ) : (
                                 <div className="text-base md:text-xl font-bold text-slate-500">{match.team_b[0]}</div>
                             )}
