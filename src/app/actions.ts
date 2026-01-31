@@ -672,11 +672,11 @@ export async function rejectPaymentRequest(id: string) {
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
-export async function submitPaymentRequest(userId: string, packageId: number, receiptImage: any) {
+export async function submitPaymentRequest(userId: string, packageId: number, receiptImage: any, paymentIdentifier?: string) {
     try {
         await sql`
-            INSERT INTO payment_requests (user_id, package_id, receipt_image, status)
-            VALUES (${userId}, ${packageId}, ${receiptImage}, 'pending')
+            INSERT INTO payment_requests (user_id, package_id, receipt_image, status, payment_identifier)
+            VALUES (${userId}, ${packageId}, ${receiptImage}, 'pending', ${paymentIdentifier || null})
         `;
         return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }

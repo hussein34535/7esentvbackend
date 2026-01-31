@@ -84,8 +84,8 @@ export default function RequestsPage() {
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
                                     <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${req.status === 'approved' ? 'bg-emerald-900/50 text-emerald-400' :
-                                            req.status === 'rejected' ? 'bg-red-900/50 text-red-400' :
-                                                'bg-yellow-900/50 text-yellow-400'
+                                        req.status === 'rejected' ? 'bg-red-900/50 text-red-400' :
+                                            'bg-yellow-900/50 text-yellow-400'
                                         }`}>
                                         {req.status}
                                     </span>
@@ -100,6 +100,12 @@ export default function RequestsPage() {
                                 <p className="text-slate-400 text-sm font-mono mt-1">
                                     User ID: {req.user_id}
                                 </p>
+                                {req.payment_identifier && (
+                                    <div className="mt-2 bg-slate-800/50 inline-block px-3 py-1 rounded text-sm text-emerald-400 border border-emerald-900/30">
+                                        <span className="text-slate-500 mr-2">Sender:</span>
+                                        {req.payment_identifier}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Actions */}
