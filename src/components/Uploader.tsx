@@ -6,8 +6,8 @@ import { CloudinaryAsset } from '@/types/cloudinary.types';
 
 interface UploaderProps {
     label: string;
-    value: CloudinaryAsset | null;
-    onChange: (value: CloudinaryAsset | null) => void;
+    value: CloudinaryAsset | string | null;
+    onChange: (value: CloudinaryAsset | string | null) => void;
 }
 
 export default function Uploader({ label, value, onChange }: UploaderProps) {
@@ -74,7 +74,7 @@ export default function Uploader({ label, value, onChange }: UploaderProps) {
 
             {value ? (
                 <div className="relative w-24 h-24 bg-slate-800 rounded-lg border border-slate-700 flex items-center justify-center group overflow-hidden">
-                    <img src={value.url} alt="Uploaded" className="object-contain w-full h-full" />
+                    <img src={typeof value === 'string' ? value : value.url} alt="Uploaded" className="object-contain w-full h-full" />
                     <button
                         onClick={() => onChange(null)}
                         className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"

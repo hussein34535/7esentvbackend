@@ -26,8 +26,8 @@
   "champion": "الدوري المصري",
   "is_premium": false,
   "is_published": true,
-  "logo_a": { "url": "https://..." },
-  "logo_b": { "url": "https://..." },
+  "logo_a": "https://...",
+  "logo_b": "https://...",
   "stream_link": [
     { "name": "FHD", "url": "https://...", "is_premium": false }
   ]

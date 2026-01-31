@@ -19,6 +19,7 @@ export default function MatchCard({ match, onClick }: MatchCardProps) {
 
     const getLogoUrl = (logo: any) => {
         if (!logo) return null;
+        if (typeof logo === 'string') return logo;
         if (Array.isArray(logo)) return logo[0]?.url;
         return logo.url;
     };
