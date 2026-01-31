@@ -12,7 +12,8 @@ import {
     Settings,
     Menu,
     X,
-    LogOut
+    LogOut,
+    User
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -25,6 +26,7 @@ export default function Sidebar() {
         { name: 'Categories', icon: List, href: '/categories' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
         { name: 'News', icon: Newspaper, href: '/news' },
+        { name: 'Users', icon: User, href: '/users' },
     ];
 
     return (

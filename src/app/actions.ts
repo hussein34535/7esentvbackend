@@ -413,6 +413,7 @@ export async function duplicateGoal(id: number) {
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+
 export async function deleteAllMatches() {
     try {
         await sql`DELETE FROM matches`;
@@ -424,4 +425,138 @@ export async function deleteAllMatches() {
     }
 }
 
+// --- PACKAGES ---
+export async function getPackages() {
+    try { return await sql`SELECT * FROM packages ORDER BY price ASC`; } catch (e) { return []; }
+}
+export async function createPackage(data: any) {
+    try {
+        await sql`INSERT INTO packages (name, description, price, duration_days, features, is_active) VALUES (${data.name}, ${data.description}, ${data.price}, ${data.duration_days}, ${data.features || '[]'}::jsonb, ${data.is_active ?? true})`;
+        revalidatePath('/packages'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function updatePackage(id: number, data: any) {
+    try {
+        await sql`UPDATE packages SET name=${data.name}, description=${data.description}, price=${data.price}, duration_days=${data.duration_days}, features=${data.features || '[]'}::jsonb, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
+        revalidatePath('/packages'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function deletePackage(id: number) {
+    try { await sql`DELETE FROM packages WHERE id=${id}`; revalidatePath('/packages'); return { success: true }; } catch (e: any) { return { success: false, error: e.message }; }
+}
 
+// --- PROMO CODES ---
+export async function getPromoCodes() {
+    try { return await sql`SELECT * FROM promo_codes ORDER BY created_at DESC`; } catch (e) { return []; }
+}
+export async function createPromoCode(data: any) {
+    try {
+        await sql`INSERT INTO promo_codes (code, discount_percent, max_uses, expires_at, is_active) VALUES (${data.code}, ${data.discount_percent}, ${data.max_uses}, ${data.expires_at}, ${data.is_active ?? true})`;
+        revalidatePath('/coupons'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function updatePromoCode(code: string, data: any) {
+    try {
+        await sql`UPDATE promo_codes SET discount_percent=${data.discount_percent}, max_uses=${data.max_uses}, expires_at=${data.expires_at}, is_active=${data.is_active} WHERE code=${code}`;
+        revalidatePath('/coupons'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function deletePromoCode(code: string) {
+    try { await sql`DELETE FROM promo_codes WHERE code=${code}`; revalidatePath('/coupons'); return { success: true }; } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+// --- PAYMENT METHODS ---
+export async function getPaymentMethods() {
+    try { return await sql`SELECT * FROM payment_methods ORDER BY id ASC`; } catch (e) { return []; }
+}
+export async function createPaymentMethod(data: any) {
+    try {
+        await sql`INSERT INTO payment_methods (name, number, instructions, image, is_active) VALUES (${data.name}, ${data.number}, ${data.instructions}, ${data.image}, ${data.is_active ?? true})`;
+        revalidatePath('/payments'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function updatePaymentMethod(id: number, data: any) {
+    try {
+        await sql`UPDATE payment_methods SET name=${data.name}, number=${data.number}, instructions=${data.instructions}, image=${data.image}, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
+        revalidatePath('/payments'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function deletePaymentMethod(id: number) {
+    try { await sql`DELETE FROM payment_methods WHERE id=${id}`; revalidatePath('/payments'); return { success: true }; } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+// --- USERS (Enhanced) ---
+export async function getUsers() {
+    try {
+        // Left join with packages to get plan name
+        return await sql`
+            SELECT u.*, p.name as plan_name 
+            FROM users u 
+            LEFT JOIN packages p ON u.plan_id = p.id
+            ORDER BY u.created_at DESC
+        `;
+    } catch (e: any) {
+        return [];
+    }
+}
+
+import { auth, firestore } from '@/lib/firebase-admin';
+
+export async function addSubscription(email: string, durationDays: number, planId?: number) {
+    try {
+        // 1. Find user by email in Firebase Auth
+        let userRecord;
+        try {
+            userRecord = await auth.getUserByEmail(email);
+        } catch (e) {
+            return { success: false, error: 'User not found in Firebase Auth' };
+        }
+
+        const uid = userRecord.uid;
+
+        // 2. Calculate new end date
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + durationDays);
+
+        // 3. Update PostgreSQL
+        await sql`
+            INSERT INTO users (id, email, subscription_end, plan_id, status, updated_at)
+            VALUES (${uid}, ${email}, ${endDate.toISOString()}, ${planId || null}, 'active', now())
+            ON CONFLICT (id) 
+            DO UPDATE SET 
+                subscription_end = ${endDate.toISOString()},
+                plan_id = ${planId || null},
+                status = 'active',
+                updated_at = now()
+        `;
+
+        // 4. Sync to Firestore (for mobile app compatibility)
+        await firestore.collection('users').doc(uid).set({
+            email: email,
+            isSubscribed: true,
+            subscriptionEnd: endDate.toISOString(),
+            status: 'active'
+        }, { merge: true });
+
+        revalidatePath('/users');
+        return { success: true, message: `Subscription added until ${endDate.toDateString()}` };
+    } catch (e: any) {
+        console.error('Add Subscription Error:', e);
+        return { success: false, error: e.message };
+    }
+}
+
+export async function updateUserStatus(uid: string, status: string) {
+    try {
+        await sql`UPDATE users SET status=${status} WHERE id=${uid}`;
+
+        const isSubscribed = status === 'active';
+        await firestore.collection('users').doc(uid).set({
+            status: status,
+            isSubscribed: isSubscribed
+        }, { merge: true });
+
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}

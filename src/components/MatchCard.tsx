@@ -19,7 +19,20 @@ export default function MatchCard({ match, onClick }: MatchCardProps) {
 
     const getLogoUrl = (logo: any) => {
         if (!logo) return null;
-        if (typeof logo === 'string') return logo;
+
+        // Handle "Stringified JSON" (Edge case protection)
+        if (typeof logo === 'string') {
+            if (logo.trim().startsWith('{') || logo.trim().startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(logo);
+                    return getLogoUrl(parsed); // Recursive call to handle the object/array
+                } catch (e) {
+                    return logo; // Return as is if parse fails (it's just a string URL)
+                }
+            }
+            return logo;
+        }
+
         if (Array.isArray(logo)) return logo[0]?.url;
         return logo.url;
     };

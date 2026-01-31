@@ -41,16 +41,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 2. Check Subscription Status in Firestore
+        // 2. Check Subscription Status in PostgreSQL (Primary Source)
         // We now ALLOW non-subscribers to access, but we filter their content.
         let isSubscribed = false;
         try {
-            const userDoc = await firestore.collection('users').doc(userId).get();
-            const userData = userDoc.data();
-            isSubscribed = userData?.isSubscribed === true;
+            const userRows = await sql`SELECT subscription_end FROM users WHERE id = ${userId}`;
+            if (userRows.length > 0) {
+                const subEnd = new Date(userRows[0].subscription_end);
+                if (subEnd > new Date()) {
+                    isSubscribed = true;
+                }
+            }
         } catch (error) {
-            console.error('Error fetching user subscription:', error);
-            // Default to false (not subscribed) if error, but allow access to free content
+            console.error('Error fetching user subscription from DB:', error);
+            // Default to false (not subscribed)
         }
 
         // Determine Access Level

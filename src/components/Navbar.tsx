@@ -25,6 +25,9 @@ export default function Navbar() {
                             <Link href="/news" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition">
                                 News
                             </Link>
+                            <Link href="/users" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition text-emerald-400">
+                                Users
+                            </Link>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -65,6 +68,13 @@ export default function Navbar() {
                             className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-800 transition"
                         >
                             News
+                        </Link>
+                        <Link
+                            href="/users"
+                            onClick={() => setIsOpen(false)}
+                            className="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:bg-slate-800 transition"
+                        >
+                            Users
                         </Link>
                     </div>
                 </div>

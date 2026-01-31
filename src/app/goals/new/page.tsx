@@ -58,7 +58,7 @@ export default function NewGoal() {
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
                     <div className="space-y-4">
-                        <Uploader label="Thumbnail / Image" value={image} onChange={setImage} />
+                        <Uploader label="Thumbnail / Image" value={image} onChange={(val) => { if (typeof val !== 'string') setImage(val); }} />
 
                         <div>
                             <label className="block text-sm font-medium text-slate-400 mb-1">Goal Title</label>

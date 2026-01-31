@@ -1,0 +1,16 @@
+src/app/goals/[id]/page.tsx(98,72): error TS2322: Type 'Dispatch<SetStateAction<CloudinaryAsset | null>>' is not assignable to type '(value: string | CloudinaryAsset | null) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | CloudinaryAsset | null' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+      Type 'string' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+src/app/goals/new/page.tsx(61,75): error TS2322: Type 'Dispatch<SetStateAction<CloudinaryAsset | null>>' is not assignable to type '(value: string | CloudinaryAsset | null) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | CloudinaryAsset | null' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+      Type 'string' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+src/app/news/[id]/page.tsx(94,71): error TS2322: Type 'Dispatch<SetStateAction<CloudinaryAsset | null>>' is not assignable to type '(value: string | CloudinaryAsset | null) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | CloudinaryAsset | null' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+      Type 'string' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+src/app/news/new/page.tsx(62,71): error TS2322: Type 'Dispatch<SetStateAction<CloudinaryAsset | null>>' is not assignable to type '(value: string | CloudinaryAsset | null) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | CloudinaryAsset | null' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
+      Type 'string' is not assignable to type 'SetStateAction<CloudinaryAsset | null>'.
