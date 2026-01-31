@@ -9,10 +9,19 @@ export default function Packages() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        description: string;
+        price: number;
+        sale_price?: number;
+        duration_days: number;
+        features: string;
+        is_active: boolean;
+    }>({
         name: '',
         description: '',
         price: 0,
+        sale_price: undefined,
         duration_days: 30,
         features: '',
         is_active: true
@@ -51,6 +60,7 @@ export default function Packages() {
             name: pkg.name,
             description: pkg.description || '',
             price: pkg.price,
+            sale_price: pkg.sale_price,
             duration_days: pkg.duration_days,
             features: Array.isArray(pkg.features) ? pkg.features.join('\n') : '',
             is_active: pkg.is_active
@@ -67,7 +77,7 @@ export default function Packages() {
 
     const resetForm = () => {
         setEditingId(null);
-        setFormData({ name: '', description: '', price: 0, duration_days: 30, features: '', is_active: true });
+        setFormData({ name: '', description: '', price: 0, sale_price: undefined, duration_days: 30, features: '', is_active: true });
         setIsModalOpen(true);
     };
 
@@ -109,7 +119,14 @@ export default function Packages() {
                             </div>
 
                             <div className="mb-6">
-                                <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                                {pkg.sale_price ? (
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-3xl font-bold text-emerald-400">${pkg.sale_price}</span>
+                                        <span className="text-lg text-slate-500 line-through">${pkg.price}</span>
+                                    </div>
+                                ) : (
+                                    <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                                )}
                             </div>
 
                             <ul className="space-y-2 mb-6 text-sm text-slate-300">
@@ -167,6 +184,15 @@ export default function Packages() {
                                     />
                                 </div>
                                 <div>
+                                    <label className="block text-sm text-slate-400 mb-1">Sale Price (Optional)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.sale_price || ''}
+                                        onChange={e => setFormData({ ...formData, sale_price: e.target.value ? Number(e.target.value) : undefined })}
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                    />
+                                </div>
+                                <div>
                                     <label className="block text-sm text-slate-400 mb-1">Duration (Days)</label>
                                     <input
                                         type="number"
@@ -176,49 +202,48 @@ export default function Packages() {
                                         className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
                                     />
                                 </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm text-slate-400 mb-1">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[80px]"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm text-slate-400 mb-1">Features (One per line)</label>
-                                <textarea
-                                    value={formData.features}
-                                    onChange={e => setFormData({ ...formData, features: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[100px]"
-                                    placeholder="No Ads&#10;4K Streaming&#10;Priority Support"
-                                />
-                            </div>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.is_active}
-                                    onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
-                                />
-                                <span className="text-sm text-slate-300">Active (Visible to users)</span>
-                            </label>
+                                <div>
+                                    <label className="block text-sm text-slate-400 mb-1">Description</label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[80px]"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-slate-400 mb-1">Features (One per line)</label>
+                                    <textarea
+                                        value={formData.features}
+                                        onChange={e => setFormData({ ...formData, features: e.target.value })}
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[100px]"
+                                        placeholder="No Ads&#10;4K Streaming&#10;Priority Support"
+                                    />
+                                </div>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.is_active}
+                                        onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
+                                        className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                                    />
+                                    <span className="text-sm text-slate-300">Active (Visible to users)</span>
+                                </label>
 
-                            <div className="flex gap-3 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 py-3 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg shadow-emerald-500/20"
-                                >
-                                    Save Package
-                                </button>
-                            </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(false)}
+                                        className="flex-1 py-3 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-1 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg shadow-emerald-500/20"
+                                    >
+                                        Save Package
+                                    </button>
+                                </div>
                         </form>
                     </div>
                 </div>

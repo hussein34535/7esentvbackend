@@ -17,7 +17,8 @@ import {
     CreditCard,
     Ticket,
     Package,
-    BarChart3
+    BarChart3,
+    Inbox
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -25,6 +26,7 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
 
     const menuItems = [
+        { name: 'Requests', icon: Inbox, href: '/requests' },
         { name: 'Analytics', icon: BarChart3, href: '/analytics' },
         { name: 'Matches', icon: LayoutDashboard, href: '/' },
         { name: 'Channels', icon: MonitorPlay, href: '/channels' },

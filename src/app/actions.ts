@@ -431,13 +431,13 @@ export async function getPackages() {
 }
 export async function createPackage(data: any) {
     try {
-        await sql`INSERT INTO packages (name, description, price, duration_days, features, is_active) VALUES (${data.name}, ${data.description}, ${data.price}, ${data.duration_days}, ${data.features || '[]'}::jsonb, ${data.is_active ?? true})`;
+        await sql`INSERT INTO packages (name, description, price, sale_price, duration_days, features, is_active) VALUES (${data.name}, ${data.description}, ${data.price}, ${data.sale_price || null}, ${data.duration_days}, ${data.features || '[]'}::jsonb, ${data.is_active ?? true})`;
         revalidatePath('/packages'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 export async function updatePackage(id: number, data: any) {
     try {
-        await sql`UPDATE packages SET name=${data.name}, description=${data.description}, price=${data.price}, duration_days=${data.duration_days}, features=${data.features || '[]'}::jsonb, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
+        await sql`UPDATE packages SET name=${data.name}, description=${data.description}, price=${data.price}, sale_price=${data.sale_price || null}, duration_days=${data.duration_days}, features=${data.features || '[]'}::jsonb, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
         revalidatePath('/packages'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
@@ -445,11 +445,8 @@ export async function deletePackage(id: number) {
     try { await sql`DELETE FROM packages WHERE id=${id}`; revalidatePath('/packages'); return { success: true }; } catch (e: any) { return { success: false, error: e.message }; }
 }
 
-// --- PROMO CODES ---
-export async function getPromoCodes() {
-    try { return await sql`SELECT * FROM promo_codes ORDER BY created_at DESC`; } catch (e) { return []; }
-}
 export async function createPromoCode(data: any) {
+
     try {
         await sql`INSERT INTO promo_codes (code, discount_percent, max_uses, expires_at, is_active) VALUES (${data.code}, ${data.discount_percent}, ${data.max_uses}, ${data.expires_at}, ${data.is_active ?? true})`;
         revalidatePath('/coupons'); return { success: true };
@@ -565,7 +562,7 @@ export async function updateUserStatus(uid: string, status: string) {
 export async function getAnalytics() {
     try {
         const today = new Date().toISOString().split('T')[0];
-        
+
         // Ensure today's record exists
         await sql`
             INSERT INTO daily_stats (date, active_users, new_users, total_requests)
@@ -578,11 +575,11 @@ export async function getAnalytics() {
             ORDER BY date DESC 
             LIMIT 30
         `;
-        
+
         // Calculate totals
         const totalUsers = await sql`SELECT count(*) as count FROM users`;
         const activeToday = stats[0]?.active_users || 0;
-        
+
         return {
             history: stats,
             overview: {
@@ -615,4 +612,68 @@ export async function trackUserActivity(uid: string) {
 
         return { success: true };
     } catch (e: any) { return { success: false }; }
+}
+
+// --- PAYMENT REQUESTS ---
+export async function getPaymentRequests() {
+    try {
+        // Join with packages to get plan name
+        return await sql`
+            SELECT pr.*, p.name as plan_name, p.duration_days
+            FROM payment_requests pr
+            LEFT JOIN packages p ON pr.package_id = p.id
+            ORDER BY pr.created_at DESC
+        `;
+    } catch (e: any) { return []; }
+}
+
+export async function approvePaymentRequest(id: string, userId: string, durationDays: number, planId: number) {
+    try {
+        // 1. Activate User Subscription
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + durationDays);
+
+        await sql`
+            INSERT INTO users (id, email, subscription_end, plan_id, status, updated_at)
+            VALUES (${userId}, 'user@app.com', ${endDate.toISOString()}, ${planId}, 'active', now())
+            ON CONFLICT (id) 
+            DO UPDATE SET 
+                subscription_end = ${endDate.toISOString()},
+                plan_id = ${planId},
+                status = 'active',
+                updated_at = now()
+        `;
+
+        // Sync to Firestore
+        await firestore.collection('users').doc(userId).set({
+            isSubscribed: true,
+            subscriptionEnd: endDate.toISOString(),
+            status: 'active'
+        }, { merge: true });
+
+        // 2. Update Request Status
+        await sql`UPDATE payment_requests SET status = 'approved', updated_at = now() WHERE id = ${id}`;
+
+        revalidatePath('/requests');
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function rejectPaymentRequest(id: string) {
+    try {
+        await sql`UPDATE payment_requests SET status = 'rejected', updated_at = now() WHERE id = ${id}`;
+        revalidatePath('/requests');
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function submitPaymentRequest(userId: string, packageId: number, receiptImage: any) {
+    try {
+        await sql`
+            INSERT INTO payment_requests (user_id, package_id, receipt_image, status)
+            VALUES (${userId}, ${packageId}, ${receiptImage}, 'pending')
+        `;
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
 }
