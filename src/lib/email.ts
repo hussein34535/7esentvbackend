@@ -16,9 +16,11 @@ export async function sendAdminNotification(data: {
     paymentIdentifier?: string;
 }) {
     try {
-        await getResend()?.emails.send({
+        const resend = getResend();
+        if (!resend) return;
+        await resend.emails.send({
             from: '7esen TV <system@7esentv.com>',
-            to: ['husso9987@gmail.com'], // Assuming this is the admin email based on context or common patterns
+            to: ['hussona4635@gmail.com'], // Updated admin email
             subject: '🔔 New Payment Request Received',
             html: `
                 <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">

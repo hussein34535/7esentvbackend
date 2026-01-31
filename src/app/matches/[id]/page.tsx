@@ -62,6 +62,16 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
 
                 // Handle Streams
                 let linkData = match.stream_link as any;
+
+                // [FIX] Ensure we parse stringified JSON (common issue with external uploads)
+                if (typeof linkData === 'string' && (linkData.trim().startsWith('[') || linkData.trim().startsWith('{'))) {
+                    try {
+                        linkData = JSON.parse(linkData);
+                    } catch (e) {
+                        console.warn('Failed to parse stream_link JSON:', e);
+                    }
+                }
+
                 const extracted = extractStreamsFromData(linkData);
                 if (extracted.length === 0 && match.stream_link && typeof match.stream_link === 'string') {
                     // Fallback for simple string if utility missed it (unlikely but safe)
