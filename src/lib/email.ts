@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+        console.warn('RESEND_API_KEY is missing. Emails will not be sent.');
+        return null;
+    }
+    return new Resend(key);
+};
 
 export async function sendAdminNotification(data: {
     userName: string;
@@ -9,7 +16,7 @@ export async function sendAdminNotification(data: {
     paymentIdentifier?: string;
 }) {
     try {
-        await resend.emails.send({
+        await getResend()?.emails.send({
             from: '7esen TV <system@7esentv.com>',
             to: ['husso9987@gmail.com'], // Assuming this is the admin email based on context or common patterns
             subject: '🔔 New Payment Request Received',
@@ -38,7 +45,7 @@ export async function sendAdminNotification(data: {
 export async function sendUserApprovalNotification(userEmail: string, packageName: string) {
     if (!userEmail) return;
     try {
-        await resend.emails.send({
+        await getResend()?.emails.send({
             from: '7esen TV <support@7esentv.com>',
             to: [userEmail],
             subject: '✅ Subscription Activated!',
@@ -60,7 +67,7 @@ export async function sendUserApprovalNotification(userEmail: string, packageNam
 export async function sendUserRejectionNotification(userEmail: string, packageName: string) {
     if (!userEmail) return;
     try {
-        await resend.emails.send({
+        await getResend()?.emails.send({
             from: '7esen TV <support@7esentv.com>',
             to: [userEmail],
             subject: '⚠️ تواصل بخصوص طلب الاشتراك',
