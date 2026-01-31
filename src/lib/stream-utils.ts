@@ -12,6 +12,17 @@ export const extractStreamsFromData = (data: any): StreamItem[] => {
     const findLinks = (node: any) => {
         if (!node) return;
 
+        // [FIX] If we receive a stringified JSON (common from admin API), parse it
+        if (typeof node === 'string' && (node.trim().startsWith('[') || node.trim().startsWith('{'))) {
+            try {
+                const parsed = JSON.parse(node);
+                findLinks(parsed); // Recurse with parsed object
+                return;
+            } catch (e) {
+                // Not JSON, continue
+            }
+        }
+
         if (Array.isArray(node)) {
             node.forEach(findLinks);
             return;
