@@ -472,13 +472,13 @@ export async function getPaymentMethods() {
 }
 export async function createPaymentMethod(data: any) {
     try {
-        await sql`INSERT INTO payment_methods (name, number, instructions, image, is_active) VALUES (${data.name}, ${data.number}, ${data.instructions}, ${data.image}, ${data.is_active ?? true})`;
+        await sql`INSERT INTO payment_methods (name, number, instructions, image, input_label, is_active) VALUES (${data.name}, ${data.number}, ${data.instructions}, ${data.image}, ${data.input_label || 'رقم المحفظة'}, ${data.is_active ?? true})`;
         revalidatePath('/payments'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 export async function updatePaymentMethod(id: number, data: any) {
     try {
-        await sql`UPDATE payment_methods SET name=${data.name}, number=${data.number}, instructions=${data.instructions}, image=${data.image}, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
+        await sql`UPDATE payment_methods SET name=${data.name}, number=${data.number}, instructions=${data.instructions}, image=${data.image}, input_label=${data.input_label || 'رقم المحفظة'}, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
         revalidatePath('/payments'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }

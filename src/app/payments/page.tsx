@@ -13,6 +13,7 @@ export default function Payments() {
         name: '',
         number: '',
         instructions: '',
+        input_label: '',
         image: null as any,
         is_active: true
     });
@@ -46,6 +47,7 @@ export default function Payments() {
             name: method.name,
             number: method.number || '',
             instructions: method.instructions || '',
+            input_label: method.input_label || '',
             image: method.image,
             is_active: method.is_active
         });
@@ -61,7 +63,7 @@ export default function Payments() {
 
     const resetForm = () => {
         setEditingId(null);
-        setFormData({ name: '', number: '', instructions: '', image: null, is_active: true });
+        setFormData({ name: '', number: '', instructions: '', input_label: '', image: null, is_active: true });
         setIsModalOpen(true);
     };
 
@@ -165,6 +167,16 @@ export default function Payments() {
                                     placeholder="Send screenshot after payment..."
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm text-slate-400 mb-1">User Input Label (What to ask user for)</label>
+                                <input
+                                    value={formData.input_label}
+                                    onChange={e => setFormData({ ...formData, input_label: e.target.value })}
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                    placeholder="e.g. رقم محفظة فودافون / Account Number"
+                                />
+                            </div>
+
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
