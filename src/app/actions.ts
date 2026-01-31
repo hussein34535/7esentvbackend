@@ -445,6 +445,10 @@ export async function deletePackage(id: number) {
     try { await sql`DELETE FROM packages WHERE id=${id}`; revalidatePath('/packages'); return { success: true }; } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+// --- PROMO CODES ---
+export async function getPromoCodes() {
+    try { return await sql`SELECT * FROM promo_codes ORDER BY created_at DESC`; } catch (e) { return []; }
+}
 export async function createPromoCode(data: any) {
 
     try {
