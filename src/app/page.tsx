@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import MatchCard from '@/components/MatchCard';
-import { getMatches, deleteMatch, bulkDeleteMatches, duplicateMatch } from './actions';
+import { getMatches, deleteMatch, bulkDeleteMatches, duplicateMatch, deleteAllMatches } from './actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
 import { Plus, Trash2, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
@@ -94,6 +94,25 @@ export default function Home() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (!confirm('Are you sure you want to delete ALL matches? This cannot be undone.')) return;
+
+    setDeleting(true);
+    try {
+      const result = await deleteAllMatches();
+      if (result.success) {
+        loadMatches();
+        router.refresh();
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="font-sans selection:bg-emerald-500/30">
 
@@ -136,6 +155,14 @@ export default function Home() {
             >
               <Trash2 className="w-4 h-4" />
               {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
+            </button>
+            <button
+              onClick={handleDeleteAll}
+              disabled={deleting || matches.length === 0}
+              className="flex items-center gap-2 bg-red-900/50 hover:bg-red-600 border border-red-500/30 text-red-500 hover:text-white px-4 py-2 rounded-lg font-medium transition text-sm disabled:opacity-30"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete All
             </button>
           </div>
         )}

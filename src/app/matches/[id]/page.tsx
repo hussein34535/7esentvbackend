@@ -47,14 +47,14 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
 
                 // Handle Logo A
                 if (match.logo_a) {
-                    if (Array.isArray(match.logo_a)) setLogoA(match.logo_a);
-                    else setLogoA([match.logo_a]);
+                    if (Array.isArray(match.logo_a)) setLogoA(match.logo_a[0]);
+                    else setLogoA(match.logo_a);
                 }
 
                 // Handle Logo B
                 if (match.logo_b) {
-                    if (Array.isArray(match.logo_b)) setLogoB(match.logo_b);
-                    else setLogoB([match.logo_b]);
+                    if (Array.isArray(match.logo_b)) setLogoB(match.logo_b[0]);
+                    else setLogoB(match.logo_b);
                 }
 
                 setIsPremium(match.is_premium || false);

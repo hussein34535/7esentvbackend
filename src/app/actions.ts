@@ -413,3 +413,15 @@ export async function duplicateGoal(id: number) {
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+export async function deleteAllMatches() {
+    try {
+        await sql`DELETE FROM matches`;
+        revalidatePath('/');
+        revalidatePath('/matches');
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
+    }
+}
+
+
