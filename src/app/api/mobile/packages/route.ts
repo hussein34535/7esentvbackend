@@ -4,7 +4,7 @@ import sql from '@/lib/db';
 export async function GET() {
     try {
         const packages = await sql`
-            SELECT id, name, description, price, duration_days, features 
+            SELECT id, name, description, price, sale_price, duration_days, features 
             FROM packages 
             WHERE is_active = true 
             ORDER BY price ASC

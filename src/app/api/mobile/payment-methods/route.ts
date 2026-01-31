@@ -4,7 +4,7 @@ import sql from '@/lib/db';
 export async function GET() {
     try {
         const methods = await sql`
-            SELECT id, name, number, instructions, image 
+            SELECT id, name, number, instructions, image, input_label 
             FROM payment_methods 
             WHERE is_active = true 
             ORDER BY id ASC
