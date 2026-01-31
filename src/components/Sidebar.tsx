@@ -13,7 +13,11 @@ import {
     Menu,
     X,
     LogOut,
-    User
+    User,
+    CreditCard,
+    Ticket,
+    Package,
+    BarChart3
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -21,12 +25,16 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false);
 
     const menuItems = [
+        { name: 'Analytics', icon: BarChart3, href: '/analytics' },
         { name: 'Matches', icon: LayoutDashboard, href: '/' },
         { name: 'Channels', icon: MonitorPlay, href: '/channels' },
         { name: 'Categories', icon: List, href: '/categories' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
         { name: 'News', icon: Newspaper, href: '/news' },
         { name: 'Users', icon: User, href: '/users' },
+        { name: 'Packages', icon: Package, href: '/packages' },
+        { name: 'Coupons', icon: Ticket, href: '/coupons' },
+        { name: 'Payments', icon: CreditCard, href: '/payments' },
     ];
 
     return (
