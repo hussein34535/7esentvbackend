@@ -3,6 +3,7 @@
 import sql from '@/lib/db';
 import { Database } from '@/types/database.types';
 import { revalidatePath } from 'next/cache';
+import { sendAdminNotification, sendUserApprovalNotification, sendUserRejectionNotification } from '@/lib/email';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
 
 type Match = Database['public']['Tables']['matches']['Row'];
@@ -539,6 +540,14 @@ export async function addSubscription(email: string, durationDays: number, planI
             status: 'active'
         }, { merge: true });
 
+        // 5. Send Email Notification
+        try {
+            const pkg = planId ? await sql`SELECT name FROM packages WHERE id = ${planId}` : [];
+            await sendUserApprovalNotification(email, pkg[0]?.name || 'Premium');
+        } catch (mailErr) {
+            console.error('Manual Subscription Email Failed:', mailErr);
+        }
+
         revalidatePath('/users');
         return { success: true, message: `Subscription added until ${endDate.toDateString()}` };
     } catch (e: any) {
@@ -658,6 +667,19 @@ export async function approvePaymentRequest(id: string, userId: string, duration
         // 2. Update Request Status
         await sql`UPDATE payment_requests SET status = 'approved', updated_at = now() WHERE id = ${id}`;
 
+        // 3. Send Email Notification
+        try {
+            const pkg = await sql`SELECT name FROM packages WHERE id = ${planId}`;
+            const userSnap = await firestore.collection('users').doc(userId).get();
+            const userData = userSnap.data();
+
+            if (userData?.email) {
+                await sendUserApprovalNotification(userData.email, pkg[0]?.name || 'Premium');
+            }
+        } catch (mailErr) {
+            console.error('Approval Email Failed:', mailErr);
+        }
+
         revalidatePath('/requests');
         revalidatePath('/users');
         return { success: true };
@@ -667,6 +689,24 @@ export async function approvePaymentRequest(id: string, userId: string, duration
 export async function rejectPaymentRequest(id: string) {
     try {
         await sql`UPDATE payment_requests SET status = 'rejected', updated_at = now() WHERE id = ${id}`;
+        // Send Rejection Email
+        try {
+            const reqData = await sql`
+                SELECT pr.*, p.name as plan_name 
+                FROM payment_requests pr 
+                LEFT JOIN packages p ON pr.package_id = p.id 
+                WHERE pr.id = ${id}
+            `;
+            const userSnap = await firestore.collection('users').doc(reqData[0].user_id).get();
+            const userData = userSnap.data();
+
+            if (userData?.email) {
+                await sendUserRejectionNotification(userData.email, reqData[0].plan_name || 'Premium');
+            }
+        } catch (mailErr) {
+            console.error('Rejection Email Failed:', mailErr);
+        }
+
         revalidatePath('/requests');
         return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
@@ -678,6 +718,21 @@ export async function submitPaymentRequest(userId: string, packageId: number, re
             INSERT INTO payment_requests (user_id, package_id, receipt_image, status, payment_identifier)
             VALUES (${userId}, ${packageId}, ${receiptImage}, 'pending', ${paymentIdentifier || null})
         `;
+        // Send Email to Admin
+        try {
+            const pkg = await sql`SELECT name, price, sale_price FROM packages WHERE id = ${packageId}`;
+            if (pkg.length > 0) {
+                await sendAdminNotification({
+                    userName: userId,
+                    packageName: pkg[0].name,
+                    amount: pkg[0].sale_price || pkg[0].price,
+                    paymentIdentifier
+                });
+            }
+        } catch (mailErr) {
+            console.error('Admin Email Failed:', mailErr);
+        }
+
         return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
