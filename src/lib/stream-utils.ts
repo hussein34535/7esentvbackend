@@ -74,13 +74,21 @@ export const processStreams = (data: any, accessLevel: StreamAccessLevel): { nam
 
     // 2. Filter and Format based on Access Level
     return rawStreams.map(stream => {
-        // PUBLIC: Hide ALL URLs
+        // PUBLIC (Free User): Hide Premium URLs, Show Free URLs
         if (accessLevel === 'public') {
-            return {
-                name: stream.name,
-                is_premium: stream.is_premium,
-                // url omitted
-            };
+            if (stream.is_premium) {
+                return {
+                    name: stream.name,
+                    is_premium: true,
+                    // url omitted
+                };
+            } else {
+                return {
+                    name: stream.name,
+                    is_premium: false, // Ensure this is explicitly false
+                    url: stream.url
+                };
+            }
         }
 
         // USER (Logged in but Free): Hide Premium URLs, Show Free URLs
