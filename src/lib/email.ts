@@ -19,9 +19,9 @@ export async function sendAdminNotification(data: {
         const resend = getResend();
         if (!resend) return;
         await resend.emails.send({
-            from: '7esen TV <system@7esentv.com>',
-            to: ['hussona4635@gmail.com'], // Updated admin email
-            subject: '🔔 New Payment Request Received',
+            from: '7eSen TV <payments@7esentv.com>',
+            to: ['hussona4635@gmail.com'],
+            subject: 'طلب دفع جديد',
             html: `
                 <div style="font-family: sans-serif; padding: 20px; color: #1e293b;">
                     <h2 style="color: #10b981;">New Payment Request</h2>
