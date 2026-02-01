@@ -48,7 +48,7 @@ export async function sendUserApprovalNotification(userEmail: string, packageNam
     if (!userEmail) return;
     try {
         await getResend()?.emails.send({
-            from: '7esen TV <support@7esentv.com>',
+            from: '7eSen TV <payments@7esentv.com>',
             to: [userEmail],
             subject: '✅ Subscription Activated!',
             html: `
@@ -70,7 +70,7 @@ export async function sendUserRejectionNotification(userEmail: string, packageNa
     if (!userEmail) return;
     try {
         await getResend()?.emails.send({
-            from: '7esen TV <support@7esentv.com>',
+            from: '7eSen TV <payments@7esentv.com>',
             to: [userEmail],
             subject: '⚠️ تواصل بخصوص طلب الاشتراك',
             html: `
