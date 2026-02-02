@@ -32,6 +32,7 @@ export default function Sidebar() {
         { name: 'Channels', icon: MonitorPlay, href: '/channels' },
         { name: 'Categories', icon: List, href: '/categories' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
+        { name: 'Highlights', icon: Video, href: '/highlights' },
         { name: 'News', icon: Newspaper, href: '/news' },
         { name: 'Users', icon: User, href: '/users' },
         { name: 'Packages', icon: Package, href: '/packages' },

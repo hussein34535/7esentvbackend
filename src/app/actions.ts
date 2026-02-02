@@ -754,3 +754,51 @@ export async function submitPaymentRequest(userId: string, packageId: number, re
         return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
+
+// --- HIGHLIGHTS ---
+export async function getHighlights() {
+    try { return await sql`SELECT * FROM highlights ORDER BY id DESC`; } catch (e) { return []; }
+}
+export async function getHighlight(id: number) {
+    try {
+        const rows = await sql`SELECT * FROM highlights WHERE id = ${id}`;
+        return rows.length > 0 ? rows[0] : null;
+    } catch (e) { return null; }
+}
+export async function createHighlight(data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
+    try {
+        // Handle URL like we do in createGoal
+        let highlightUrl = data.url;
+        if (typeof data.url === 'string') {
+            highlightUrl = { url: data.url, type: 'video' };
+        }
+
+        await sql`INSERT INTO highlights (title, image, url, is_premium, is_published, created_at, updated_at) VALUES (${data.title}, ${data.image}, ${JSON.stringify(highlightUrl)}::jsonb, ${data.is_premium}, ${data.is_published ?? true}, now(), now())`;
+        revalidatePath('/highlights'); return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function updateHighlight(id: number, data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
+    try {
+        // Handle URL
+        let highlightUrl = data.url;
+        if (typeof data.url === 'string') {
+            highlightUrl = { url: data.url, type: 'video' };
+        }
+
+        await sql`UPDATE highlights SET title = ${data.title}, image = ${data.image}, url = ${JSON.stringify(highlightUrl)}::jsonb, is_premium = ${data.is_premium}, is_published = ${data.is_published}, updated_at = now() WHERE id = ${id}`;
+        revalidatePath('/highlights');
+        revalidatePath(`/highlights/${id}`);
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function deleteHighlight(id: number) {
+    try { await sql`DELETE FROM highlights WHERE id = ${id}`; revalidatePath('/highlights'); return { success: true }; }
+    catch (e: any) { return { success: false, error: e.message }; }
+}
+export async function bulkDeleteHighlights(ids: number[]) {
+    try {
+        await sql`DELETE FROM highlights WHERE id = ANY(${ids}::bigint[])`;
+        revalidatePath('/highlights');
+        return { success: true, deleted: ids.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}

@@ -1,7 +1,10 @@
 const postgres = require('postgres');
 require('dotenv').config({ path: '.env.local' });
 
-const sql = postgres(process.env.POSTGRES_URL);
+const { DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, DATABASE_NAME } = process.env;
+const connectionString = `postgres://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?sslmode=require`;
+
+const sql = postgres(connectionString);
 
 async function main() {
     try {
