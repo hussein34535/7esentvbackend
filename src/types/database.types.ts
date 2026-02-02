@@ -108,7 +108,7 @@ export interface Database {
                     title: string | null;
                     image: CloudinaryAsset[] | null;
                     time: string | null;
-                    url: BlockContent[] | null;
+                    url: any | null;
                     is_premium: boolean;
                     is_published: boolean;
                     created_at: string;
@@ -119,7 +119,7 @@ export interface Database {
                     title?: string | null;
                     image?: CloudinaryAsset[] | null;
                     time?: string | null;
-                    url?: BlockContent[] | null;
+                    url?: any | null;
                     is_premium?: boolean;
                     is_published?: boolean;
                     created_at?: string;
@@ -130,7 +130,7 @@ export interface Database {
                     title?: string | null;
                     image?: CloudinaryAsset[] | null;
                     time?: string | null;
-                    url?: BlockContent[] | null;
+                    url?: any | null;
                     is_premium?: boolean;
                     is_published?: boolean;
                     created_at?: string;
@@ -143,7 +143,7 @@ export interface Database {
                     title: string | null;
                     image: CloudinaryAsset[] | null;
                     date: string | null;
-                    link: BlockContent[] | null;
+                    link: any | null;
                     is_premium: boolean;
                     is_published: boolean;
                     created_at: string;
@@ -154,7 +154,7 @@ export interface Database {
                     title?: string | null;
                     image?: CloudinaryAsset[] | null;
                     date?: string | null;
-                    link?: BlockContent[] | null;
+                    link?: any | null;
                     is_premium?: boolean;
                     is_published?: boolean;
                     created_at?: string;
@@ -165,7 +165,39 @@ export interface Database {
                     title?: string | null;
                     image?: CloudinaryAsset[] | null;
                     date?: string | null;
-                    link?: BlockContent[] | null;
+                    link?: any | null;
+                    is_premium?: boolean;
+                    is_published?: boolean;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+            };
+            highlights: {
+                Row: {
+                    id: number;
+                    title: string | null;
+                    image: CloudinaryAsset[] | null;
+                    url: any | null;
+                    is_premium: boolean;
+                    is_published: boolean;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: number;
+                    title?: string | null;
+                    image?: CloudinaryAsset[] | null;
+                    url?: any | null;
+                    is_premium?: boolean;
+                    is_published?: boolean;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: number;
+                    title?: string | null;
+                    image?: CloudinaryAsset[] | null;
+                    url?: any | null;
                     is_premium?: boolean;
                     is_published?: boolean;
                     created_at?: string;
