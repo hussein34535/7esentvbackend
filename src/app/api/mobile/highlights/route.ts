@@ -18,9 +18,14 @@ export async function GET(request: NextRequest) {
                 image = image[0];
             }
 
-            // Unpack URL if it's stored as {url: '...', type: 'video'}
+            // Unpack URL if it's stored as {url: '...', type: 'video'} or stringified JSON
             let url = item.url;
-            if (url && typeof url === 'object' && url.url) {
+            if (typeof url === 'string' && (url.trim().startsWith('{') || url.trim().startsWith('['))) {
+                try {
+                    const parsed = JSON.parse(url);
+                    if (parsed.url) url = parsed.url;
+                } catch (e) { /* ignore */ }
+            } else if (url && typeof url === 'object' && url.url) {
                 url = url.url;
             }
 

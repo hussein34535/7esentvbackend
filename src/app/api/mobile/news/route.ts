@@ -10,17 +10,36 @@ export async function GET() {
             ORDER BY created_at DESC
         `;
 
-        // Filter premium content
-        const filteredNews = news.map(item => ({
-            id: item.id,
-            title: item.title,
-            image: item.image,
-            date: item.date,
-            is_premium: item.is_premium,
-            // Only show link if not premium
-            link: item.is_premium ? null : item.link,
-            created_at: item.created_at
-        }));
+        // Filter premium content and clean up link
+        const filteredNews = news.map(item => {
+            let cleanLink = item.link;
+
+            // Unpack if stringified JSON
+            if (typeof cleanLink === 'string' && (cleanLink.trim().startsWith('{') || cleanLink.trim().startsWith('['))) {
+                try {
+                    const parsed = JSON.parse(cleanLink);
+                    if (parsed.url) cleanLink = parsed.url;
+                    else if (parsed.link) cleanLink = parsed.link;
+                } catch (e) { /* ignore */ }
+            }
+            // Unpack if already object
+            else if (typeof cleanLink === 'object' && cleanLink?.url) {
+                cleanLink = cleanLink.url;
+            } else if (typeof cleanLink === 'object' && cleanLink?.link) {
+                cleanLink = cleanLink.link;
+            }
+
+            return {
+                id: item.id,
+                title: item.title,
+                image: item.image,
+                date: item.date,
+                is_premium: item.is_premium,
+                // Only show link if not premium
+                link: item.is_premium ? null : cleanLink,
+                created_at: item.created_at
+            };
+        });
 
         return NextResponse.json({
             success: true,
