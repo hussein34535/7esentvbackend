@@ -41,13 +41,17 @@ export default async function HighlightsPage() {
                         <div key={item.id} className="group bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition">
                             {/* Image Area */}
                             <div className="relative h-48 bg-slate-950">
-                                {imgUrl && (
+                                {imgUrl && imgUrl !== '/placeholder.png' ? (
                                     <Image
                                         src={imgUrl}
                                         alt={item.title || 'Highlight'}
                                         fill
                                         className="object-cover group-hover:scale-105 transition duration-500"
                                     />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-slate-800">
+                                        <Video className="w-12 h-12 text-slate-700" />
+                                    </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60" />
 

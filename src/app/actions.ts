@@ -193,7 +193,7 @@ export async function deleteCategory(id: number) {
 
 // --- GOALS ---
 export async function getGoals(): Promise<Goal[]> {
-    try { return await sql<Goal[]>`SELECT * FROM goals ORDER BY id DESC`; } catch (e) { return []; }
+    try { return await sql<Goal[]>`SELECT * FROM goals ORDER BY created_at DESC`; } catch (e) { return []; }
 }
 export async function getGoal(id: number): Promise<Goal | null> {
     try {
@@ -203,13 +203,13 @@ export async function getGoal(id: number): Promise<Goal | null> {
 }
 export async function createGoal(data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
     try {
-        await sql`INSERT INTO goals (title, image, url, is_premium, is_published, time, created_at, updated_at) VALUES (${data.title}, ${data.image}, ${data.url}, ${data.is_premium}, ${data.is_published ?? true}, now(), now(), now())`;
+        await sql`INSERT INTO goals (title, image, url, is_premium, is_published, created_at, updated_at) VALUES (${data.title}, ${data.image}, ${JSON.stringify(data.url)}::jsonb, ${data.is_premium}, ${data.is_published ?? true}, now(), now())`;
         revalidatePath('/goals'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 export async function updateGoal(id: number, data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
     try {
-        await sql`UPDATE goals SET title = ${data.title}, image = ${data.image}, url = ${data.url}, is_premium = ${data.is_premium}, is_published = ${data.is_published}, updated_at = now() WHERE id = ${id}`;
+        await sql`UPDATE goals SET title = ${data.title}, image = ${data.image}, url = ${JSON.stringify(data.url)}::jsonb, is_premium = ${data.is_premium}, is_published = ${data.is_published}, updated_at = now() WHERE id = ${id}`;
         revalidatePath('/goals');
         revalidatePath(`/goals/${id}`);
         return { success: true };
@@ -757,7 +757,7 @@ export async function submitPaymentRequest(userId: string, packageId: number, re
 
 // --- HIGHLIGHTS ---
 export async function getHighlights() {
-    try { return await sql`SELECT * FROM highlights ORDER BY id DESC`; } catch (e) { return []; }
+    try { return await sql`SELECT * FROM highlights ORDER BY created_at DESC`; } catch (e) { return []; }
 }
 export async function getHighlight(id: number) {
     try {
@@ -767,25 +767,13 @@ export async function getHighlight(id: number) {
 }
 export async function createHighlight(data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
     try {
-        // Handle URL like we do in createGoal
-        let highlightUrl = data.url;
-        if (typeof data.url === 'string') {
-            highlightUrl = { url: data.url, type: 'video' };
-        }
-
-        await sql`INSERT INTO highlights (title, image, url, is_premium, is_published, created_at, updated_at) VALUES (${data.title}, ${data.image}, ${JSON.stringify(highlightUrl)}::jsonb, ${data.is_premium}, ${data.is_published ?? true}, now(), now())`;
+        await sql`INSERT INTO highlights (title, image, url, is_premium, is_published, created_at, updated_at) VALUES (${data.title}, ${data.image}, ${JSON.stringify(data.url)}::jsonb, ${data.is_premium}, ${data.is_published ?? true}, now(), now())`;
         revalidatePath('/highlights'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 export async function updateHighlight(id: number, data: { title: string; image: any; url: any; is_premium: boolean; is_published: boolean }) {
     try {
-        // Handle URL
-        let highlightUrl = data.url;
-        if (typeof data.url === 'string') {
-            highlightUrl = { url: data.url, type: 'video' };
-        }
-
-        await sql`UPDATE highlights SET title = ${data.title}, image = ${data.image}, url = ${JSON.stringify(highlightUrl)}::jsonb, is_premium = ${data.is_premium}, is_published = ${data.is_published}, updated_at = now() WHERE id = ${id}`;
+        await sql`UPDATE highlights SET title = ${data.title}, image = ${data.image}, url = ${JSON.stringify(data.url)}::jsonb, is_premium = ${data.is_premium}, is_published = ${data.is_published}, updated_at = now() WHERE id = ${id}`;
         revalidatePath('/highlights');
         revalidatePath(`/highlights/${id}`);
         return { success: true };

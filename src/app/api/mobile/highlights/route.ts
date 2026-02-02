@@ -18,22 +18,34 @@ export async function GET(request: NextRequest) {
                 image = image[0];
             }
 
-            // Unpack URL if it's stored as {url: '...', type: 'video'} or stringified JSON
-            let url = item.url;
-            if (typeof url === 'string' && (url.trim().startsWith('{') || url.trim().startsWith('['))) {
-                try {
-                    const parsed = JSON.parse(url);
-                    if (parsed.url) url = parsed.url;
-                } catch (e) { /* ignore */ }
-            } else if (url && typeof url === 'object' && url.url) {
-                url = url.url;
+            // Unpack URL: could be string, single object, or array of servers
+            let sources: { name: string, url: string }[] = [];
+            let primaryUrl = '';
+
+            let rawUrl = item.url;
+            if (rawUrl) {
+                if (typeof rawUrl === 'string' && (rawUrl.trim().startsWith('{') || rawUrl.trim().startsWith('['))) {
+                    try { rawUrl = JSON.parse(rawUrl); } catch (e) { }
+                }
+
+                if (Array.isArray(rawUrl)) {
+                    sources = rawUrl;
+                    primaryUrl = rawUrl[0]?.url || '';
+                } else if (typeof rawUrl === 'object' && rawUrl.url) {
+                    sources = [{ name: 'Server 1', url: rawUrl.url }];
+                    primaryUrl = rawUrl.url;
+                } else if (typeof rawUrl === 'string') {
+                    sources = [{ name: 'Server 1', url: rawUrl }];
+                    primaryUrl = rawUrl;
+                }
             }
 
             return {
                 id: item.id,
                 title: item.title,
                 image: image,
-                url: url, // Direct link
+                url: primaryUrl, // Backward compatibility
+                sources: sources, // New multi-link support
                 is_premium: item.is_premium,
                 created_at: item.created_at
             };

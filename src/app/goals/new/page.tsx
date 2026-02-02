@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createGoal } from '@/app/actions';
-import { Save, ArrowLeft, Video, Link as LinkIcon, Calendar, Star } from 'lucide-react';
+import { Save, ArrowLeft, Video, Link as LinkIcon, Calendar, Star, X } from 'lucide-react';
 import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
@@ -13,21 +13,27 @@ export default function NewGoal() {
     const [loading, setLoading] = useState(false);
 
     const [title, setTitle] = useState('');
-    const [url, setUrl] = useState('');
+    const [links, setLinks] = useState<{ name: string, url: string }[]>([{ name: 'Server 1', url: '' }]);
     const [isPremium, setIsPremium] = useState(false);
     const [isPublished, setIsPublished] = useState(true);
     const [image, setImage] = useState<CloudinaryAsset | null>(null);
+
+    const addLink = () => setLinks([...links, { name: `Server ${links.length + 1}`, url: '' }]);
+    const removeLink = (index: number) => setLinks(links.filter((_, i) => i !== index));
+    const updateLink = (index: number, field: 'name' | 'url', value: string) => {
+        const newLinks = [...links];
+        newLinks[index][field] = value;
+        setLinks(newLinks);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const streamLinkJson = { url: url, type: 'video' };
-
             const result = await createGoal({
                 title,
-                url: streamLinkJson,
+                url: links,
                 image: image ? [image] : null,
                 is_premium: isPremium,
                 is_published: isPublished
@@ -48,7 +54,7 @@ export default function NewGoal() {
 
     return (
         <div className="font-sans">
-            <main className="max-w-xl mx-auto px-4 py-8">
+            <main className="max-w-2xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-4 mb-8">
                     <Link href="/goals" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
                         <ArrowLeft className="w-5 h-5" />
@@ -71,18 +77,42 @@ export default function NewGoal() {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-1">Video URL</label>
-                            <div className="relative">
-                                <LinkIcon className="absolute left-3 top-2.5 w-5 h-5 text-slate-500" />
-                                <input
-                                    required
-                                    type="url"
-                                    placeholder="https://example.com/video.mp4"
-                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 focus:border-blue-500 outline-none transition font-mono text-sm"
-                                    value={url} onChange={e => setUrl(e.target.value)}
-                                />
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <label className="block text-sm font-medium text-slate-400">Video Links (Servers)</label>
+                                <button type="button" onClick={addLink} className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded hover:bg-blue-600/30 transition">
+                                    + Add Server
+                                </button>
                             </div>
+
+                            {links.map((link, idx) => (
+                                <div key={idx} className="flex gap-2 items-start bg-slate-950 p-3 rounded-lg border border-slate-800">
+                                    <div className="flex-1 space-y-2">
+                                        <input
+                                            required
+                                            type="text"
+                                            placeholder="Server Name"
+                                            className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-sm outline-none focus:border-blue-500"
+                                            value={link.name} onChange={e => updateLink(idx, 'name', e.target.value)}
+                                        />
+                                        <div className="relative">
+                                            <LinkIcon className="absolute left-2 top-2 w-4 h-4 text-slate-500" />
+                                            <input
+                                                required
+                                                type="url"
+                                                placeholder="https://..."
+                                                className="w-full bg-slate-900 border border-slate-800 rounded pl-8 pr-3 py-1.5 text-sm outline-none focus:border-blue-500 font-mono"
+                                                value={link.url} onChange={e => updateLink(idx, 'url', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    {links.length > 1 && (
+                                        <button type="button" onClick={() => removeLink(idx)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
                         </div>
 
                         {/* Premium Toggle */}

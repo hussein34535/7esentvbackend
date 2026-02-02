@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getGoal, updateGoal } from '@/app/actions';
+import { getHighlight, updateHighlight } from '@/app/actions';
 import { Save, ArrowLeft, Link as LinkIcon, Star, Image as ImageIcon, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
 
-export default function EditGoal() {
+export default function EditHighlight() {
     const router = useRouter();
     const params = useParams();
     const id = parseInt(params.id as string);
@@ -24,7 +24,7 @@ export default function EditGoal() {
 
     useEffect(() => {
         async function load() {
-            const data = await getGoal(id);
+            const data = await getHighlight(id);
             if (data) {
                 setTitle(data.title || '');
                 setIsPremium(data.is_premium || false);
@@ -36,7 +36,7 @@ export default function EditGoal() {
                     else setImage(data.image);
                 }
 
-                // Handle Links
+                // Handle Links (could be string or array)
                 if (data.url) {
                     if (Array.isArray(data.url)) {
                         setLinks(data.url);
@@ -72,7 +72,7 @@ export default function EditGoal() {
         setSaving(true);
 
         try {
-            const result = await updateGoal(id, {
+            const result = await updateHighlight(id, {
                 title,
                 url: links,
                 image: image ? [image] : null,
@@ -81,7 +81,7 @@ export default function EditGoal() {
             });
 
             if (result.success) {
-                router.push('/goals');
+                router.push('/highlights');
                 router.refresh();
             } else {
                 alert('Error: ' + result.error);
@@ -97,7 +97,7 @@ export default function EditGoal() {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-slate-500">
                 <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                <p>Loading goal...</p>
+                <p>Loading highlight...</p>
             </div>
         );
     }
@@ -106,22 +106,22 @@ export default function EditGoal() {
         <div className="font-sans">
             <main className="max-w-2xl mx-auto px-4 py-8">
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/goals" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
+                    <Link href="/highlights" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <h1 className="text-2xl font-bold">Edit Goal</h1>
+                    <h1 className="text-2xl font-bold">Edit Highlight</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
                     <div className="space-y-4">
                         <Uploader
-                            label="Thumbnail / Image"
+                            label="Cover Image"
                             value={image}
                             onChange={(val) => { if (typeof val !== 'string') setImage(val); }}
                         />
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-1">Goal Title</label>
+                            <label className="block text-sm font-medium text-slate-400 mb-1">Highlight Title</label>
                             <input
                                 required
                                 type="text"

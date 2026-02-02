@@ -12,18 +12,25 @@ export async function GET() {
 
         // Filter premium content and clean up URL
         const filteredGoals = goals.map(goal => {
-            let cleanUrl = goal.url;
+            let sources: { name: string, url: string }[] = [];
+            let primaryUrl = '';
 
-            // Unpack if stringified JSON
-            if (typeof cleanUrl === 'string' && (cleanUrl.trim().startsWith('{') || cleanUrl.trim().startsWith('['))) {
-                try {
-                    const parsed = JSON.parse(cleanUrl);
-                    if (parsed.url) cleanUrl = parsed.url;
-                } catch (e) { /* ignore */ }
-            }
-            // Unpack if already object
-            else if (typeof cleanUrl === 'object' && cleanUrl?.url) {
-                cleanUrl = cleanUrl.url;
+            let rawUrl = goal.url;
+            if (rawUrl) {
+                if (typeof rawUrl === 'string' && (rawUrl.trim().startsWith('{') || rawUrl.trim().startsWith('['))) {
+                    try { rawUrl = JSON.parse(rawUrl); } catch (e) { }
+                }
+
+                if (Array.isArray(rawUrl)) {
+                    sources = rawUrl;
+                    primaryUrl = rawUrl[0]?.url || '';
+                } else if (typeof rawUrl === 'object' && rawUrl.url) {
+                    sources = [{ name: 'Server 1', url: rawUrl.url }];
+                    primaryUrl = rawUrl.url;
+                } else if (typeof rawUrl === 'string') {
+                    sources = [{ name: 'Server 1', url: rawUrl }];
+                    primaryUrl = rawUrl;
+                }
             }
 
             return {
@@ -31,8 +38,9 @@ export async function GET() {
                 title: goal.title,
                 image: goal.image,
                 is_premium: goal.is_premium,
-                // Only show URL if not premium
-                url: goal.is_premium ? null : cleanUrl,
+                // Only show URLs if not premium
+                url: goal.is_premium ? null : primaryUrl,
+                sources: goal.is_premium ? [] : sources,
                 created_at: goal.created_at
             };
         });
