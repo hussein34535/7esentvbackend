@@ -133,7 +133,13 @@ export default function NewsPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {news.map((item) => {
-                        const imgUrl = Array.isArray(item.image) && item.image[0]?.url ? item.image[0].url : null;
+                        let imgUrl = null;
+                        if (item.image) {
+                            if (typeof item.image === 'string') imgUrl = item.image;
+                            else if (Array.isArray(item.image) && item.image[0]) imgUrl = (item.image[0] as any).secure_url || (item.image[0] as any).url;
+                            else if ((item.image as any).secure_url) imgUrl = (item.image as any).secure_url;
+                            else if ((item.image as any).url) imgUrl = (item.image as any).url;
+                        }
 
                         return (
                             <div key={item.id} className="relative">
