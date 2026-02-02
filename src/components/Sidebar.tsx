@@ -18,7 +18,8 @@ import {
     Ticket,
     Package,
     BarChart3,
-    Inbox
+    Inbox,
+    Video
 } from 'lucide-react';
 
 export default function Sidebar() {
