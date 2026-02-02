@@ -133,7 +133,13 @@ export default function GoalsPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {goals.map((goal) => {
-                        const imgUrl = Array.isArray(goal.image) && goal.image[0]?.url ? goal.image[0].url : null;
+                        let imgUrl = null;
+                        if (goal.image) {
+                            if (typeof goal.image === 'string') imgUrl = goal.image;
+                            else if (Array.isArray(goal.image) && goal.image[0]) imgUrl = (goal.image[0] as any).secure_url || (goal.image[0] as any).url;
+                            else if ((goal.image as any).secure_url) imgUrl = (goal.image as any).secure_url;
+                            else if ((goal.image as any).url) imgUrl = (goal.image as any).url;
+                        }
 
                         return (
                             <div key={goal.id} className="relative">
