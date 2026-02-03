@@ -11,6 +11,7 @@ export interface Database {
                     sort_order: number;
                     created_at: string;
                     updated_at: string;
+                    image: CloudinaryAsset | null;
                 };
                 Insert: {
                     id?: number;
@@ -19,6 +20,7 @@ export interface Database {
                     sort_order?: number;
                     created_at?: string;
                     updated_at?: string;
+                    image?: CloudinaryAsset | null;
                 };
                 Update: {
                     id?: number;
@@ -27,6 +29,7 @@ export interface Database {
                     sort_order?: number;
                     created_at?: string;
                     updated_at?: string;
+                    image?: CloudinaryAsset | null;
                 };
             };
             channels: {

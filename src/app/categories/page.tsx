@@ -162,8 +162,16 @@ export default function CategoriesPage() {
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-4">
-                                            <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 group-hover:border-purple-500/30 transition">
-                                                <Hash className="w-6 h-6 text-purple-500" />
+                                            <div className="bg-slate-950 p-0 rounded-lg border border-slate-800 group-hover:border-purple-500/30 transition w-12 h-12 flex items-center justify-center overflow-hidden">
+                                                {(cat as any).image?.url || (cat as any).image?.secure_url ? (
+                                                    <img
+                                                        src={(cat as any).image.secure_url || (cat as any).image.url}
+                                                        alt={cat.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <Hash className="w-6 h-6 text-purple-500" />
+                                                )}
                                             </div>
                                             <div className="flex gap-2">
                                                 {cat.is_premium && (

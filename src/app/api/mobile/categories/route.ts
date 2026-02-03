@@ -15,7 +15,8 @@ export async function GET() {
                 id: cat.id,
                 name: cat.name,
                 is_premium: cat.is_premium,
-                sort_order: cat.sort_order
+                sort_order: cat.sort_order,
+                image: cat.image ? (cat.image.secure_url || cat.image.url) : null
             }))
         });
     } catch (error) {

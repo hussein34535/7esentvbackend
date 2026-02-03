@@ -3,9 +3,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getCategory, updateCategory, getChannels } from '@/app/actions';
-import { Save, ArrowLeft, Search, Check, Tv, Hash } from 'lucide-react';
+import { Save, ArrowLeft, Search, Check, Tv, Hash, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Database } from '@/types/database.types';
+import Uploader from '@/components/Uploader';
+import { CloudinaryAsset } from '@/types/cloudinary.types';
 
 type Channel = Database['public']['Tables']['channels']['Row'];
 
@@ -21,6 +23,7 @@ export default function EditCategory() {
     const [name, setName] = useState('');
     const [isPremium, setIsPremium] = useState(false);
     const [sortOrder, setSortOrder] = useState(0);
+    const [image, setImage] = useState<CloudinaryAsset | null>(null);
 
     const [allChannels, setAllChannels] = useState<Channel[]>([]);
     const [selectedChannelIds, setSelectedChannelIds] = useState<number[]>([]);
@@ -40,6 +43,7 @@ export default function EditCategory() {
                     setName(catData.name);
                     setIsPremium(catData.is_premium || false);
                     setSortOrder(catData.sort_order || 0);
+                    setImage(catData.image || null);
 
                     // Pre-select channels
                     // The Action returns 'channels' as a JSON array of objects {id, name}
@@ -77,7 +81,8 @@ export default function EditCategory() {
                 name,
                 is_premium: isPremium,
                 sort_order: sortOrder,
-                channel_ids: selectedChannelIds
+                channel_ids: selectedChannelIds,
+                image
             });
 
             if (result.success) {
@@ -110,6 +115,13 @@ export default function EditCategory() {
                     <div className="lg:col-span-1 space-y-6">
                         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
                             <h2 className="font-bold text-lg mb-4">Details</h2>
+
+                            <Uploader
+                                label="Category Icon"
+                                value={image}
+                                onChange={(val) => { if (typeof val !== 'string') setImage(val); }}
+                            />
+
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-400 mb-1">Category Name</label>

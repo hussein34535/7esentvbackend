@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCategory } from '@/app/actions';
-import { Save, ArrowLeft, Star } from 'lucide-react';
+import { Save, ArrowLeft, Star, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
+import Uploader from '@/components/Uploader';
+import { CloudinaryAsset } from '@/types/cloudinary.types';
 
 export default function NewCategory() {
     const router = useRouter();
@@ -13,6 +15,7 @@ export default function NewCategory() {
     const [name, setName] = useState('');
     const [isPremium, setIsPremium] = useState(false);
     const [sortOrder, setSortOrder] = useState(0);
+    const [image, setImage] = useState<CloudinaryAsset | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,7 +25,8 @@ export default function NewCategory() {
             const result = await createCategory({
                 name,
                 is_premium: isPremium,
-                sort_order: sortOrder
+                sort_order: sortOrder,
+                image
             });
 
             if (result.success) {
@@ -50,6 +54,12 @@ export default function NewCategory() {
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
                     <div className="space-y-4">
+                        <Uploader
+                            label="Category Icon / Image"
+                            value={image}
+                            onChange={(val) => { if (typeof val !== 'string') setImage(val); }}
+                        />
+
                         <div>
                             <label className="block text-sm font-medium text-slate-400 mb-1">Category Name</label>
                             <input

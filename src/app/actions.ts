@@ -150,9 +150,9 @@ export async function getCategory(id: number) {
     } catch (e) { return null; }
 }
 
-export async function createCategory(data: { name: string; is_premium: boolean; sort_order?: number; channel_ids?: number[] }) {
+export async function createCategory(data: { name: string; is_premium: boolean; sort_order?: number; channel_ids?: number[]; image?: any }) {
     try {
-        const result = await sql`INSERT INTO channel_categories (name, is_premium, sort_order, created_at, updated_at) VALUES (${data.name}, ${data.is_premium}, ${data.sort_order || 0}, now(), now()) RETURNING id`;
+        const result = await sql`INSERT INTO channel_categories (name, is_premium, sort_order, image, created_at, updated_at) VALUES (${data.name}, ${data.is_premium}, ${data.sort_order || 0}, ${data.image || null}, now(), now()) RETURNING id`;
         const catId = result[0].id;
 
         if (data.channel_ids && data.channel_ids.length > 0) {
@@ -164,9 +164,9 @@ export async function createCategory(data: { name: string; is_premium: boolean; 
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
-export async function updateCategory(id: number, data: { name: string; is_premium: boolean; sort_order?: number; channel_ids?: number[] }) {
+export async function updateCategory(id: number, data: { name: string; is_premium: boolean; sort_order?: number; channel_ids?: number[]; image?: any }) {
     try {
-        await sql`UPDATE channel_categories SET name = ${data.name}, is_premium = ${data.is_premium}, sort_order = ${data.sort_order || 0}, updated_at = now() WHERE id = ${id}`;
+        await sql`UPDATE channel_categories SET name = ${data.name}, is_premium = ${data.is_premium}, sort_order = ${data.sort_order || 0}, image = ${data.image || null}, updated_at = now() WHERE id = ${id}`;
 
         // Update relations: Delete entries for this Category and re-insert
         // Note: This removes channels from THIS category, but doesn't delete the channels themselves.
