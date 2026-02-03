@@ -414,6 +414,29 @@ export async function duplicateGoal(id: number) {
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+export async function duplicateHighlight(id: number) {
+    try {
+        const highlight = await getHighlight(id);
+        if (!highlight) return { success: false, error: 'Highlight not found' };
+
+        const result = await sql`
+            INSERT INTO highlights (title, image, url, is_premium, is_published, created_at, updated_at)
+            VALUES (
+                ${highlight.title + ' (Copy)'}, 
+                ${highlight.image ? JSON.stringify(highlight.image) : null}::jsonb, 
+                ${highlight.url ? JSON.stringify(highlight.url) : null}::jsonb, 
+                ${highlight.is_premium}, 
+                false, 
+                now(), 
+                now()
+            )
+            RETURNING id
+        `;
+        revalidatePath('/highlights');
+        return { success: true, newId: result[0].id };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
 
 export async function deleteAllMatches() {
     try {
