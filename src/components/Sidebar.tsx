@@ -19,8 +19,7 @@ import {
     Package,
     BarChart3,
     Inbox,
-    Video,
-    Sparkles
+    Video
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -33,7 +32,6 @@ export default function Sidebar() {
         { name: 'Matches', icon: LayoutDashboard, href: '/' },
         { name: 'Channels', icon: MonitorPlay, href: '/channels' },
         { name: 'Categories', icon: List, href: '/categories' },
-        { name: 'AI Link Manager', icon: Sparkles, href: '/ai-manager' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
         { name: 'Highlights', icon: Video, href: '/highlights' },
         { name: 'News', icon: Newspaper, href: '/news' },
