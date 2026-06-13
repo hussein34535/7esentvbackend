@@ -7,9 +7,10 @@ import { getMatch, updateMatch } from '@/app/actions';
 import Navbar from '@/components/Navbar';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
-import { Save, ArrowLeft, Plus, Trash2, Wand2, Star } from 'lucide-react';
+import { Save, ArrowLeft, Plus, Trash2, Wand2, Star, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { StreamItem, extractStreamsFromData } from '@/lib/stream-utils';
+import EsenlinksModal from '@/components/EsenlinksModal';
 
 export default function EditMatch({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -23,6 +24,15 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
     const [isPublished, setIsPublished] = useState(true);
 
     const [streams, setStreams] = useState<StreamItem[]>([]);
+    const [isEsenlinksOpen, setIsEsenlinksOpen] = useState(false);
+
+    const handleAddEsenlinks = (importedStreams: StreamItem[]) => {
+        if (streams.length === 1 && streams[0].url.trim() === '') {
+            setStreams(importedStreams);
+        } else {
+            setStreams([...streams, ...importedStreams]);
+        }
+    };
 
     const [formData, setFormData] = useState({
         team_a: '',
@@ -218,6 +228,9 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
                                 <p className="text-sm text-slate-500">Manage stream qualities/servers.</p>
                             </div>
                             <div className="flex gap-2">
+                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-pink-400 bg-pink-500/10 border border-pink-500/20 rounded-lg hover:bg-pink-500/20 transition">
+                                    <Sparkles className="w-3.5 h-3.5" /> Import Esenlinks
+                                </button>
                                 <button type="button" onClick={parseRichTextJson} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-lg hover:bg-indigo-500/20 transition">
                                     <Wand2 className="w-3.5 h-3.5" /> Import JSON
                                 </button>
@@ -312,6 +325,11 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
 
                 </form>
             </main>
+            <EsenlinksModal 
+                isOpen={isEsenlinksOpen} 
+                onClose={() => setIsEsenlinksOpen(false)} 
+                onAddStreams={handleAddEsenlinks} 
+            />
         </div>
     );
 }

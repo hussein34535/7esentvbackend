@@ -813,3 +813,27 @@ export async function bulkDeleteHighlights(ids: number[]) {
         return { success: true, deleted: ids.length };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
+
+export async function fetchEsenlinks(): Promise<{ links: any[]; categories: string[] }> {
+    try {
+        const baseUrl = process.env.NEXT_PUBLIC_ESENLINKS_URL || 'https://7esenlink.vercel.app';
+        const res = await fetch(`${baseUrl}/api/links`, {
+            cache: 'no-store',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!res.ok) {
+            throw new Error(`Failed to fetch links: ${res.statusText}`);
+        }
+        const data = await res.json();
+        return {
+            links: data.links || [],
+            categories: data.categories || [],
+        };
+    } catch (error: any) {
+        console.error('Error fetching Esenlinks:', error);
+        return { links: [], categories: [] };
+    }
+}
+

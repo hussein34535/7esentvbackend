@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createChannel, getCategories } from '@/app/actions';
 import { Database } from '@/types/database.types';
-import { Save, ArrowLeft, Tv, Plus, Trash2, Wand2, Star } from 'lucide-react';
+import { Save, ArrowLeft, Tv, Plus, Trash2, Wand2, Star, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { extractStreamsFromData, StreamItem } from '@/lib/stream-utils';
+import EsenlinksModal from '@/components/EsenlinksModal';
 
 type Category = Database['public']['Tables']['channel_categories']['Row'];
 
@@ -20,6 +21,15 @@ export default function NewChannel() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCats, setSelectedCats] = useState<number[]>([]);
     const [showAllCats, setShowAllCats] = useState(true);
+    const [isEsenlinksOpen, setIsEsenlinksOpen] = useState(false);
+
+    const handleAddEsenlinks = (importedStreams: StreamItem[]) => {
+        if (streams.length === 1 && streams[0].url.trim() === '') {
+            setStreams(importedStreams);
+        } else {
+            setStreams([...streams, ...importedStreams]);
+        }
+    };
 
     useEffect(() => {
         const loadCats = async () => {
@@ -196,6 +206,9 @@ export default function NewChannel() {
                                 <p className="text-sm text-slate-500">Add multiple qualities or sources.</p>
                             </div>
                             <div className="flex gap-2">
+                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-pink-400 bg-pink-500/10 border border-pink-500/20 rounded-lg hover:bg-pink-500/20 transition">
+                                    <Sparkles className="w-3.5 h-3.5" /> Import Esenlinks
+                                </button>
                                 <button type="button" onClick={parseRichTextJson} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-lg hover:bg-indigo-500/20 transition">
                                     <Wand2 className="w-3.5 h-3.5" /> Import JSON
                                 </button>
@@ -276,6 +289,11 @@ export default function NewChannel() {
                     </div>
                 </form>
             </main>
+            <EsenlinksModal 
+                isOpen={isEsenlinksOpen} 
+                onClose={() => setIsEsenlinksOpen(false)} 
+                onAddStreams={handleAddEsenlinks} 
+            />
         </div>
     );
 }
