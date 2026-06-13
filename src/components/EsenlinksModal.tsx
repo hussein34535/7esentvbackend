@@ -60,27 +60,27 @@ export default function EsenlinksModal({ isOpen, onClose, onAddStreams }: Esenli
         return matchesSearch && matchesCategory;
     });
 
-    const toggleSelectLink = (id: any) => {
+    const toggleSelectLink = (uniqueKey: string) => {
         const next = new Set(selectedLinkIds);
-        if (next.has(id)) {
-            next.delete(id);
+        if (next.has(uniqueKey)) {
+            next.delete(uniqueKey);
         } else {
-            next.add(id);
+            next.add(uniqueKey);
         }
         setSelectedLinkIds(next);
     };
 
     const toggleSelectAllFiltered = () => {
-        const allFilteredIds = filteredLinks.map(l => l.id);
-        const allSelected = allFilteredIds.every(id => selectedLinkIds.has(id));
+        const allFilteredKeys = filteredLinks.map(l => `${l.category}_${l.id}`);
+        const allSelected = allFilteredKeys.every(key => selectedLinkIds.has(key));
 
         const next = new Set(selectedLinkIds);
         if (allSelected) {
             // Uncheck all filtered
-            allFilteredIds.forEach(id => next.delete(id));
+            allFilteredKeys.forEach(key => next.delete(key));
         } else {
             // Check all filtered
-            allFilteredIds.forEach(id => next.add(id));
+            allFilteredKeys.forEach(key => next.add(key));
         }
         setSelectedLinkIds(next);
     };
@@ -90,7 +90,7 @@ export default function EsenlinksModal({ isOpen, onClose, onAddStreams }: Esenli
 
         const baseUrl = process.env.NEXT_PUBLIC_ESENLINKS_URL || 'https://7esenlink.vercel.app';
         
-        const selectedItems = links.filter(l => selectedLinkIds.has(l.id));
+        const selectedItems = links.filter(l => selectedLinkIds.has(`${l.category}_${l.id}`));
         const streamsToAdd: StreamItem[] = selectedItems.map(link => {
             // Ensure converted URL starts with /
             const path = link.converted.startsWith('/') ? link.converted : `/${link.converted}`;
@@ -106,7 +106,7 @@ export default function EsenlinksModal({ isOpen, onClose, onAddStreams }: Esenli
     };
 
     const isAllFilteredSelected = filteredLinks.length > 0 && 
-        filteredLinks.every(l => selectedLinkIds.has(l.id));
+        filteredLinks.every(l => selectedLinkIds.has(`${l.category}_${l.id}`));
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in font-sans">
@@ -206,11 +206,12 @@ export default function EsenlinksModal({ isOpen, onClose, onAddStreams }: Esenli
                             {/* List */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {filteredLinks.map(link => {
-                                    const isSelected = selectedLinkIds.has(link.id);
+                                    const uniqueKey = `${link.category}_${link.id}`;
+                                    const isSelected = selectedLinkIds.has(uniqueKey);
                                     return (
                                         <div
-                                            key={link.id}
-                                            onClick={() => toggleSelectLink(link.id)}
+                                            key={uniqueKey}
+                                            onClick={() => toggleSelectLink(uniqueKey)}
                                             className={`group flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all select-none ${
                                                 isSelected
                                                     ? 'bg-slate-950/60 border-emerald-500/50 hover:border-emerald-500'
