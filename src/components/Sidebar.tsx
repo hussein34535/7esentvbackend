@@ -19,7 +19,8 @@ import {
     Package,
     BarChart3,
     Inbox,
-    Video
+    Video,
+    Sparkles
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -30,10 +31,12 @@ export default function Sidebar() {
         { name: 'Requests', icon: Inbox, href: '/requests' },
         { name: 'Analytics', icon: BarChart3, href: '/analytics' },
         { name: 'Matches', icon: LayoutDashboard, href: '/' },
+        { name: 'Auto Matches', icon: Sparkles, href: '/matches/auto-import' },
         { name: 'Channels', icon: MonitorPlay, href: '/channels' },
         { name: 'Categories', icon: List, href: '/categories' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
         { name: 'Highlights', icon: Video, href: '/highlights' },
+        { name: 'Auto Full Matches', icon: Sparkles, href: '/highlights/auto-import' },
         { name: 'News', icon: Newspaper, href: '/news' },
         { name: 'Users', icon: User, href: '/users' },
         { name: 'Packages', icon: Package, href: '/packages' },

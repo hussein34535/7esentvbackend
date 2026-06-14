@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Edit, Video, Star, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
+import { Plus, Trash2, Edit, Video, Star, CheckSquare, Square, XSquare, Copy, Sparkles } from 'lucide-react';
 import { getHighlights, deleteHighlight, bulkDeleteHighlights, duplicateHighlight } from '@/app/actions';
 import { useRouter } from 'next/navigation';
 
@@ -98,6 +98,14 @@ export default function HighlightsPage() {
                         {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
+
+                    <Link
+                        href="/highlights/auto-import"
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-purple-900/20 transition-all hover:scale-[1.02]"
+                    >
+                        <Sparkles className="w-5 h-5" />
+                        <span>Auto Import</span>
+                    </Link>
 
                     <Link
                         href="/highlights/new"

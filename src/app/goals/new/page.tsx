@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createGoal, scrapeBeinGoal } from '@/app/actions';
-import { Save, ArrowLeft, Video, Link as LinkIcon, Calendar, Star, X, Sparkles } from 'lucide-react';
+import { createGoal } from '@/app/actions';
+import { Save, ArrowLeft, Video, Link as LinkIcon, Calendar, Star, X } from 'lucide-react';
 import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
@@ -18,43 +18,7 @@ export default function NewGoal() {
     const [isPublished, setIsPublished] = useState(true);
     const [image, setImage] = useState<CloudinaryAsset | null>(null);
 
-    const [autoPageUrl, setAutoPageUrl] = useState('');
-    const [autoVideoUrl, setAutoVideoUrl] = useState('');
-    const [autoLoading, setAutoLoading] = useState(false);
-    const [autoMessage, setAutoMessage] = useState('');
 
-    const handleAutoFetch = async () => {
-        if (!autoPageUrl || !autoVideoUrl) {
-            setAutoMessage('الرجاء إدخال كلا الرابطين للجلب التلقائي.');
-            return;
-        }
-        setAutoLoading(true);
-        setAutoMessage('');
-        try {
-            const res = await scrapeBeinGoal(autoPageUrl, autoVideoUrl);
-            if (res.success && res.data) {
-                setTitle(res.data.title);
-                setLinks([{ name: 'Server 1', url: res.data.videoUrl }]);
-                if (res.data.thumbnail) {
-                    setImage({
-                        url: res.data.thumbnail,
-                        secure_url: res.data.thumbnail,
-                        public_id: '',
-                        format: 'jpg',
-                        width: 1280,
-                        height: 720
-                    } as any);
-                }
-                setAutoMessage('تم جلب البيانات وتعبئتها بنجاح!');
-            } else {
-                setAutoMessage(`خطأ في جلب البيانات: ${res.error}`);
-            }
-        } catch (err: any) {
-            setAutoMessage(`خطأ: ${err.message}`);
-        } finally {
-            setAutoLoading(false);
-        }
-    };
 
     const addLink = () => setLinks([...links, { name: `Server ${links.length + 1}`, url: '' }]);
     const removeLink = (index: number) => setLinks(links.filter((_, i) => i !== index));
@@ -101,51 +65,7 @@ export default function NewGoal() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-                    {/* Auto-fill Section */}
-                    <div className="bg-slate-955 p-4 rounded-lg border border-slate-800/80 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-blue-400 flex items-center gap-2">
-                                <Sparkles className="w-4 h-4" /> جلب بيانات الملخص تلقائياً
-                            </h3>
-                        </div>
-                        <div className="grid grid-cols-1 gap-3">
-                            <div>
-                                <label className="block text-xs text-slate-500 mb-1">رابط صفحة beIN Sports</label>
-                                <input
-                                    type="text"
-                                    placeholder="https://www.beinsports.com/..."
-                                    className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs outline-none focus:border-blue-500 text-slate-300"
-                                    value={autoPageUrl}
-                                    onChange={e => setAutoPageUrl(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-slate-500 mb-1">رابط الفيديو المباشر (Embed/M3U8)</label>
-                                <input
-                                    type="text"
-                                    placeholder="https://..."
-                                    className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs outline-none focus:border-blue-500 text-slate-300"
-                                    value={autoVideoUrl}
-                                    onChange={e => setAutoVideoUrl(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={handleAutoFetch}
-                            disabled={autoLoading}
-                            className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold disabled:opacity-50 transition"
-                        >
-                            {autoLoading ? 'جاري جلب وتعبئة البيانات...' : 'جلب وتعبئة البيانات'}
-                        </button>
-                        {autoMessage && (
-                            <p className={`text-center text-xs ${autoMessage.includes('نجاح') ? 'text-green-400' : 'text-red-400'}`}>
-                                {autoMessage}
-                            </p>
-                        )}
-                    </div>
-                    
-                    <div className="border-t border-slate-800 my-4"></div>
+
 
                     <div className="space-y-4">
                         <Uploader label="Thumbnail / Image" value={image} onChange={(val) => { if (typeof val !== 'string') setImage(val); }} />
