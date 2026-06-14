@@ -5,7 +5,7 @@ import MatchCard from '@/components/MatchCard';
 import { getMatches, deleteMatch, bulkDeleteMatches, duplicateMatch, deleteAllMatches } from './actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
+import { Plus, Trash2, CheckSquare, Square, XSquare, Copy, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Match = Database['public']['Tables']['matches']['Row'];
@@ -133,6 +133,11 @@ export default function Home() {
               {selectMode ? <XSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />}
               <span>{selectMode ? 'Cancel' : 'Select'}</span>
             </button>
+
+            <Link href="/matches/auto-import" className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
+              <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span>Auto Import</span>
+            </Link>
 
             <Link href="/matches/new" className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
               <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />

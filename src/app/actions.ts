@@ -1,5 +1,6 @@
 'use server';
 
+import * as cheerio from 'cheerio';
 import sql from '@/lib/db';
 import { Database } from '@/types/database.types';
 import { revalidatePath } from 'next/cache';
@@ -834,6 +835,143 @@ export async function fetchEsenlinks(): Promise<{ links: any[]; categories: stri
     } catch (error: any) {
         console.error('Error fetching Esenlinks:', error);
         return { links: [], categories: [] };
+    }
+}
+
+export async function scrapeMatches() {
+    try {
+        const MGA4K_URL = 'https://www.mga4k.co/';
+        const res = await fetch(MGA4K_URL, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            },
+            next: { revalidate: 0 }
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch source website: ${res.statusText}`);
+        }
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const fetchedMatches: any[] = [];
+
+        $('.match-container').each((_i, el) => {
+            const $el = $(el);
+
+            const team_a = $el.find('.right-team .team-name').text().trim();
+            const team_b = $el.find('.left-team .team-name').text().trim();
+            const logo_a = $el.find('.right-team .team-logo img').attr('data-src') || '';
+            const logo_b = $el.find('.left-team .team-logo img').attr('data-src') || '';
+            const rawTime = $el.find('.match-time').text().trim();
+            const infoItems: string[] = [];
+            $el.find('.match-info li span').each((_j, span) => {
+                infoItems.push($(span).text().trim());
+            });
+
+            const channel = infoItems[0] || '';
+            const commentator = infoItems[1] || '';
+            const champion = infoItems[2] || '';
+
+            // Format match_time for postgres
+            const match_time = formatMatchTime(rawTime);
+
+            if (team_a && team_b) {
+                fetchedMatches.push({
+                    team_a,
+                    team_b,
+                    logo_a,
+                    logo_b,
+                    match_time,
+                    channel,
+                    commentator,
+                    champion,
+                    is_premium: false,
+                    is_published: true,
+                    stream_link: []
+                });
+            }
+        });
+
+        return { success: true, matches: fetchedMatches };
+    } catch (error: any) {
+        console.error('scrapeMatches error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+function formatMatchTime(timeString: string): string {
+    const parts = timeString.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!parts) return "00:00:00";
+
+    let hours = parseInt(parts[1], 10);
+    const minutes = parseInt(parts[2], 10);
+    const period = parts[3]?.toUpperCase();
+
+    if (period === 'PM' && hours < 12) {
+        hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+        hours = 0;
+    }
+
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}:00`;
+}
+
+export async function scrapeBeinGoal(pageUrl: string, videoUrl: string) {
+    try {
+        if (!pageUrl || !videoUrl) {
+            return { success: false, error: 'Missing pageUrl or videoUrl' };
+        }
+
+        const res = await fetch(pageUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            },
+            next: { revalidate: 0 }
+        });
+
+        if (!res.ok) {
+            return { success: false, error: 'Failed to fetch beIN Sports page' };
+        }
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+
+        const title = $('title').text().trim() || $('h1').first().text().trim() || 'ملخص مباراة';
+        const description = $('meta[name="description"]').attr('content') || '';
+        const thumbnail = $('meta[property="og:image"]').attr('content') || '';
+
+        return {
+            success: true,
+            data: {
+                title,
+                description,
+                thumbnail,
+                videoUrl,
+                sourceUrl: pageUrl,
+            },
+        };
+    } catch (error: any) {
+        console.error('scrapeBeinGoal error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function createMultipleMatches(matches: any[]) {
+    try {
+        for (const data of matches) {
+            await sql`
+              INSERT INTO matches (team_a, team_b, match_time, channel, commentator, champion, logo_a, logo_b, is_premium, is_published, stream_link, created_at, updated_at)
+              VALUES (${data.team_a}, ${data.team_b}, ${data.match_time}, ${data.channel}, ${data.commentator}, ${data.champion}, ${data.logo_a}, ${data.logo_b}, ${data.is_premium || false}, ${data.is_published ?? true}, ${data.stream_link ? JSON.stringify(data.stream_link) : '[]'}::jsonb, now(), now())
+            `;
+        }
+        revalidatePath('/'); revalidatePath('/matches');
+        return { success: true };
+    } catch (e: any) {
+        return { success: false, error: e.message };
     }
 }
 
