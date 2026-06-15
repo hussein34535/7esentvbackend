@@ -6,7 +6,7 @@ export async function GET() {
         let packages;
         try {
             packages = await sql`
-                SELECT id, name, description, price, sale_price, duration_days, features 
+                SELECT id, name, description, price, sale_price, duration_days, duration_months, discount_months, features 
                 FROM packages 
                 WHERE is_active = true 
                 ORDER BY price ASC
@@ -19,7 +19,7 @@ export async function GET() {
                 WHERE is_active = true 
                 ORDER BY price ASC
             `;
-            packages = packages.map(p => ({ ...p, sale_price: null }));
+            packages = packages.map(p => ({ ...p, sale_price: null, duration_months: 1, discount_months: 0 }));
         }
         return NextResponse.json(packages);
     } catch (error) {

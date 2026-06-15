@@ -14,7 +14,8 @@ export default function Packages() {
         description: string;
         price: number;
         sale_price?: number;
-        duration_days: number;
+        duration_months: number;
+        discount_months: number;
         features: string;
         is_active: boolean;
     }>({
@@ -22,7 +23,8 @@ export default function Packages() {
         description: '',
         price: 0,
         sale_price: undefined,
-        duration_days: 30,
+        duration_months: 1,
+        discount_months: 0,
         features: '',
         is_active: true
     });
@@ -61,7 +63,8 @@ export default function Packages() {
             description: pkg.description || '',
             price: pkg.price,
             sale_price: pkg.sale_price,
-            duration_days: pkg.duration_days,
+            duration_months: pkg.duration_months || (pkg.duration_days ? Math.round(pkg.duration_days / 30) : 1),
+            discount_months: pkg.discount_months || 0,
             features: Array.isArray(pkg.features) ? pkg.features.join('\n') : '',
             is_active: pkg.is_active
         });
@@ -77,7 +80,7 @@ export default function Packages() {
 
     const resetForm = () => {
         setEditingId(null);
-        setFormData({ name: '', description: '', price: 0, sale_price: undefined, duration_days: 30, features: '', is_active: true });
+        setFormData({ name: '', description: '', price: 0, sale_price: undefined, duration_months: 1, discount_months: 0, features: '', is_active: true });
         setIsModalOpen(true);
     };
 
@@ -108,10 +111,21 @@ export default function Packages() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {packages.map((pkg) => (
                         <div key={pkg.id} className="bg-slate-800 rounded-xl p-6 border border-slate-700 relative group hover:border-emerald-500/30 transition">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
+                             <div className="flex justify-between items-start mb-4">
+                                <div className="space-y-1">
                                     <h3 className="text-xl font-bold text-white">{pkg.name}</h3>
-                                    <p className="text-slate-400 text-sm">{pkg.duration_days} Days</p>
+                                    <div className="flex flex-col gap-1.5">
+                                        <p className="text-slate-400 text-sm">
+                                            {pkg.duration_months ? `${pkg.duration_months} Month(s)` : `${Math.round(pkg.duration_days / 30)} Month(s)`}
+                                            <span className="text-slate-500 text-xs ml-1">({pkg.duration_days} Days)</span>
+                                        </p>
+                                        {pkg.discount_months > 0 && (
+                                            <span className="inline-flex items-center gap-1 self-start bg-amber-500/10 text-amber-400 text-xs font-semibold px-2 py-0.5 rounded border border-amber-500/20">
+                                                <Tag size={12} className="fill-current" />
+                                                {pkg.discount_months === 1 ? 'خصم شهر واحد' : pkg.discount_months === 2 ? 'خصم شهرين' : `خصم ${pkg.discount_months} شهور`}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                                 <span className={`px-2 py-1 rounded-md text-xs font-bold ${pkg.is_active ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
                                     {pkg.is_active ? 'ACTIVE' : 'INACTIVE'}
@@ -174,32 +188,45 @@ export default function Packages() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Price</label>
+                                    <label className="block text-sm text-slate-400 mb-1">Price ($)</label>
                                     <input
                                         type="number"
                                         required
                                         value={formData.price}
                                         onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Sale Price (Optional)</label>
+                                    <label className="block text-sm text-slate-400 mb-1">Sale Price (Optional) ($)</label>
                                     <input
                                         type="number"
                                         value={formData.sale_price || ''}
                                         onChange={e => setFormData({ ...formData, sale_price: e.target.value ? Number(e.target.value) : undefined })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Duration (Days)</label>
+                                    <label className="block text-sm text-slate-400 mb-1">Duration (Months)</label>
                                     <input
                                         type="number"
+                                        min={1}
                                         required
-                                        value={formData.duration_days}
-                                        onChange={e => setFormData({ ...formData, duration_days: Number(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                        value={formData.duration_months}
+                                        onChange={e => setFormData({ ...formData, duration_months: Number(e.target.value) })}
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        placeholder="e.g. 12"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-slate-400 mb-1">Discount (Months)</label>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={formData.discount_months}
+                                        onChange={e => setFormData({ ...formData, discount_months: Number(e.target.value) })}
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        placeholder="e.g. 2"
                                     />
                                 </div>
                             </div>

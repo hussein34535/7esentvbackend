@@ -456,13 +456,15 @@ export async function getPackages() {
 }
 export async function createPackage(data: any) {
     try {
-        await sql`INSERT INTO packages (name, description, price, sale_price, duration_days, features, is_active) VALUES (${data.name}, ${data.description}, ${data.price}, ${data.sale_price || null}, ${data.duration_days}, ${data.features || '[]'}::jsonb, ${data.is_active ?? true})`;
+        const durationDays = (data.duration_months || 1) * 30;
+        await sql`INSERT INTO packages (name, description, price, sale_price, duration_days, duration_months, discount_months, features, is_active) VALUES (${data.name}, ${data.description}, ${data.price}, ${data.sale_price || null}, ${durationDays}, ${data.duration_months || 1}, ${data.discount_months || 0}, ${data.features || '[]'}::jsonb, ${data.is_active ?? true})`;
         revalidatePath('/packages'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 export async function updatePackage(id: number, data: any) {
     try {
-        await sql`UPDATE packages SET name=${data.name}, description=${data.description}, price=${data.price}, sale_price=${data.sale_price || null}, duration_days=${data.duration_days}, features=${data.features || '[]'}::jsonb, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
+        const durationDays = (data.duration_months || 1) * 30;
+        await sql`UPDATE packages SET name=${data.name}, description=${data.description}, price=${data.price}, sale_price=${data.sale_price || null}, duration_days=${durationDays}, duration_months=${data.duration_months || 1}, discount_months=${data.discount_months || 0}, features=${data.features || '[]'}::jsonb, is_active=${data.is_active}, updated_at=now() WHERE id=${id}`;
         revalidatePath('/packages'); return { success: true };
     } catch (e: any) { return { success: false, error: e.message }; }
 }
