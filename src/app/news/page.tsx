@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getNews, deleteNews, bulkDeleteNews, duplicateNews } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Newspaper, Calendar, Star, CheckSquare, Square, XSquare, Copy } from 'lucide-react';
+import { Plus, Trash2, Film, Calendar, Star, CheckSquare, Square, XSquare, Copy, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type NewsItem = Database['public']['Tables']['news']['Row'];
@@ -86,10 +86,10 @@ export default function NewsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans text-white">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                        News
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-rose-500 bg-clip-text text-transparent">
+                        مباريات كاملة
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1">Manage latest sports news.</p>
+                    <p className="text-slate-400 text-sm mt-1">إدارة المباريات الكاملة المسجلة.</p>
                 </div>
 
                 <div className="flex gap-2">
@@ -101,9 +101,14 @@ export default function NewsPage() {
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
+                    <Link href="/news/auto-import" className="flex items-center gap-2 bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                        <Zap className="w-4 h-4" />
+                        <span>جلب تلقائي</span>
+                    </Link>
+
                     <Link href="/news/new" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg font-medium transition">
                         <Plus className="w-4 h-4" />
-                        <span>Add Article</span>
+                        <span>إضافة يدوي</span>
                     </Link>
                 </div>
             </div>
@@ -178,7 +183,7 @@ export default function NewsPage() {
                                         {imgUrl ? (
                                             <img src={imgUrl} alt={item.title || 'News Image'} className="w-full h-full object-cover transition group-hover:scale-105" />
                                         ) : (
-                                            <Newspaper className="w-10 h-10 text-slate-700" />
+                                            <Film className="w-10 h-10 text-slate-700" />
                                         )}
                                     </div>
                                     <div className="p-4">
@@ -218,7 +223,7 @@ export default function NewsPage() {
             )}
             {!loading && news.length === 0 && (
                 <div className="text-center p-10 text-slate-500 bg-slate-900/50 rounded-xl border border-slate-800">
-                    No articles found.
+                    لا توجد مباريات كاملة. أضف واحدة للبدء.
                 </div>
             )}
         </div>

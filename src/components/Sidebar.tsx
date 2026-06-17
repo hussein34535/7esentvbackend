@@ -8,7 +8,6 @@ import {
     MonitorPlay,
     List,
     Trophy,
-    Newspaper,
     Settings,
     Menu,
     X,
@@ -20,7 +19,8 @@ import {
     BarChart3,
     Inbox,
     Video,
-    Sparkles
+    Sparkles,
+    Film
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -36,8 +36,8 @@ export default function Sidebar() {
         { name: 'Categories', icon: List, href: '/categories' },
         { name: 'Goals', icon: Trophy, href: '/goals' },
         { name: 'Highlights', icon: Video, href: '/highlights' },
-        { name: 'Auto Full Matches', icon: Sparkles, href: '/highlights/auto-import' },
-        { name: 'News', icon: Newspaper, href: '/news' },
+        { name: 'مباريات كاملة', icon: Film, href: '/news' },
+        { name: 'جلب تلقائي', icon: Sparkles, href: '/news/auto-import' },
         { name: 'Users', icon: User, href: '/users' },
         { name: 'Packages', icon: Package, href: '/packages' },
         { name: 'Coupons', icon: Ticket, href: '/coupons' },

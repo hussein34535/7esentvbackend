@@ -922,6 +922,67 @@ function formatMatchTime(timeString: string): string {
     return `${formattedHours}:${formattedMinutes}:00`;
 }
 
+// --- FETCH VIDEO INFO (Dailymotion oEmbed - no beIN needed) ---
+export async function fetchVideoInfo(videoUrl: string) {
+    try {
+        if (!videoUrl) {
+            return { success: false, error: 'يرجى إدخال رابط الفيديو' };
+        }
+
+        // Extract Dailymotion video ID from URL
+        const dmMatch = videoUrl.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+        
+        if (dmMatch) {
+            // Use Dailymotion oEmbed API - free, no key needed
+            const oembedUrl = `https://www.dailymotion.com/services/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
+            const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
+            
+            if (res.ok) {
+                const data = await res.json();
+                return {
+                    success: true,
+                    data: {
+                        title: data.title || 'مباراة كاملة',
+                        thumbnail: data.thumbnail_url || '',
+                        videoUrl: videoUrl,
+                    }
+                };
+            }
+        }
+
+        // Fallback: try YouTube oEmbed
+        const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (ytMatch) {
+            const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
+            const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
+            if (res.ok) {
+                const data = await res.json();
+                return {
+                    success: true,
+                    data: {
+                        title: data.title || 'مباراة كاملة',
+                        thumbnail: data.thumbnail_url || '',
+                        videoUrl: videoUrl,
+                    }
+                };
+            }
+        }
+
+        // Generic fallback - just use the URL
+        return {
+            success: true,
+            data: {
+                title: 'مباراة كاملة',
+                thumbnail: '',
+                videoUrl: videoUrl,
+            }
+        };
+    } catch (error: any) {
+        console.error('fetchVideoInfo error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 export async function scrapeBeinGoal(pageUrl: string, videoUrl: string) {
     try {
         if (!pageUrl || !videoUrl) {
