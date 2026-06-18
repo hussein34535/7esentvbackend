@@ -935,7 +935,7 @@ export async function fetchVideoInfo(videoUrl: string) {
 
         if (dmMatch) {
             const videoId = dmMatch[1];
-            const convertedUrl = `https://7esentv-match.vercel.app/?id=${videoId}`;
+            const convertedUrl = `https://7esentv-match.vercel.app/api/video?id=${videoId}`;
 
             // Use Dailymotion oEmbed API to get title + thumbnail
             const oembedUrl = `https://www.dailymotion.com/services/oembed?url=${encodeURIComponent(`https://www.dailymotion.com/video/${videoId}`)}&format=json`;
