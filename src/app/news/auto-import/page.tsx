@@ -12,7 +12,9 @@ import Link from 'next/link';
 interface FetchedData {
     title: string;
     thumbnail: string;
-    videoUrl: string;
+    videoUrl: string;       // الرابط المحوَّل (7esentv-match) — يُحفظ في DB
+    originalUrl: string;    // الرابط الأصلي — للعرض فقط
+    videoId: string | null;
 }
 
 export default function AutoImportFullMatch() {
@@ -233,13 +235,38 @@ export default function AutoImportFullMatch() {
                             </div>
 
                             {/* Video URL Preview */}
-                            <div>
-                                <label className="block text-xs font-medium text-slate-500 mb-1.5">رابط الفيديو</label>
-                                <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5">
-                                    <Play className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-                                    <span className="text-xs text-slate-400 font-mono truncate">{fetchedData.videoUrl}</span>
+                            <div className="space-y-2">
+                                {/* Converted URL (saved to DB) */}
+                                <div>
+                                    <label className="block text-xs font-medium text-emerald-500 mb-1.5 flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                                        الرابط المحوَّل (يُحفظ هكذا)
+                                    </label>
+                                    <div className="flex items-center gap-2 bg-emerald-950/30 border border-emerald-500/30 rounded-xl px-3 py-2.5">
+                                        <Play className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                                        <span className="text-xs text-emerald-300 font-mono truncate">{fetchedData.videoUrl}</span>
+                                        {fetchedData.videoId && (
+                                            <span className="flex-shrink-0 text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-bold">
+                                                ID: {fetchedData.videoId}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
+
+                                {/* Original URL */}
+                                {fetchedData.originalUrl !== fetchedData.videoUrl && (
+                                    <div>
+                                        <label className="block text-xs font-medium text-slate-500 mb-1.5 flex items-center gap-1.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block" />
+                                            الرابط الأصلي
+                                        </label>
+                                        <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
+                                            <span className="text-xs text-slate-500 font-mono truncate">{fetchedData.originalUrl}</span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
+
 
                             {/* Publish Settings */}
                             <div className="grid grid-cols-2 gap-3 pt-1">

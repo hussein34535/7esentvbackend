@@ -930,51 +930,77 @@ export async function fetchVideoInfo(videoUrl: string) {
         }
 
         // Extract Dailymotion video ID from URL
-        const dmMatch = videoUrl.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
-        
+        // Supports: dailymotion.com/video/xagaahm  or  dai.ly/xagaahm  or  dailymotion.com/embed/video/xagaahm
+        const dmMatch = videoUrl.match(/(?:dailymotion\.com\/(?:video|embed\/video)\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+
         if (dmMatch) {
-            // Use Dailymotion oEmbed API - free, no key needed
-            const oembedUrl = `https://www.dailymotion.com/services/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
-            const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
+            const videoId = dmMatch[1];
+            const convertedUrl = `https://7esentv-match.vercel.app/?id=${videoId}`;
+
+            // Use Dailymotion oEmbed API to get title + thumbnail
+            const oembedUrl = `https://www.dailymotion.com/services/oembed?url=${encodeURIComponent(`https://www.dailymotion.com/video/${videoId}`)}&format=json`;
             
-            if (res.ok) {
-                const data = await res.json();
-                return {
-                    success: true,
-                    data: {
-                        title: data.title || 'مباراة كاملة',
-                        thumbnail: data.thumbnail_url || '',
-                        videoUrl: videoUrl,
-                    }
-                };
-            }
+            try {
+                const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
+                if (res.ok) {
+                    const data = await res.json();
+                    return {
+                        success: true,
+                        data: {
+                            title: data.title || 'مباراة كاملة',
+                            thumbnail: data.thumbnail_url || '',
+                            videoUrl: convertedUrl,      // ← 7esentv-match format
+                            originalUrl: videoUrl,       // ← الرابط الأصلي للعرض فقط
+                            videoId,
+                        }
+                    };
+                }
+            } catch (_) {}
+
+            // oEmbed failed but we still have the ID → return with empty thumbnail
+            return {
+                success: true,
+                data: {
+                    title: 'مباراة كاملة',
+                    thumbnail: '',
+                    videoUrl: convertedUrl,
+                    originalUrl: videoUrl,
+                    videoId,
+                }
+            };
         }
 
-        // Fallback: try YouTube oEmbed
+        // Fallback: YouTube oEmbed
         const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
         if (ytMatch) {
             const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
-            const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
-            if (res.ok) {
-                const data = await res.json();
-                return {
-                    success: true,
-                    data: {
-                        title: data.title || 'مباراة كاملة',
-                        thumbnail: data.thumbnail_url || '',
-                        videoUrl: videoUrl,
-                    }
-                };
-            }
+            try {
+                const res = await fetch(oembedUrl, { next: { revalidate: 0 } });
+                if (res.ok) {
+                    const data = await res.json();
+                    return {
+                        success: true,
+                        data: {
+                            title: data.title || 'مباراة كاملة',
+                            thumbnail: data.thumbnail_url || '',
+                            videoUrl: videoUrl,     // YouTube يُحفظ كما هو
+                            originalUrl: videoUrl,
+                            videoId: ytMatch[1],
+                        }
+                    };
+                }
+            } catch (_) {}
         }
 
-        // Generic fallback - just use the URL
+        // Generic fallback
         return {
             success: true,
             data: {
                 title: 'مباراة كاملة',
                 thumbnail: '',
                 videoUrl: videoUrl,
+                originalUrl: videoUrl,
+                videoId: null,
             }
         };
     } catch (error: any) {
