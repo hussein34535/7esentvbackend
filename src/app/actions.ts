@@ -924,13 +924,13 @@ function formatMatchTime(timeString: string): string {
 
 // --- FORMAT MATCH TITLE ---
 function formatMatchTitle(rawTitle: string): string {
-    if (!rawTitle) return 'مباراة كاملة';
+    if (!rawTitle) return 'المباراة الكاملة';
 
     // 1. Clean up common noise words and parentheses content
     let cleaned = rawTitle
         .replace(/[\(\[\{].*?[\)\}\]]/g, '') // Remove content in parentheses/brackets
         .replace(/\b(?:hd|fhd|sd|4k|mp4|avi|fever)\b/gi, '') // Remove quality keywords
-        .replace(/(?:مباراة|كاملة|شاهد|ملخص|أهداف|اهداف|بث مباشر|تحميل|شوط أول|شوط ثاني|الشوط الأول|الشوط الثاني|الأول|الثاني)/g, '')
+        .replace(/(?:المباراة|الكاملة|مباراة|كاملة|شاهد|ملخص|أهداف|اهداف|بث مباشر|تحميل|شوط أول|شوط ثاني|الشوط الأول|الشوط الثاني|الأول|الثاني)/g, '')
         .trim();
 
     // 2. Identify separators: 'ضد', 'vs', ' v ', '-', '–', '—', 'و'
@@ -973,12 +973,12 @@ function formatMatchTitle(rawTitle: string): string {
     }
 
     if (teamA && teamB) {
-        return `مباراة كاملة ${teamA} ضد ${teamB}`;
+        return `المباراة الكاملة ${teamA} ضد ${teamB}`;
     }
 
     // Fallback: If no separator/teams found, just clean the whole title
     const finalCleaned = cleanTeam(cleaned.replace(/\s+/g, ' '));
-    return finalCleaned ? `مباراة كاملة ${finalCleaned}` : 'مباراة كاملة';
+    return finalCleaned ? `المباراة الكاملة ${finalCleaned}` : 'المباراة الكاملة';
 }
 
 // --- FETCH VIDEO INFO (Dailymotion oEmbed - no beIN needed) ---
