@@ -922,6 +922,65 @@ function formatMatchTime(timeString: string): string {
     return `${formattedHours}:${formattedMinutes}:00`;
 }
 
+// --- FORMAT MATCH TITLE ---
+function formatMatchTitle(rawTitle: string): string {
+    if (!rawTitle) return 'مباراة كاملة';
+
+    // 1. Clean up common noise words and parentheses content
+    let cleaned = rawTitle
+        .replace(/[\(\[\{].*?[\)\}\]]/g, '') // Remove content in parentheses/brackets
+        .replace(/\b(?:hd|fhd|sd|4k|mp4|avi|fever)\b/gi, '') // Remove quality keywords
+        .replace(/(?:مباراة|كاملة|شاهد|ملخص|أهداف|اهداف|بث مباشر|تحميل|شوط أول|شوط ثاني|الشوط الأول|الشوط الثاني|الأول|الثاني)/g, '')
+        .trim();
+
+    // 2. Identify separators: 'ضد', 'vs', ' v ', '-', '–', '—', 'و'
+    let teamA = '';
+    let teamB = '';
+
+    const separators = [
+        /\s+ضد\s+/i,
+        /\s+vs\s+/i,
+        /\s+v\s+/i,
+        /\s*[-–—]\s*/,
+        /\s+و\s+/ // Arabic 'and' with spaces
+    ];
+
+    let splitResult: string[] = [];
+    for (const sep of separators) {
+        const parts = cleaned.split(sep);
+        if (parts.length >= 2) {
+            const p1 = parts[0].trim();
+            const p2 = parts.slice(1).join(' ').trim();
+            if (p1 && p2) {
+                splitResult = [p1, p2];
+                break;
+            }
+        }
+    }
+
+    // Clean team names function
+    const cleanTeam = (name: string) => {
+        return name
+            // Remove digits, punctuation and extra spaces from beginning and end
+            .replace(/^[\s\d\p{P}]+/gu, '')
+            .replace(/[\s\d\p{P}]+$/gu, '')
+            .trim();
+    };
+
+    if (splitResult.length === 2) {
+        teamA = cleanTeam(splitResult[0]);
+        teamB = cleanTeam(splitResult[1]);
+    }
+
+    if (teamA && teamB) {
+        return `مباراة كاملة ${teamA} ضد ${teamB}`;
+    }
+
+    // Fallback: If no separator/teams found, just clean the whole title
+    const finalCleaned = cleanTeam(cleaned.replace(/\s+/g, ' '));
+    return finalCleaned ? `مباراة كاملة ${finalCleaned}` : 'مباراة كاملة';
+}
+
 // --- FETCH VIDEO INFO (Dailymotion oEmbed - no beIN needed) ---
 export async function fetchVideoInfo(videoUrl: string) {
     try {
@@ -947,7 +1006,7 @@ export async function fetchVideoInfo(videoUrl: string) {
                     return {
                         success: true,
                         data: {
-                            title: data.title || 'مباراة كاملة',
+                            title: formatMatchTitle(data.title || 'مباراة كاملة'),
                             thumbnail: data.thumbnail_url || '',
                             videoUrl: convertedUrl,      // ← 7esentv-match format
                             originalUrl: videoUrl,       // ← الرابط الأصلي للعرض فقط
@@ -981,7 +1040,7 @@ export async function fetchVideoInfo(videoUrl: string) {
                     return {
                         success: true,
                         data: {
-                            title: data.title || 'مباراة كاملة',
+                            title: formatMatchTitle(data.title || 'مباراة كاملة'),
                             thumbnail: data.thumbnail_url || '',
                             videoUrl: videoUrl,     // YouTube يُحفظ كما هو
                             originalUrl: videoUrl,
