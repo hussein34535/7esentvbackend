@@ -3,8 +3,16 @@ import sql from '@/lib/db';
 
 export async function POST(request: Request) {
     try {
-        const { uid } = await request.json();
+        let uid = null;
+        try {
+            const body = await request.json();
+            uid = body?.uid;
+        } catch (e) {
+            // Ignore empty body errors for telemetry
+            console.log('Telemetry body is empty or not JSON, skipping uid.');
+        }
         const today = new Date().toISOString().split('T')[0];
+
 
         // 1. Ensure Daily Stat Row Exists
         await sql`
