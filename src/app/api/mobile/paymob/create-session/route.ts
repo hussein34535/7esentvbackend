@@ -144,12 +144,16 @@ export async function POST(request: Request) {
             iframeId = iframeId.slice(1, -1);
         }
 
+        const checkout_url = `https://accept.paymob.com/api/acceptance/iframes/${iframeId}?payment_token=${paymentKey}`;
+
         return NextResponse.json({
             success: true,
             paymentKey,
             iframeId,
-            orderId
+            orderId,
+            checkout_url
         });
+
 
     } catch (error: any) {
         console.error('Paymob session creation error:', error);
