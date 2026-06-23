@@ -21,6 +21,9 @@ export async function POST(request: Request) {
                 if (body.payLoad && typeof body.payLoad === 'string') {
                     try { body.payLoad = JSON.parse(body.payLoad); } catch (err) {}
                 }
+                if (body.pay_load && typeof body.pay_load === 'string') {
+                    try { body.pay_load = JSON.parse(body.pay_load); } catch (err) {}
+                }
                 console.log('Webhook Body (URL-Encoded):', JSON.stringify(body));
             } catch (e2) {
                 console.error('Failed to parse webhook JSON or Form body:', e2);
