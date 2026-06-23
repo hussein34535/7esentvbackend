@@ -122,7 +122,8 @@ export async function POST(request: Request) {
                 email: email,
                 isSubscribed: true,
                 subscriptionEnd: endDate.toISOString(),
-                status: 'active'
+                status: 'active',
+                lastPaymentTime: new Date().toISOString()
             }, { merge: true });
 
             // 8. Send Email Notification
