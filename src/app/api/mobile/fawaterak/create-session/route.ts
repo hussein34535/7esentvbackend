@@ -141,7 +141,11 @@ export async function POST(request: Request) {
         }
 
         if (resData.status !== 'success' || !resData.data) {
-            throw new Error(`Fawaterak API error: ${resData.message || resText}`);
+            let errorMsg = resData.message;
+            if (typeof errorMsg === 'object') {
+                errorMsg = JSON.stringify(errorMsg);
+            }
+            throw new Error(`Fawaterak API error: ${errorMsg || resText}`);
         }
 
         console.log('Fawaterak Invoice Created Successfully!', resData.data);
