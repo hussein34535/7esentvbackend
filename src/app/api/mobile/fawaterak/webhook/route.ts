@@ -9,12 +9,23 @@ export async function POST(request: Request) {
         console.log('--- Fawaterak Webhook Received ---');
         
         let body;
+        const bodyText = await request.text();
         try {
-            body = await request.json();
-            console.log('Webhook Body:', JSON.stringify(body));
+            body = JSON.parse(bodyText);
+            console.log('Webhook Body (JSON):', JSON.stringify(body));
         } catch (e: any) {
-            console.error('Failed to parse webhook JSON body:', e);
-            return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+            console.log('Webhook is not JSON, trying URL-encoded...', bodyText);
+            try {
+                const params = new URLSearchParams(bodyText);
+                body = Object.fromEntries(params.entries());
+                if (body.payLoad && typeof body.payLoad === 'string') {
+                    try { body.payLoad = JSON.parse(body.payLoad); } catch (err) {}
+                }
+                console.log('Webhook Body (URL-Encoded):', JSON.stringify(body));
+            } catch (e2) {
+                console.error('Failed to parse webhook JSON or Form body:', e2);
+                return NextResponse.json({ success: false, error: 'Invalid request body format' }, { status: 400 });
+            }
         }
 
         const vendorKey = process.env.FAWATERAK_PROVIDER_KEY;
