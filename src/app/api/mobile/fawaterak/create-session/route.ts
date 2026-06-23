@@ -20,12 +20,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: 'Missing uid, packageId, or paymentMethod' }, { status: 400 });
         }
 
-        // Map paymentMethod ('fawry' or 'wallet') to Fawaterak payment_method_id
+        // Map paymentMethod ('fawry', 'wallet', or 'card') to Fawaterak payment_method_id
         let paymentMethodId = 3; // default to Fawry
         if (paymentMethod.toLowerCase() === 'wallet' || paymentMethod.toLowerCase() === 'mobile wallet') {
             paymentMethodId = 4; // Mobile Wallet
         } else if (paymentMethod.toLowerCase() === 'fawry') {
             paymentMethodId = 3; // Fawry
+        } else if (paymentMethod.toLowerCase() === 'card' || paymentMethod.toLowerCase() === 'credit card' || paymentMethod.toLowerCase() === 'visa') {
+            paymentMethodId = 2; // Credit Card / Visa
         } else {
             // Check if user passed number directly
             const parsedId = parseInt(paymentMethod);
