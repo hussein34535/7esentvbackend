@@ -28,9 +28,9 @@ export async function POST(request: Request) {
             }
         }
 
-        const vendorKey = process.env.FAWATERAK_PROVIDER_KEY;
+        const vendorKey = process.env.FAWATERAK_API_KEY;
         if (!vendorKey) {
-            console.error('FAWATERAK_PROVIDER_KEY is not configured on server');
+            console.error('FAWATERAK_API_KEY is not configured on server');
             return NextResponse.json({ success: false, error: 'Server configuration error' }, { status: 500 });
         }
 
