@@ -118,7 +118,8 @@ export async function POST(request: Request) {
         console.log('Sending invoice request to Fawaterak:', JSON.stringify(fawaterakPayload));
 
         // 5. Call Fawaterak ExecutePayment API
-        const fawaterakRes = await fetch('https://app.fawaterk.com/api/v2/invoiceInitPay', {
+        const baseUrl = process.env.FAWATERAK_BASE_URL || 'https://app.fawaterk.com/api';
+        const fawaterakRes = await fetch(`${baseUrl}/v2/invoiceInitPay`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiToken}`,
