@@ -1,24 +1,9 @@
-const API_BASE = 'https://st9.onrender.com/api';
-
-async function testFetch() {
-    // Try sending publicationState=preview to see drafts
-    const endpoints = [
-        '/channel-categories?publicationState=preview',
-        '/matches?publicationState=preview',
-        '/goals?publicationState=preview'
-    ];
-
-    for (const ep of endpoints) {
-        console.log(`Checking ${ep}...`);
-        try {
-            const res = await fetch(`${API_BASE}${ep}`);
-            const json = await res.json();
-            const count = json.data?.length || 0;
-            console.log(`> Found: ${count} items`);
-        } catch (e) {
-            console.error(e.message);
-        }
-    }
+async function test() {
+    const res = await fetch('https://7esentvbackend.vercel.app/api/mobile/fawaterak/create-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: 'A5r67EeXIcVpRtxRmjDey5Zgbi43', packageId: 1, paymentMethod: 'wallet' })
+    });
+    console.log(res.status, await res.text());
 }
-
-testFetch();
+test();

@@ -606,6 +606,47 @@ export async function updateUserStatus(uid: string, status: string) {
     } catch (e: any) { return { success: false, error: e.message }; }
 }
 
+export async function updateUserSubscription(uid: string, subscriptionEnd: string | null, planId: number | null) {
+    try {
+        let isSubscribed = false;
+        let status = 'active';
+
+        if (subscriptionEnd) {
+            const endDate = new Date(subscriptionEnd);
+            if (endDate > new Date()) {
+                isSubscribed = true;
+            } else {
+                status = 'expired';
+            }
+        } else {
+            status = 'expired';
+        }
+
+        // Update Postgres
+        await sql`
+            UPDATE users SET 
+                subscription_end = ${subscriptionEnd}, 
+                plan_id = ${planId},
+                status = ${status},
+                updated_at = now()
+            WHERE id = ${uid}
+        `;
+
+        // Sync to Firestore
+        await firestore.collection('users').doc(uid).set({
+            isSubscribed: isSubscribed,
+            subscriptionEnd: subscriptionEnd,
+            status: status
+        }, { merge: true });
+
+        revalidatePath('/users');
+        return { success: true };
+    } catch (e: any) {
+        console.error('updateUserSubscription error:', e);
+        return { success: false, error: e.message };
+    }
+}
+
 // --- ANALYTICS ---
 export async function getAnalytics() {
     try {
@@ -769,7 +810,7 @@ export async function submitPaymentRequest(userId: string, packageId: number, re
                 await sendAdminNotification({
                     userName: userId,
                     packageName: pkg[0].name,
-                    amount: pkg[0].sale_price || pkg[0].price,
+                    amount: (pkg[0].sale_price && Number(pkg[0].sale_price) < Number(pkg[0].price) && Number(pkg[0].sale_price) > 0) ? pkg[0].sale_price : pkg[0].price,
                     paymentIdentifier
                 });
             }
@@ -898,6 +939,53 @@ export async function scrapeMatches() {
         return { success: true, matches: fetchedMatches };
     } catch (error: any) {
         console.error('scrapeMatches error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function fetchAndPublishMatches() {
+    try {
+        const scrapeResult = await scrapeMatches();
+        if (!scrapeResult.success || !scrapeResult.matches) {
+            return { success: false, error: scrapeResult.error || 'Failed to scrape matches' };
+        }
+
+        const scraped = scrapeResult.matches;
+
+        // Fetch existing matches from DB
+        const existing = await sql<Match[]>`SELECT team_a, team_b, match_time FROM matches`;
+
+        const results: any[] = [];
+        const toInsert: any[] = [];
+
+        for (const match of scraped) {
+            const isDuplicate = existing.some(ext => 
+                ext.team_a.trim().toLowerCase() === match.team_a.trim().toLowerCase() &&
+                ext.team_b.trim().toLowerCase() === match.team_b.trim().toLowerCase() &&
+                ext.match_time.trim().slice(0, 5) === match.match_time.trim().slice(0, 5)
+            );
+
+            if (isDuplicate) {
+                results.push({
+                    ...match,
+                    status: 'already_published'
+                });
+            } else {
+                toInsert.push(match);
+                results.push({
+                    ...match,
+                    status: 'published'
+                });
+            }
+        }
+
+        if (toInsert.length > 0) {
+            await createMultipleMatches(toInsert);
+        }
+
+        return { success: true, matches: results, newlyAdded: toInsert.length };
+    } catch (error: any) {
+        console.error('fetchAndPublishMatches error:', error);
         return { success: false, error: error.message };
     }
 }

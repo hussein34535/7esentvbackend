@@ -96,7 +96,7 @@ export default function HighlightsPage() {
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition text-sm ${selectMode ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}
                     >
                         {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
-                        <span>{selectMode ? 'Cancel' : 'Select'}</span>
+                        <span>{selectMode ? 'إلغاء' : 'تحديد'}</span>
                     </button>
 
                     <Link
@@ -104,7 +104,7 @@ export default function HighlightsPage() {
                         className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-purple-900/20 transition-all hover:scale-[1.02]"
                     >
                         <Sparkles className="w-5 h-5" />
-                        <span>Auto Import</span>
+                        <span>جلب تلقائي</span>
                     </Link>
 
                     <Link
@@ -112,7 +112,7 @@ export default function HighlightsPage() {
                         className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-green-900/20 transition-all hover:scale-[1.02]"
                     >
                         <Plus className="w-5 h-5" />
-                        <span>Add Highlight</span>
+                        <span>إضافة ملخص</span>
                     </Link>
                 </div>
             </header>

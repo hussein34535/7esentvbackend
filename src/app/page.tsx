@@ -131,17 +131,17 @@ export default function Home() {
               className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition text-xs md:text-sm ${selectMode ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}
             >
               {selectMode ? <XSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />}
-              <span>{selectMode ? 'Cancel' : 'Select'}</span>
+              <span>{selectMode ? 'إلغاء' : 'تحديد'}</span>
             </button>
 
             <Link href="/matches/auto-import" className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
               <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
-              <span>Auto Import</span>
+              <span>جلب تلقائي</span>
             </Link>
 
             <Link href="/matches/new" className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
               <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-              <span>Add Match</span>
+              <span>إضافة مباراة</span>
             </Link>
           </div>
         </div>

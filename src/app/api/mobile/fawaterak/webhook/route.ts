@@ -136,6 +136,8 @@ export async function POST(request: Request) {
                 email: email,
                 isSubscribed: true,
                 subscriptionEnd: endDate.toISOString(),
+                subscriptionPlan: packageName,
+                planId: packageId,
                 status: 'active',
                 lastPaymentTime: new Date().toISOString()
             }, { merge: true });

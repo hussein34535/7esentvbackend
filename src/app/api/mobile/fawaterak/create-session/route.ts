@@ -54,7 +54,9 @@ export async function POST(request: Request) {
         }
         
         const pkg = packageRows[0];
-        const basePrice = pkg.sale_price || pkg.price;
+        const basePrice = (pkg.sale_price && Number(pkg.sale_price) < Number(pkg.price) && Number(pkg.sale_price) > 0)
+            ? pkg.sale_price
+            : pkg.price;
         let finalPrice = Number(basePrice);
 
         // 2. Apply coupon discount if applicable
