@@ -46,8 +46,9 @@ export default function Sidebar() {
         <>
             {/* Mobile Toggle Button (Visible only on mobile) */}
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-slate-950 border-b border-slate-800 p-4 flex items-center justify-between">
-                <Link href="/" className="text-xl font-bold text-emerald-400">
-                    7ESEN<span className="text-white">CMS</span>
+                <Link href="/" className="flex items-center gap-2 text-xl font-bold text-emerald-400">
+                    <img src="/logo.png" alt="7esen TV" className="w-7 h-7 rounded-md object-cover" />
+                    <span>7esen <span className="text-white">TV</span></span>
                 </Link>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -65,8 +66,9 @@ export default function Sidebar() {
             `}>
                 {/* Logo Area (Desktop) */}
                 <div className="hidden md:flex items-center h-16 px-6 border-b border-slate-900/50">
-                    <Link href="/" className="text-2xl font-bold text-emerald-400">
-                        7ESEN<span className="text-white">CMS</span>
+                    <Link href="/" className="flex items-center gap-3 text-2xl font-bold text-emerald-400">
+                        <img src="/logo.png" alt="7esen TV" className="w-8 h-8 rounded-lg object-cover" />
+                        <span>7esen <span className="text-white">TV</span></span>
                     </Link>
                 </div>
 
