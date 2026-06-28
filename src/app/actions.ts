@@ -517,12 +517,32 @@ export async function deletePaymentMethod(id: number) {
 export async function getUsers() {
     try {
         // Left join with packages to get plan name
-        return await sql`
+        const dbUsers = await sql`
             SELECT u.*, p.name as plan_name 
             FROM users u 
             LEFT JOIN packages p ON u.plan_id = p.id
             ORDER BY u.created_at DESC
         `;
+
+        try {
+            const firestoreSnap = await firestore.collection('users').get();
+            const firestoreUsersMap = new Map();
+            firestoreSnap.forEach(doc => {
+                firestoreUsersMap.set(doc.id, doc.data());
+            });
+
+            return dbUsers.map(user => {
+                const fsUser = firestoreUsersMap.get(user.id);
+                return {
+                    ...user,
+                    photo_url: fsUser?.photoUrl || fsUser?.image_url || null,
+                    display_name: fsUser?.name || null
+                };
+            });
+        } catch (fsError) {
+            console.error("Error fetching Firestore users:", fsError);
+            return dbUsers;
+        }
     } catch (e: any) {
         return [];
     }

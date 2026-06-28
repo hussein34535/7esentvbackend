@@ -81,7 +81,9 @@ export default function Sidebar() {
 
                     {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                        const isActive = pathname === item.href || 
+                            (item.href !== '/' && pathname.startsWith(item.href)) ||
+                            (item.href === '/' && (pathname === '/' || pathname.startsWith('/matches')));
 
                         return (
                             <Link

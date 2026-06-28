@@ -377,8 +377,20 @@ export default function Users() {
                         return (
                             <div key={user.id} className="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-emerald-500/30 transition shadow-sm">
                                 <div className="flex items-center gap-4 w-full md:w-auto">
-                                    <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center">
-                                        <User className="w-5 h-5 text-slate-400" />
+                                    <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
+                                        {user.photo_url ? (
+                                            <img 
+                                                src={user.photo_url} 
+                                                alt={user.email} 
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+                                                }}
+                                            />
+                                        ) : (
+                                            <User className="w-5 h-5 text-slate-400" />
+                                        )}
                                     </div>
                                     <div className="text-right">
                                         <h3 className="font-semibold text-white flex items-center gap-2">
