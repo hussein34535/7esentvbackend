@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { auth } from '@/lib/firebase-admin';
 
 export async function POST(request: Request) {
     try {
@@ -28,13 +29,37 @@ export async function POST(request: Request) {
             WHERE date = ${today}
         `;
 
-        // 3. Update User Last Active
+        // 3. Update User Last Active and ensure registration
         if (uid) {
-            await sql`
-                UPDATE users 
-                SET last_active_at = now() 
-                WHERE id = ${uid}
-            `;
+            try {
+                // Check if user exists in PostgreSQL
+                const userExists = await sql`SELECT id FROM users WHERE id = ${uid}`;
+                
+                if (userExists.length === 0) {
+                    // Fetch user details from Firebase Auth to register them
+                    const userRecord = await auth.getUser(uid);
+                    await sql`
+                        INSERT INTO users (id, email, status, joined_at, last_active_at, updated_at)
+                        VALUES (${uid}, ${userRecord.email || null}, 'active', ${userRecord.metadata.creationTime ? new Date(userRecord.metadata.creationTime).toISOString() : new Date().toISOString()}, now(), now())
+                    `;
+                } else {
+                    await sql`
+                        UPDATE users 
+                        SET last_active_at = now() 
+                        WHERE id = ${uid}
+                    `;
+                }
+            } catch (userErr) {
+                console.error('Error handling user telemetry / auto-registration:', userErr);
+                // Fallback to simple update if Firebase/Db query failed
+                try {
+                    await sql`
+                        UPDATE users 
+                        SET last_active_at = now() 
+                        WHERE id = ${uid}
+                    `;
+                } catch (_) {}
+            }
 
             // NOTE: Accurate DAU (Daily Active Users) requires verifying if THIS user was already counted today.
             // For a simple "Estimate", we can't easily do specific DAU without a lookup table.
