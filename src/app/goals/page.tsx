@@ -249,8 +249,8 @@ export default function GoalsPage() {
                                                 </span>
                                             )}
                                             {goal.is_published ? (
-                                                <span className="inline-flex items-center gap-1.5 bg-accentsoft text-accentstrong border border-accentline text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-accent"></span> Published
+                                                <span className="inline-flex items-center gap-1.5 bg-successsoft text-success border border-success/30 text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-success"></span> Published
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center bg-infosoft text-info border border-info/30 text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-sm">

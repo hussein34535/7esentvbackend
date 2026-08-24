@@ -78,7 +78,7 @@ export default function MatchCard({ match, onClick, selected }: MatchCardProps) 
                     <span
                         className={`inline-flex items-center gap-1 text-[10px] md:text-xs font-medium px-2 py-0.5 rounded-full ${
                             match.is_published
-                                ? 'bg-accentsoft text-accentstrong'
+                                ? 'bg-successsoft text-success'
                                 : 'bg-warnsoft text-warn'
                         }`}
                     >

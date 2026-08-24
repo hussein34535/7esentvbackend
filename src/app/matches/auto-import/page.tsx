@@ -170,7 +170,7 @@ export default function AutoImportMatches() {
                                                     منشورة بالفعل
                                                 </div>
                                             ) : (
-                                                <div className="w-full py-2 bg-accentsoft text-accentstrong rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
+                                                <div className="w-full py-2 bg-successsoft text-success rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
                                                     <Check className="w-4 h-4" />
                                                     تم النشر بنجاح
                                                 </div>

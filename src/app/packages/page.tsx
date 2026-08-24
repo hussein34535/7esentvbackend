@@ -189,7 +189,7 @@ export default function Packages() {
                                         )}
                                     </div>
                                 </div>
-                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${pkg.is_active ? 'bg-accentsoft text-accentstrong' : 'bg-surface2 text-inkmute'}`}>
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${pkg.is_active ? 'bg-successsoft text-success' : 'bg-surface2 text-inkmute'}`}>
                                     <span className={`w-1.5 h-1.5 rounded-full ${pkg.is_active ? 'bg-accent' : 'bg-inkmute/60'}`} />
                                     {pkg.is_active ? 'ACTIVE' : 'INACTIVE'}
                                 </span>

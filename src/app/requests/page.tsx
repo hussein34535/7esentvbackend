@@ -147,12 +147,12 @@ export default function RequestsPage() {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3 mb-2">
                                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                                        req.status === 'approved' ? 'bg-accentsoft text-accentstrong' :
+                                        req.status === 'approved' ? 'bg-successsoft text-success' :
                                         req.status === 'rejected' ? 'bg-dangersoft text-danger' :
                                             'bg-warnsoft text-warn'
                                     }`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${
-                                            req.status === 'approved' ? 'bg-accent' :
+                                            req.status === 'approved' ? 'bg-success' :
                                             req.status === 'rejected' ? 'bg-danger' : 'bg-warn'
                                         }`} />
                                         {req.status}

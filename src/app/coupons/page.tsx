@@ -206,7 +206,7 @@ export default function Coupons() {
                                             <span className="w-1.5 h-1.5 rounded-full bg-danger" /> Expired
                                         </span>
                                     ) : coupon.is_active ? (
-                                        <span className="inline-flex items-center gap-1.5 shrink-0 bg-accentsoft text-accentstrong text-xs font-medium px-2 py-1 rounded-md">
+                                        <span className="inline-flex items-center gap-1.5 shrink-0 bg-successsoft text-success text-xs font-medium px-2 py-1 rounded-md">
                                             <Check className="w-3 h-3" /> Active
                                         </span>
                                     ) : (

@@ -307,7 +307,7 @@ export default function Users() {
                                 <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                                     <div className="text-right">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium mb-1 ${
-                                            isBanned ? 'bg-dangersoft text-danger' : isSub ? 'bg-accentsoft text-accentstrong' : 'bg-dangersoft text-danger'
+                                            isBanned ? 'bg-dangersoft text-danger' : isSub ? 'bg-successsoft text-success' : 'bg-dangersoft text-danger'
                                         }`}>
                                             {isBanned ? (
                                                 <><Ban className="w-3.5 h-3.5" /> محظور</>

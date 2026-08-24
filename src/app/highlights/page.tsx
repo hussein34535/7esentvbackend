@@ -274,8 +274,8 @@ export default function HighlightsPage() {
                                                     <Star className="w-3 h-3 fill-current" /> Premium
                                                 </span>
                                             )}
-                                            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-md ${item.is_published !== false ? 'bg-accentsoft text-accentstrong' : 'bg-infosoft text-info'}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${item.is_published !== false ? 'bg-accent' : 'bg-info'}`} />
+                                            <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-md ${item.is_published !== false ? 'bg-successsoft text-success' : 'bg-infosoft text-info'}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${item.is_published !== false ? 'bg-success' : 'bg-info'}`} />
                                                 {item.is_published !== false ? 'Published' : 'Draft'}
                                             </span>
                                         </div>

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Manage your 7esen content',
 };
 
-const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark'){document.documentElement.classList.add('dark')}}catch(e){}})();`;
+const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(!t){t='dark'}if(t==='dark'){document.documentElement.classList.add('dark')}}catch(e){document.documentElement.classList.add('dark')}})();`;
 
 export default function RootLayout({
   children,
