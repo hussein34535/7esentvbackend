@@ -127,9 +127,63 @@ export async function deleteChannel(id: number) {
     catch (e: any) { return { success: false, error: e.message }; }
 }
 
+export type ChannelWithCategories = Channel & {
+    categories: { id: number; name: string }[];
+};
+
+export async function getChannelsWithCategories(): Promise<ChannelWithCategories[]> {
+    try {
+        const rows = await sql<ChannelWithCategories[]>`
+            SELECT c.*,
+            COALESCE(
+                json_agg(json_build_object('id', cc.id, 'name', cc.name) ORDER BY cc.sort_order ASC, cc.id ASC)
+                FILTER (WHERE cc.id IS NOT NULL), '[]'
+            ) as categories
+            FROM channels c
+            LEFT JOIN _rel_channels_categories rcc ON c.id = rcc.channel_id
+            LEFT JOIN channel_categories cc ON rcc.category_id = cc.id
+            GROUP BY c.id
+            ORDER BY c.id ASC
+        `;
+        return rows || [];
+    } catch (e) { return []; }
+}
+
 // --- CATEGORIES ---
 export async function getCategories(): Promise<Category[]> {
     try { return await sql<Category[]>`SELECT * FROM channel_categories ORDER BY sort_order ASC, id ASC`; } catch (e) { return []; }
+}
+
+export type CategoryWithCount = Category & { channels_count: number };
+
+export async function getCategoriesWithCounts(): Promise<CategoryWithCount[]> {
+    try {
+        const rows = await sql<CategoryWithCount[]>`
+            SELECT cc.*, COUNT(rcc.channel_id)::int as channels_count
+            FROM channel_categories cc
+            LEFT JOIN _rel_channels_categories rcc ON cc.id = rcc.category_id
+            GROUP BY cc.id
+            ORDER BY cc.sort_order ASC, cc.id ASC
+        `;
+        return rows || [];
+    } catch (e) { return []; }
+}
+
+export async function updateCategoriesSortOrder(orderedIds: number[]) {
+    try {
+        if (orderedIds.length === 0) return { success: true };
+        const positions = orderedIds.map((_, i) => i);
+        await sql`
+            UPDATE channel_categories AS cc
+            SET sort_order = v.ord, updated_at = now()
+            FROM (
+                SELECT * FROM unnest(${orderedIds}::bigint[], ${positions}::int[]) AS t(id, ord)
+            ) AS v
+            WHERE cc.id = v.id
+        `;
+        revalidatePath('/categories');
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
 }
 
 // Added getCategory for fetching single with channels
