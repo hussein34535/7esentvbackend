@@ -192,7 +192,7 @@ export default function ChannelsPage() {
 
             {/* Category filter chips */}
             {categories.length > 0 && (
-                <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
+                <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1">
                     <Tag className="w-3.5 h-3.5 text-inkmute shrink-0" />
                     <button
                         onClick={() => setCategoryFilter(null)}
@@ -288,13 +288,13 @@ export default function ChannelsPage() {
                                         href={selectMode ? '#' : `/channels/${channel.id}`}
                                         onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(channel.id); } : undefined}
                                         className={`group bg-surface border rounded-2xl p-4 md:p-5 transition-all duration-200 relative block h-full ${selectedIds.has(channel.id)
-                                            ? 'border-accent bg-accentsoft/50'
-                                            : 'hover:border-accent/40 hover:shadow-cardhover'
+                                            ? 'border-accent/70 bg-accentsoft/40'
+                                            : 'border-line hover:border-inkmute/40 hover:shadow-cardhover hover:-translate-y-0.5'
                                             }`}
                                     >
-                                        <div className="flex items-start justify-between mb-2 md:mb-4">
-                                            <div className="bg-surface2 p-2 md:p-2.5 rounded-lg border border-line group-hover:border-accent/30 transition-colors">
-                                                <Tv className="w-5 h-5 md:w-6 md:h-6 text-accent" />
+                                        <div className="flex items-start justify-between mb-3 md:mb-4">
+                                            <div className="bg-surface2 p-2 md:p-2.5 rounded-xl border border-line transition-colors group-hover:border-inkmute/30">
+                                                <Tv className="w-4.5 h-4.5 md:w-5 md:h-5 text-inkmute" />
                                             </div>
                                             {!selectMode && (
                                                 <div className="flex gap-1">
@@ -316,7 +316,7 @@ export default function ChannelsPage() {
                                             )}
                                         </div>
 
-                                        <h3 className="font-semibold text-sm md:text-lg text-ink mb-0.5 md:mb-1 group-hover:text-accentstrong transition-colors truncate">{channel.name}</h3>
+                                        <h3 className="font-semibold text-sm md:text-base text-ink mb-0.5 md:mb-1 truncate">{channel.name}</h3>
                                         <div className="flex items-center gap-2 text-[10px] md:text-xs text-inkmute tabular-nums mb-2 md:mb-3">
                                             <Hash className="w-2.5 h-2.5 md:w-3 md:h-3" /> ID: {channel.id}
                                         </div>

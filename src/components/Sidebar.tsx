@@ -134,12 +134,12 @@ export default function Sidebar() {
                                             className={`
                                                 flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm font-medium transition-all duration-200
                                                 ${isActive
-                                                    ? 'bg-accentsoft text-accentstrong'
-                                                    : 'text-inksoft hover:bg-surface2 hover:text-ink'
+                                                    ? 'bg-surface2 text-ink font-semibold'
+                                                    : 'text-inksoft hover:bg-surface2/60 hover:text-ink'
                                                 }
                                             `}
                                         >
-                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-accentstrong' : 'text-inkmute'}`} />
+                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-accent' : 'text-inkmute'}`} />
                                             <span className="truncate">{item.name}</span>
                                             {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent shrink-0" />}
                                         </Link>

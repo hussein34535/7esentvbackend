@@ -129,6 +129,16 @@ body {
     background: var(--accentsoft);
 }
 
+/* Hide scrollbars on horizontal chip rows / carousels */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
 /* Neutralize motion for users who prefer reduced */
 @media (prefers-reduced-motion: reduce) {
     *,

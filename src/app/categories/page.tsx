@@ -342,7 +342,7 @@ export default function CategoriesPage() {
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className="bg-surface2 rounded-lg border border-line group-hover:border-accent/30 transition-colors w-12 h-12 flex items-center justify-center overflow-hidden shrink-0 ml-12">
+                                                <div className="bg-surface2 rounded-xl border border-line transition-colors w-12 h-12 flex items-center justify-center overflow-hidden shrink-0 ml-12">
                                                     {(() => {
                                                         const img = cat.image as CloudinaryAsset | null;
                                                         const imgUrl = img?.url;
@@ -353,7 +353,7 @@ export default function CategoriesPage() {
                                                                 className="w-full h-full object-cover"
                                                             />
                                                         ) : (
-                                                            <Hash className="w-6 h-6 text-accent" />
+                                                            <Hash className="w-5 h-5 text-inkmute" />
                                                         );
                                                     })()}
                                                 </div>
@@ -386,7 +386,7 @@ export default function CategoriesPage() {
                                                 )}
                                             </div>
 
-                                            <h3 className="font-semibold text-base md:text-lg text-ink mb-1 group-hover:text-accentstrong transition-colors truncate">{cat.name}</h3>
+                                            <h3 className="font-semibold text-base text-ink mb-1 truncate">{cat.name}</h3>
                                             <div className="flex items-center gap-3 text-xs text-inkmute">
                                                 <span className="bg-surface2 border border-line px-2 py-0.5 rounded-full text-inksoft tabular-nums">
                                                     {cat.channels_count} channel{cat.channels_count !== 1 ? 's' : ''}
