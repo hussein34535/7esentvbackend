@@ -39,7 +39,7 @@ export default function NewChannel() {
         loadCats();
     }, []);
 
-    const handleStreamChange = (index: number, field: keyof StreamItem, value: any) => {
+    const handleStreamChange = (index: number, field: keyof StreamItem, value: string | boolean) => {
         const newStreams = [...streams];
         newStreams[index] = { ...newStreams[index], [field]: value };
         setStreams(newStreams);
@@ -62,7 +62,7 @@ export default function NewChannel() {
             let current;
             try {
                 current = JSON.parse(raw);
-            } catch (e) {
+            } catch {
                 alert('Invalid JSON syntax.');
                 return;
             }
@@ -118,47 +118,48 @@ export default function NewChannel() {
     };
 
     return (
-        <div className="font-sans">
-            <main className="max-w-4xl mx-auto px-4 py-4 md:py-8">
-                <div className="flex items-center gap-4 mb-6 md:mb-8">
-                    <Link href="/channels" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
+        <div>
+            <main className="max-w-3xl mx-auto px-4 py-6 md:py-8">
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                    <Link href="/channels" aria-label="Back to channels" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <h1 className="text-xl md:text-2xl font-bold">New Channel</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">New Channel</h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-6 space-y-6 md:space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
 
                     {/* Channel Name */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1">Channel Name</label>
+                    <section className="bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card">
+                        <label htmlFor="channel-name" className="block text-sm font-medium text-ink mb-1.5">Channel Name</label>
                         <div className="relative">
-                            <Tv className="absolute left-3 top-2.5 w-5 h-5 text-slate-500" />
+                            <Tv className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                             <input
+                                id="channel-name"
                                 required
                                 type="text"
                                 placeholder="e.g. beIN Sports 1"
-                                className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 focus:border-emerald-500 outline-none transition"
+                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                 value={name} onChange={e => setName(e.target.value)}
                             />
                         </div>
-                    </div>
+                    </section>
 
                     {/* Categories */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="text-sm font-medium text-slate-400">Categories</label>
+                    <section className="bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card">
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="text-sm font-medium text-ink">Categories</label>
                             <button
                                 type="button"
                                 onClick={() => setShowAllCats(!showAllCats)}
-                                className="text-xs text-emerald-400 hover:text-emerald-300 transition"
+                                className="text-xs font-medium text-accentstrong hover:underline transition focus-visible:outline-none"
                             >
                                 {showAllCats ? 'Hide Categories' : 'Show Categories'}
                             </button>
                         </div>
 
                         {showAllCats && categories.length > 0 && (
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 max-h-60 overflow-y-auto pr-1">
                                 {categories
                                     .sort((a, b) => {
                                         const aSel = selectedCats.includes(a.id);
@@ -177,14 +178,14 @@ export default function NewChannel() {
                                                     setSelectedCats([...selectedCats, cat.id]);
                                                 }
                                             }}
-                                            className={`cursor-pointer px-4 py-3 rounded-lg border transition flex items-center justify-between ${selectedCats.includes(cat.id)
-                                                ? 'bg-emerald-500/10 border-emerald-500/50 text-white'
-                                                : 'bg-slate-950 border-slate-700 text-slate-400 hover:border-slate-600'
+                                            className={`cursor-pointer px-4 py-3 rounded-xl border transition-all duration-200 flex items-center justify-between ${selectedCats.includes(cat.id)
+                                                ? 'border-accent bg-accentsoft/50 text-ink'
+                                                : 'bg-surface2/50 border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                                 }`}
                                         >
                                             <span className="text-sm font-medium truncate" title={cat.name}>{cat.name}</span>
                                             {selectedCats.includes(cat.id) && (
-                                                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] flex-shrink-0 ml-2" />
+                                                <span className="w-2 h-2 rounded-full bg-accent shrink-0 ml-2" />
                                             )}
                                         </div>
                                     ))}
@@ -192,27 +193,25 @@ export default function NewChannel() {
                         )}
 
                         {showAllCats && categories.length === 0 && (
-                            <div className="text-sm text-slate-600 italic py-2">No categories available.</div>
+                            <div className="text-sm text-inkmute py-2">No categories available.</div>
                         )}
-                    </div>
-
-                    <div className="border-t border-slate-800"></div>
+                    </section>
 
                     {/* Stream List Config */}
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
+                    <section className="bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                             <div>
-                                <h3 className="text-lg font-medium text-white">Stream Sources</h3>
-                                <p className="text-sm text-slate-500">Add multiple qualities or sources.</p>
+                                <h3 className="text-base font-semibold text-ink">Stream Sources</h3>
+                                <p className="text-xs text-inkmute mt-0.5">Add multiple qualities or sources.</p>
                             </div>
-                            <div className="flex gap-2">
-                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-pink-400 bg-pink-500/10 border border-pink-500/20 rounded-lg hover:bg-pink-500/20 transition">
+                            <div className="flex flex-wrap gap-2">
+                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-accentline bg-accentsoft text-accentstrong hover:bg-accentsoft/70 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                                     <Sparkles className="w-3.5 h-3.5" /> Import Esenlinks
                                 </button>
-                                <button type="button" onClick={parseRichTextJson} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-lg hover:bg-indigo-500/20 transition">
+                                <button type="button" onClick={parseRichTextJson} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-inksoft hover:bg-surface2 hover:text-ink transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                                     <Wand2 className="w-3.5 h-3.5" /> Import JSON
                                 </button>
-                                <button type="button" onClick={addStream} className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition">
+                                <button type="button" onClick={addStream} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-accentstrong hover:bg-surface2 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                                     <Plus className="w-3.5 h-3.5" /> Add Stream
                                 </button>
                             </div>
@@ -220,17 +219,17 @@ export default function NewChannel() {
 
                         <div className="space-y-3">
                             {streams.map((stream, idx) => (
-                                <div key={idx} className="group flex items-start gap-3 bg-slate-950 p-4 rounded-lg border border-slate-800 hover:border-slate-700 transition">
-                                    <div className="mt-3 text-xs text-slate-600 font-mono w-6 text-center">{idx + 1}</div>
+                                <div key={idx} className="group flex items-start gap-3 bg-surface2/50 p-3 md:p-4 rounded-xl border border-line hover:border-inkmute/30 transition-colors">
+                                    <div className="mt-3 text-xs text-inkmute tabular-nums w-6 text-center">{idx + 1}</div>
 
                                     <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3">
                                         {/* Name */}
                                         <div className="md:col-span-3">
-                                            <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1 block">Label</label>
+                                            <label className="text-xs font-medium text-inksoft mb-1 block">Label</label>
                                             <input
                                                 type="text"
                                                 placeholder="e.g. FHD"
-                                                className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-sm focus:border-indigo-500 outline-none"
+                                                className="w-full bg-surface border border-line focus:border-accent/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                                 value={stream.name}
                                                 onChange={e => handleStreamChange(idx, 'name', e.target.value)}
                                             />
@@ -238,11 +237,11 @@ export default function NewChannel() {
 
                                         {/* URL */}
                                         <div className="md:col-span-6">
-                                            <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1 block">Stream URL</label>
+                                            <label className="text-xs font-medium text-inksoft mb-1 block">Stream URL</label>
                                             <input
                                                 type="text"
                                                 placeholder="https://..."
-                                                className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-sm font-mono text-slate-300 focus:border-indigo-500 outline-none"
+                                                className="w-full bg-surface border border-line focus:border-accent/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                                 value={stream.url}
                                                 onChange={e => handleStreamChange(idx, 'url', e.target.value)}
                                             />
@@ -253,9 +252,9 @@ export default function NewChannel() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleStreamChange(idx, 'is_premium', !stream.is_premium)}
-                                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition w-full justify-center ${stream.is_premium
-                                                    ? 'bg-amber-500/10 border-amber-500/50 text-amber-500'
-                                                    : 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800'
+                                                className={`flex items-center gap-2 px-3 py-1.5 rounded-[10px] border transition-all duration-200 w-full justify-center focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${stream.is_premium
+                                                    ? 'bg-warnsoft border-warn/40 text-warn'
+                                                    : 'bg-surface border-line text-inksoft hover:bg-surface2'
                                                     }`}
                                             >
                                                 <Star className={`w-3.5 h-3.5 ${stream.is_premium ? 'fill-current' : ''}`} />
@@ -268,7 +267,7 @@ export default function NewChannel() {
                                         type="button"
                                         onClick={() => removeStream(idx)}
                                         disabled={streams.length <= 1}
-                                        className="mt-6 text-slate-600 hover:text-red-400 transition p-1 disabled:opacity-30 disabled:hover:text-slate-600"
+                                        className="mt-6 p-1.5 rounded-lg text-inkmute hover:text-danger hover:bg-dangersoft transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-30 disabled:pointer-events-none"
                                         title="Remove Stream"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -276,13 +275,17 @@ export default function NewChannel() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </section>
 
-                    <div className="pt-6 border-t border-slate-800 flex justify-end">
+                    {/* Footer */}
+                    <div className="pt-2 flex items-center justify-end gap-2">
+                        <Link href="/channels" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            Cancel
+                        </Link>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-2.5 rounded-lg font-medium transition disabled:opacity-50 shadow-lg shadow-emerald-900/20"
+                            className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                         >
                             {loading ? 'Creating...' : <><Save className="w-4 h-4" /> Create Channel</>}
                         </button>

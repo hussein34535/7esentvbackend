@@ -2,11 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { getPackages, createPackage, updatePackage, deletePackage } from '@/app/actions';
-import { Plus, Edit, Trash2, Tag, Calendar, Check, X, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Tag, Check, Search, X, Package as PackageIcon } from 'lucide-react';
+
+type PackageRow = {
+    id: number;
+    name: string;
+    description?: string | null;
+    price?: number;
+    sale_price?: number | null;
+    duration_days?: number | null;
+    duration_months?: number | null;
+    discount_months?: number | null;
+    features?: string[] | null;
+    is_active: boolean;
+};
 
 export default function Packages() {
-    const [packages, setPackages] = useState<any[]>([]);
+    const [packages, setPackages] = useState<PackageRow[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [formData, setFormData] = useState<{
@@ -29,16 +43,20 @@ export default function Packages() {
         is_active: true
     });
 
+    const loadPackages = async () => {
+        try {
+            const data = await getPackages();
+            setPackages((data || []) as PackageRow[]);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         loadPackages();
     }, []);
-
-    const loadPackages = async () => {
-        setLoading(true);
-        const data = await getPackages();
-        setPackages(data);
-        setLoading(false);
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,13 +74,13 @@ export default function Packages() {
         loadPackages();
     };
 
-    const handleEdit = (pkg: any) => {
+    const handleEdit = (pkg: PackageRow) => {
         setEditingId(pkg.id);
         setFormData({
             name: pkg.name,
             description: pkg.description || '',
-            price: pkg.price,
-            sale_price: pkg.sale_price,
+            price: pkg.price || 0,
+            sale_price: pkg.sale_price || undefined,
             duration_months: pkg.duration_months || (pkg.duration_days ? Math.round(pkg.duration_days / 30) : 1),
             discount_months: pkg.discount_months || 0,
             features: Array.isArray(pkg.features) ? pkg.features.join('\n') : '',
@@ -84,86 +102,133 @@ export default function Packages() {
         setIsModalOpen(true);
     };
 
+    const filteredPackages = packages.filter(pkg =>
+        pkg.name && pkg.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const inputSkin = "w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
+    const btnFocus = "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none";
+
     return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                        Packages
-                    </h1>
-                    <p className="text-slate-400 mt-1">Manage subscription plans and pricing</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Packages</h1>
+                    <p className="text-sm text-inksoft mt-1">Manage subscription plans and pricing</p>
+                    {!loading && (
+                        <p className="text-xs md:text-sm text-inkmute mt-1">
+                            {filteredPackages.length} of {packages.length} packages
+                        </p>
+                    )}
                 </div>
                 <button
                     onClick={resetForm}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-lg shadow-emerald-500/20"
+                    className={`inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm shrink-0 ${btnFocus}`}
                 >
-                    <Plus size={20} />
+                    <Plus className="w-4 h-4" />
                     Create Package
                 </button>
             </div>
 
+            <div className="mb-4 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-inkmute w-4 h-4 pointer-events-none" />
+                <input
+                    type="text"
+                    placeholder="Search packages..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                />
+                {searchTerm && (
+                    <button
+                        onClick={() => setSearchTerm('')}
+                        aria-label="Clear search"
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-inkmute hover:text-ink hover:bg-surface transition-colors ${btnFocus}`}
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </button>
+                )}
+            </div>
+
             {loading ? (
-                <div className="text-center py-20 text-slate-500">
-                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                    Loading...
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="bg-surface border border-line rounded-2xl p-4 md:p-5 space-y-4">
+                            <div className="h-5 w-1/2 bg-surface2 rounded animate-pulse" />
+                            <div className="h-8 w-2/3 bg-surface2 rounded animate-pulse" />
+                            <div className="space-y-2">
+                                <div className="h-3 w-full bg-surface2 rounded animate-pulse" />
+                                <div className="h-3 w-4/5 bg-surface2 rounded animate-pulse" />
+                            </div>
+                            <div className="h-9 w-full bg-surface2 rounded-xl animate-pulse" />
+                        </div>
+                    ))}
+                </div>
+            ) : filteredPackages.length === 0 ? (
+                <div className="py-16 flex flex-col items-center gap-3">
+                    <PackageIcon className="w-10 h-10 text-inkmute/40" />
+                    <p className="text-sm text-inksoft">No packages found.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {packages.map((pkg) => (
-                        <div key={pkg.id} className="bg-slate-800 rounded-xl p-6 border border-slate-700 relative group hover:border-emerald-500/30 transition">
-                             <div className="flex justify-between items-start mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {filteredPackages.map((pkg) => (
+                        <div key={pkg.id} className="bg-surface border border-line rounded-2xl p-4 md:p-5 flex flex-col hover:border-accent/40 hover:shadow-cardhover transition-all duration-200">
+                            <div className="flex justify-between items-start mb-4">
                                 <div className="space-y-1">
-                                    <h3 className="text-xl font-bold text-white">{pkg.name}</h3>
+                                    <h3 className="text-lg font-semibold text-ink">{pkg.name}</h3>
                                     <div className="flex flex-col gap-1.5">
-                                        <p className="text-slate-400 text-sm">
-                                            {pkg.duration_months ? `${pkg.duration_months} Month(s)` : `${Math.round(pkg.duration_days / 30)} Month(s)`}
-                                            <span className="text-slate-500 text-xs ml-1">({pkg.duration_days} Days)</span>
+                                        <p className="text-inksoft text-sm tabular-nums">
+                                            {pkg.duration_months ? `${pkg.duration_months} Month(s)` : `${Math.round((pkg.duration_days || 30) / 30)} Month(s)`}
+                                            <span className="text-inkmute text-xs ml-1">({pkg.duration_days} Days)</span>
                                         </p>
-                                        {pkg.discount_months > 0 && (
-                                            <span className="inline-flex items-center gap-1 self-start bg-amber-500/10 text-amber-400 text-xs font-semibold px-2 py-0.5 rounded border border-amber-500/20">
-                                                <Tag size={12} className="fill-current" />
+                                        {(pkg.discount_months ?? 0) > 0 && (
+                                            <span className="inline-flex items-center gap-1 self-start bg-warnsoft text-warn text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                <Tag className="w-3 h-3" />
                                                 {pkg.discount_months === 1 ? 'خصم شهر واحد' : pkg.discount_months === 2 ? 'خصم شهرين' : `خصم ${pkg.discount_months} شهور`}
                                             </span>
                                         )}
                                     </div>
                                 </div>
-                                <span className={`px-2 py-1 rounded-md text-xs font-bold ${pkg.is_active ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${pkg.is_active ? 'bg-accentsoft text-accentstrong' : 'bg-surface2 text-inkmute'}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${pkg.is_active ? 'bg-accent' : 'bg-inkmute/60'}`} />
                                     {pkg.is_active ? 'ACTIVE' : 'INACTIVE'}
                                 </span>
                             </div>
 
-                            <div className="mb-6">
+                            <div className="mb-5">
                                 {pkg.sale_price ? (
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-3xl font-bold text-emerald-400">${pkg.sale_price}</span>
-                                        <span className="text-lg text-slate-500 line-through">${pkg.price}</span>
+                                        <span className="text-3xl font-bold text-ink tabular-nums">${pkg.sale_price}</span>
+                                        <span className="text-lg text-inkmute line-through tabular-nums">${pkg.price}</span>
                                     </div>
                                 ) : (
-                                    <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                                    <span className="text-3xl font-bold text-ink tabular-nums">${pkg.price}</span>
                                 )}
                             </div>
 
-                            <ul className="space-y-2 mb-6 text-sm text-slate-300">
+                            <ul className="space-y-2 mb-5 text-sm text-inksoft">
                                 {Array.isArray(pkg.features) && pkg.features.map((feat: string, i: number) => (
                                     <li key={i} className="flex items-center gap-2">
-                                        <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                                        <Check className="w-4 h-4 text-accent shrink-0" />
                                         {feat}
                                     </li>
                                 ))}
                             </ul>
 
-                            <div className="flex justify-end gap-2 mt-auto border-t border-slate-700 pt-4">
+                            <div className="flex justify-end gap-1 mt-auto border-t border-line pt-4">
                                 <button
                                     onClick={() => handleEdit(pkg)}
-                                    className="p-2 text-slate-400 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-lg transition"
+                                    aria-label={`Edit ${pkg.name}`}
+                                    className={`p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors ${btnFocus}`}
                                 >
-                                    <Edit size={18} />
+                                    <Edit className="w-[18px] h-[18px]" />
                                 </button>
                                 <button
                                     onClick={() => handleDelete(pkg.id)}
-                                    className="p-2 text-rose-400 hover:text-white bg-rose-900/20 hover:bg-rose-600 rounded-lg transition"
+                                    aria-label={`Delete ${pkg.name}`}
+                                    className={`p-2 rounded-lg text-inkmute hover:text-danger hover:bg-dangersoft transition-colors ${btnFocus}`}
                                 >
-                                    <Trash2 size={18} />
+                                    <Trash2 className="w-[18px] h-[18px]" />
                                 </button>
                             </div>
                         </div>
@@ -172,111 +237,110 @@ export default function Packages() {
             )}
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-lg shadow-2xl overflow-y-auto max-h-[90vh]">
-                        <h2 className="text-xl font-bold mb-4">{editingId ? 'Edit Package' : 'New Package'}</h2>
+                <div className="fixed inset-0 bg-ink/30 z-50 flex items-center justify-center p-4">
+                    <div className="bg-surface border border-line rounded-2xl shadow-cardhover p-5 md:p-6 w-full max-w-lg overflow-y-auto max-h-[90vh]">
+                        <h2 className="text-xl font-bold text-ink mb-4">{editingId ? 'Edit Package' : 'New Package'}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm text-slate-400 mb-1">Name</label>
+                                <label className="block text-sm text-inksoft mb-1">Name</label>
                                 <input
                                     required
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500"
+                                    className={inputSkin}
                                     placeholder="e.g. Premium Monthly"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Price ($)</label>
+                                    <label className="block text-sm text-inksoft mb-1">Price ($)</label>
                                     <input
                                         type="number"
                                         required
                                         value={formData.price}
                                         onChange={e => setFormData({ ...formData, price: Number(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        className={`${inputSkin} tabular-nums`}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Sale Price (Optional) ($)</label>
+                                    <label className="block text-sm text-inksoft mb-1">Sale Price (Optional) ($)</label>
                                     <input
                                         type="number"
                                         value={formData.sale_price || ''}
                                         onChange={e => setFormData({ ...formData, sale_price: e.target.value ? Number(e.target.value) : undefined })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        className={`${inputSkin} tabular-nums`}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Duration (Months)</label>
+                                    <label className="block text-sm text-inksoft mb-1">Duration (Months)</label>
                                     <input
                                         type="number"
                                         min={1}
                                         required
                                         value={formData.duration_months}
                                         onChange={e => setFormData({ ...formData, duration_months: Number(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        className={`${inputSkin} tabular-nums`}
                                         placeholder="e.g. 12"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-slate-400 mb-1">Discount (Months)</label>
+                                    <label className="block text-sm text-inksoft mb-1">Discount (Months)</label>
                                     <input
                                         type="number"
                                         min={0}
                                         value={formData.discount_months}
                                         onChange={e => setFormData({ ...formData, discount_months: Number(e.target.value) })}
-                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 text-white"
+                                        className={`${inputSkin} tabular-nums`}
                                         placeholder="e.g. 2"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm text-slate-400 mb-1">Description</label>
+                                <label className="block text-sm text-inksoft mb-1">Description</label>
                                 <textarea
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[80px]"
+                                    className={`${inputSkin} min-h-[80px] resize-y`}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm text-slate-400 mb-1">Features (One per line)</label>
+                                <label className="block text-sm text-inksoft mb-1">Features (One per line)</label>
                                 <textarea
                                     value={formData.features}
                                     onChange={e => setFormData({ ...formData, features: e.target.value })}
-                                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 focus:outline-none focus:border-emerald-500 min-h-[100px]"
+                                    className={`${inputSkin} min-h-[100px] resize-y`}
                                     placeholder="No Ads&#10;4K Streaming&#10;Priority Support"
                                 />
                             </div>
-                            <label className="flex items-center gap-2 cursor-pointer">
+                            <label className="inline-flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={formData.is_active}
                                     onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                                    className="w-4 h-4 accent-accent focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                 />
-                                <span className="text-sm text-slate-300">Active (Visible to users)</span>
+                                <span className="text-sm text-inksoft">Active (Visible to users)</span>
                             </label>
 
-                            <div className="flex gap-3 mt-6">
+                            <div className="flex gap-3 pt-4 border-t border-line">
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 py-3 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
+                                    className={`flex-1 py-2.5 rounded-[10px] bg-surface border border-line hover:bg-surface2 text-ink text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnFocus}`}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow-lg shadow-emerald-500/20"
+                                    className={`flex-1 py-2.5 rounded-[10px] bg-accent hover:bg-accentstrong text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-[0.98] ${btnFocus}`}
                                 >
                                     Save Package
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div >
-            )
-            }
-        </div >
+                </div>
+            )}
+        </div>
     );
 }

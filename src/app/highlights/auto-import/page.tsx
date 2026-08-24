@@ -6,6 +6,10 @@ import { scrapeBeinGoal, createHighlight } from '@/app/actions';
 import { ArrowLeft, Sparkles, Send, RefreshCw, Star, Play, Check } from 'lucide-react';
 import Link from 'next/link';
 
+const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const inputSkin = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
+const fieldLabel = 'block text-xs font-semibold text-inksoft mb-1.5';
+
 export default function AutoImportHighlight() {
     const router = useRouter();
     const [pageUrl, setPageUrl] = useState('');
@@ -48,8 +52,8 @@ export default function AutoImportHighlight() {
             } else {
                 setMessage({ type: 'error', text: res.error || 'فشل جلب المعلومات من الرابط المدخل.' });
             }
-        } catch (err: any) {
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ غير متوقع أثناء الجلب.' });
+        } catch (err) {
+            setMessage({ type: 'error', text: (err instanceof Error && err.message) || 'حدث خطأ غير متوقع أثناء الجلب.' });
         } finally {
             setLoading(false);
         }
@@ -79,7 +83,7 @@ export default function AutoImportHighlight() {
 
             const res = await createHighlight({
                 title: title || scrapedData.title,
-                image: imagePayload as any,
+                image: imagePayload,
                 url: urlPayload,
                 is_premium: isPremium,
                 is_published: isPublished
@@ -94,195 +98,195 @@ export default function AutoImportHighlight() {
             } else {
                 setMessage({ type: 'error', text: `فشل الحفظ: ${res.error}` });
             }
-        } catch (err: any) {
-            setMessage({ type: 'error', text: err.message || 'حدث خطأ أثناء الحفظ.' });
+        } catch (err) {
+            setMessage({ type: 'error', text: (err instanceof Error && err.message) || 'حدث خطأ أثناء الحفظ.' });
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <div className="font-sans text-white max-w-4xl mx-auto px-4 py-8">
-            <div className="flex items-center gap-4 mb-8">
-                <Link href="/highlights" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6 md:mb-8">
+                <Link href="/highlights" className={`p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors shrink-0 ${btnBase}`} aria-label="Back to highlights">
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent flex items-center gap-2">
-                        <Sparkles className="w-6 h-6 text-purple-400" />
-                        جلب وإضافة المباريات الكاملة تلقائياً (Auto Full Matches)
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-accent shrink-0" />
+                        جلب وإضافة المباريات الكاملة تلقائياً
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1">أدخل روابط beIN Sports لتعبئة وحفظ تفاصيل المباراة الكاملة فوراً</p>
+                    <p className="text-sm text-inksoft mt-1">أدخل روابط beIN Sports لتعبئة وحفظ تفاصيل المباراة الكاملة فوراً</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Form Inputs */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h2 className="text-lg font-semibold text-slate-200">الروابط المطلوبة</h2>
-                        <form onSubmit={handleFetch} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                                    رابط صفحة beIN Sports
-                                </label>
-                                <input
-                                    type="url"
-                                    required
-                                    placeholder="https://www.beinsports.com/..."
-                                    className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-lg px-3 py-2 text-sm text-slate-300 outline-none transition"
-                                    value={pageUrl}
-                                    onChange={e => setPageUrl(e.target.value)}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1">
-                                    رابط الفيديو المباشر
-                                </label>
-                                <input
-                                    type="url"
-                                    required
-                                    placeholder="https://...mp4 or embed"
-                                    className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-lg px-3 py-2 text-sm text-slate-300 outline-none transition"
-                                    value={videoUrl}
-                                    onChange={e => setVideoUrl(e.target.value)}
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-semibold disabled:opacity-50 transition"
-                            >
-                                {loading ? (
-                                    <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الجلب...</>
-                                ) : (
-                                    <><Send className="w-4 h-4" /> جلب معلومات المباراة</>
-                                )}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                {/* Display & Save Section */}
-                <div className="lg:col-span-2 space-y-6">
-                    {message && (
-                        <div className={`p-4 rounded-xl flex items-center gap-3 border ${
-                            message.type === 'success' 
-                                ? 'bg-green-500/10 border-green-500/30 text-green-400' 
-                                : message.type === 'error'
-                                ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                                : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
-                        }`}>
-                            <span className="text-sm font-medium">{message.text}</span>
+            <div className="space-y-4 md:space-y-6">
+                {/* Fetch form */}
+                <section className="bg-surface border border-line rounded-2xl p-4 md:p-5">
+                    <h2 className="text-sm font-semibold text-ink mb-4">الروابط المطلوبة</h2>
+                    <form onSubmit={handleFetch} className="space-y-4">
+                        <div>
+                            <label className={fieldLabel}>رابط صفحة beIN Sports</label>
+                            <input
+                                type="url"
+                                required
+                                placeholder="https://www.beinsports.com/..."
+                                className={inputSkin}
+                                value={pageUrl}
+                                onChange={e => setPageUrl(e.target.value)}
+                            />
                         </div>
-                    )}
 
-                    {!scrapedData ? (
-                        <div className="text-center py-24 bg-slate-900/40 rounded-2xl border border-slate-800 border-dashed">
-                            <Play className="w-12 h-12 mx-auto mb-3 text-slate-700" />
-                            <p className="text-slate-400">لم يتم جلب أي بيانات بعد.</p>
-                            <p className="text-slate-600 text-sm mt-1">أدخل الروابط على اليمين واضغط على زر الجلب للتجربة.</p>
+                        <div>
+                            <label className={fieldLabel}>رابط الفيديو المباشر</label>
+                            <input
+                                type="url"
+                                required
+                                placeholder="https://...mp4 or embed"
+                                className={inputSkin}
+                                value={videoUrl}
+                                onChange={e => setVideoUrl(e.target.value)}
+                            />
                         </div>
-                    ) : (
-                        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-                            <h3 className="text-lg font-semibold text-slate-200">البيانات التي تم العثور عليها</h3>
 
-                            {/* Thumbnail Preview */}
-                            {scrapedData.thumbnail && (
-                                <div className="h-48 bg-slate-950 rounded-xl relative overflow-hidden flex items-center justify-center border border-slate-800">
-                                    <img src={scrapedData.thumbnail} alt="Match Thumbnail" className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                        <Play className="w-10 h-10 text-white drop-shadow-md" />
-                                    </div>
-                                </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full flex justify-center items-center gap-2 py-2 px-4 bg-accent hover:bg-accentstrong text-white rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
+                        >
+                            {loading ? (
+                                <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الجلب...</>
+                            ) : (
+                                <><Send className="w-4 h-4" /> جلب معلومات المباراة</>
                             )}
+                        </button>
+                    </form>
+                </section>
 
-                            {/* Editable Fields */}
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-400 mb-1">
-                                        عنوان المباراة (يمكن تعديله)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none transition"
-                                        value={title}
-                                        onChange={e => setTitle(e.target.value)}
-                                    />
+                {/* Message */}
+                {message && (
+                    <div className={`p-4 rounded-xl flex items-start gap-3 border ${message.type === 'success'
+                        ? 'bg-accentsoft border-accentline text-accentstrong'
+                        : message.type === 'error'
+                            ? 'bg-dangersoft border-danger/20 text-danger'
+                            : 'bg-infosoft border-info/20 text-info'
+                        }`}>
+                        {message.type === 'success' ? (
+                            <Check className="w-4 h-4 mt-0.5 shrink-0" />
+                        ) : (
+                            <Play className="w-4 h-4 mt-0.5 shrink-0" />
+                        )}
+                        <span className="text-sm font-medium">{message.text}</span>
+                    </div>
+                )}
+
+                {/* Results */}
+                {!scrapedData ? (
+                    <div className="text-center py-20 bg-surface border border-line border-dashed rounded-2xl">
+                        <Play className="w-10 h-10 mx-auto mb-3 text-inkmute/40" />
+                        <p className="text-sm text-inksoft">لم يتم جلب أي بيانات بعد.</p>
+                        <p className="text-xs text-inkmute mt-1">أدخل الروابط أعلاه واضغط على زر الجلب للتجربة.</p>
+                    </div>
+                ) : (
+                    <section className="bg-surface border border-line rounded-2xl p-4 md:p-5 space-y-5">
+                        <h2 className="text-sm font-semibold text-ink">البيانات التي تم العثور عليها</h2>
+
+                        {/* Thumbnail Preview */}
+                        {scrapedData.thumbnail && (
+                            <div className="h-48 bg-surface2 rounded-xl relative overflow-hidden flex items-center justify-center border border-line">
+                                <img src={scrapedData.thumbnail} alt="Match Thumbnail" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-ink/30 flex items-center justify-center">
+                                    <span className="p-3 rounded-full bg-surface/90 shadow-cardhover flex items-center justify-center">
+                                        <Play className="w-8 h-8 text-accent fill-current" />
+                                    </span>
                                 </div>
+                            </div>
+                        )}
 
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-400 mb-1">
-                                        الوصف المسترجع من الصفحة
-                                    </label>
-                                    <div className="w-full bg-slate-950/60 border border-slate-850 rounded-lg px-3 py-2 text-xs text-slate-500 min-h-[50px]">
-                                        {scrapedData.description || 'لا يوجد وصف متاح.'}
-                                    </div>
-                                </div>
+                        {/* Editable Fields */}
+                        <div className="space-y-4">
+                            <div>
+                                <label className={fieldLabel}>عنوان المباراة (يمكن تعديله)</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className={inputSkin}
+                                    value={title}
+                                    onChange={e => setTitle(e.target.value)}
+                                />
+                            </div>
 
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-400 mb-1">
-                                        رابط الفيديو الفعلي المستهدف
-                                    </label>
-                                    <input
-                                        type="text"
-                                        disabled
-                                        className="w-full bg-slate-950/60 border border-slate-850 rounded-lg px-3 py-2 text-xs text-slate-500 font-mono select-all"
-                                        value={scrapedData.videoUrl}
-                                    />
-                                </div>
-
-                                {/* Options */}
-                                <div className="grid grid-cols-2 gap-4 pt-2">
-                                    <div 
-                                        className="flex items-center gap-3 p-4 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer" 
-                                        onClick={() => setIsPremium(!isPremium)}
-                                    >
-                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${isPremium ? 'bg-amber-500 border-amber-500 text-black' : 'border-slate-600'}`}>
-                                            {isPremium && <Star className="w-3 h-3 fill-current" />}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-white text-xs">محتوى مميز (Premium)</div>
-                                            <div className="text-[10px] text-slate-500">للمشتركين فقط</div>
-                                        </div>
-                                    </div>
-
-                                    <div 
-                                        className="flex items-center gap-3 p-4 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer" 
-                                        onClick={() => setIsPublished(!isPublished)}
-                                    >
-                                        <div className={`w-10 h-6 rounded-full p-1 transition-colors ${isPublished ? 'bg-emerald-500' : 'bg-slate-700'}`}>
-                                            <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-white text-xs">
-                                                {isPublished ? 'نشر مباشر' : 'حفظ كمسودة'}
-                                            </div>
-                                            <div className="text-[10px] text-slate-500">{isPublished ? 'متاح بالكامل للجمهور' : 'لن يظهر في التطبيق حالياً'}</div>
-                                        </div>
-                                    </div>
+                            <div>
+                                <label className={fieldLabel}>الوصف المسترجع من الصفحة</label>
+                                <div className="w-full bg-surface2 border border-line rounded-[10px] px-3 py-2 text-xs text-inksoft min-h-[50px]">
+                                    {scrapedData.description || 'لا يوجد وصف متاح.'}
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t border-slate-800 flex justify-end">
+                            <div>
+                                <label className={fieldLabel}>رابط الفيديو الفعلي المستهدف</label>
+                                <input
+                                    type="text"
+                                    disabled
+                                    className={`w-full bg-surface2 border border-line rounded-[10px] px-3 py-2 text-xs text-inkmute font-mono select-all outline-none cursor-default`}
+                                    value={scrapedData.videoUrl}
+                                />
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                                 <button
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition"
+                                    type="button"
+                                    onClick={() => setIsPremium(!isPremium)}
+                                    className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPremium ? 'border-warn/50' : 'border-line'} ${btnBase}`}
                                 >
-                                    {saving ? (
-                                        <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الحفظ...</>
-                                    ) : (
-                                        <><Check className="w-4 h-4" /> حفظ ونشر المباراة</>
-                                    )}
+                                    <span className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors shrink-0 ${isPremium ? 'bg-warn border-warn' : 'bg-surface border-line'}`}>
+                                        {isPremium && <Star className="w-3 h-3 text-surface fill-current" />}
+                                    </span>
+                                    <span>
+                                        <span className="block text-xs font-medium text-ink">محتوى مميز (Premium)</span>
+                                        <span className="block text-[11px] text-inksoft mt-0.5">للمشتركين فقط</span>
+                                    </span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIsPublished(!isPublished)}
+                                    className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-accent/50' : 'border-line'} ${btnBase}`}
+                                >
+                                    <span className={`w-10 h-6 rounded-full p-1 transition-colors shrink-0 flex items-center ${isPublished ? 'bg-accent' : 'bg-line'}`}>
+                                        <span className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
+                                    </span>
+                                    <span>
+                                        <span className="block text-xs font-medium text-ink">{isPublished ? 'نشر مباشر' : 'حفظ كمسودة'}</span>
+                                        <span className="block text-[11px] text-inksoft mt-0.5">{isPublished ? 'متاح بالكامل للجمهور' : 'لن يظهر في التطبيق حالياً'}</span>
+                                    </span>
                                 </button>
                             </div>
                         </div>
-                    )}
-                </div>
+
+                        <div className="pt-4 border-t border-line flex justify-end gap-3">
+                            <button
+                                onClick={() => { setScrapedData(null); setMessage(null); }}
+                                className={`inline-flex items-center bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnBase}`}
+                            >
+                                إلغاء
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-6 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
+                            >
+                                {saving ? (
+                                    <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الحفظ...</>
+                                ) : (
+                                    <><Check className="w-4 h-4" /> حفظ ونشر المباراة</>
+                                )}
+                            </button>
+                        </div>
+                    </section>
+                )}
             </div>
         </div>
     );

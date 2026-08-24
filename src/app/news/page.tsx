@@ -1,13 +1,30 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getNews, deleteNews, bulkDeleteNews, duplicateNews } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Film, Calendar, Star, CheckSquare, Square, XSquare, Copy, Zap } from 'lucide-react';
+import { Plus, Trash2, Film, Calendar, Star, CheckSquare, Square, XSquare, Copy, Search, ChevronDown, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type NewsItem = Database['public']['Tables']['news']['Row'];
+
+type SortOption = 'newest' | 'oldest' | 'title';
+
+type ImageLike = { secure_url?: string; url?: string };
+
+const getImgUrl = (img: NewsItem['image']): string | null => {
+    if (!img) return null;
+    if (typeof img === 'string') return img;
+    if (Array.isArray(img)) {
+        const first = img[0] as ImageLike | undefined;
+        return (first && (first.secure_url || first.url)) || null;
+    }
+    const single = img as unknown as ImageLike;
+    return single.secure_url || single.url || null;
+};
+
+const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 
 export default function NewsPage() {
     const router = useRouter();
@@ -16,6 +33,22 @@ export default function NewsPage() {
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [selectMode, setSelectMode] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [search, setSearch] = useState('');
+    const [sortBy, setSortBy] = useState<SortOption>('newest');
+
+    const filtered = useMemo(() => {
+        let list = [...news];
+        if (search.trim()) {
+            const q = search.trim().toLowerCase();
+            list = list.filter(n => (n.title || '').toLowerCase().includes(q) || String(n.id).includes(q));
+        }
+        switch (sortBy) {
+            case 'oldest': list.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()); break;
+            case 'title': list.sort((a, b) => (a.title || '').localeCompare(b.title || '')); break;
+            default: list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        }
+        return list;
+    }, [news, search, sortBy]);
 
     const loadData = async () => {
         setLoading(true);
@@ -61,7 +94,7 @@ export default function NewsPage() {
         setSelectedIds(newSet);
     };
 
-    const selectAll = () => setSelectedIds(new Set(news.map(n => n.id)));
+    const selectAll = () => setSelectedIds(new Set(filtered.map(n => n.id)));
     const deselectAll = () => setSelectedIds(new Set());
 
     const handleBulkDelete = async () => {
@@ -83,47 +116,94 @@ export default function NewsPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans text-white">
-            <div className="flex items-center justify-between mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 font-sans">
+            {/* Header */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-rose-500 bg-clip-text text-transparent">
-                        مباريات كاملة
-                    </h1>
-                    <p className="text-slate-400 text-sm mt-1">إدارة المباريات الكاملة المسجلة.</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">مباريات كاملة</h1>
+                    <p className="text-xs md:text-sm text-inkmute mt-1 tabular-nums">
+                        {loading ? '...' : `${filtered.length} of ${news.length} items`}
+                    </p>
                 </div>
 
                 <div className="flex gap-2">
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition text-sm ${selectMode ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}
+                        className={`flex items-center gap-2 rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING} ${selectMode
+                            ? 'bg-accent border border-accent text-white hover:bg-accentstrong'
+                            : 'bg-surface border border-line hover:bg-surface2 text-ink'
+                            }`}
                     >
                         {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
-                    <Link href="/news/auto-import" className="flex items-center gap-2 bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg font-medium transition">
-                        <Zap className="w-4 h-4" />
+                    <Link
+                        href="/news/auto-import"
+                        className={`flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                    >
+                        <Zap className="w-4 h-4 text-accent" />
                         <span>جلب تلقائي</span>
                     </Link>
 
-                    <Link href="/news/new" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-4 py-2 rounded-lg font-medium transition">
+                    <Link
+                        href="/news/new"
+                        className={`flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                    >
                         <Plus className="w-4 h-4" />
                         <span>إضافة يدوي</span>
                     </Link>
                 </div>
             </div>
 
+            {/* Toolbar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search by title or ID..."
+                        className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`}
+                    />
+                    {search && (
+                        <button
+                            onClick={() => setSearch('')}
+                            aria-label="Clear search"
+                            className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded text-inkmute hover:text-ink transition-colors ${FOCUS_RING}`}
+                        >
+                            <XSquare className="w-4 h-4" />
+                        </button>
+                    )}
+                </div>
+
+                <div className="relative sm:w-48">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                        aria-label="Sort items"
+                        className={`appearance-none w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer ${FOCUS_RING}`}
+                    >
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="title">Title A → Z</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
+                </div>
+            </div>
+
             {/* Bulk Actions Bar */}
             {selectMode && (
-                <div className="flex items-center gap-3 mb-4 p-3 bg-slate-800 rounded-lg border border-slate-700">
-                    <span className="text-sm text-slate-300">{selectedIds.size} selected</span>
-                    <button onClick={selectAll} className="text-xs text-orange-400 hover:text-orange-300">Select All</button>
-                    <button onClick={deselectAll} className="text-xs text-slate-400 hover:text-slate-300">Deselect All</button>
+                <div className="flex items-center gap-3 mb-4 p-3 bg-surface border border-line rounded-2xl shadow-card">
+                    <span className="text-sm text-inksoft font-medium tabular-nums">{selectedIds.size} selected</span>
+                    <button onClick={selectAll} className={`text-xs font-medium text-accent hover:text-accentstrong transition-colors rounded ${FOCUS_RING}`}>Select All</button>
+                    <button onClick={deselectAll} className={`text-xs font-medium text-inksoft hover:text-ink transition-colors rounded ${FOCUS_RING}`}>Deselect All</button>
                     <div className="flex-1" />
                     <button
                         onClick={handleBulkDelete}
                         disabled={selectedIds.size === 0 || deleting}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-slate-700 disabled:text-slate-500 text-white px-4 py-2 rounded-lg font-medium transition text-sm"
+                        className={`flex items-center gap-2 bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`}
                     >
                         <Trash2 className="w-4 h-4" />
                         {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
@@ -132,98 +212,121 @@ export default function NewsPage() {
             )}
 
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                    {[1, 2, 3].map(i => <div key={i} className="h-64 bg-slate-900 rounded-xl"></div>)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="bg-surface border border-line rounded-2xl overflow-hidden animate-pulse">
+                            <div className="aspect-video bg-surface2" />
+                            <div className="p-4 space-y-3">
+                                <div className="h-4 bg-surface2 rounded-md w-3/4" />
+                                <div className="h-3 bg-surface2 rounded-md w-1/3" />
+                                <div className="h-3 bg-surface2 rounded-md w-1/4" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : news.length === 0 ? (
+                <div className="bg-surface border border-line rounded-2xl px-6 py-16 text-center">
+                    <Film className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                    <p className="text-sm text-inksoft mb-5">لا توجد مباريات كاملة. أضف واحدة للبدء.</p>
+                    <Link
+                        href="/news/new"
+                        className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>إضافة يدوي</span>
+                    </Link>
+                </div>
+            ) : filtered.length === 0 ? (
+                <div className="bg-surface border border-line rounded-2xl px-6 py-16 text-center">
+                    <Search className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                    <p className="text-sm text-inksoft mb-4">No matching items</p>
+                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-accent hover:text-accentstrong underline underline-offset-4 transition-colors rounded ${FOCUS_RING}`}>
+                        Clear filters
+                    </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {news.map((item) => {
-                        let imgUrl = null;
-                        if (item.image) {
-                            if (typeof item.image === 'string') imgUrl = item.image;
-                            else if (Array.isArray(item.image) && item.image[0]) imgUrl = (item.image[0] as any).secure_url || (item.image[0] as any).url;
-                            else if ((item.image as any).secure_url) imgUrl = (item.image as any).secure_url;
-                            else if ((item.image as any).url) imgUrl = (item.image as any).url;
-                        }
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {filtered.map((item) => {
+                        const imgUrl = getImgUrl(item.image);
 
                         return (
                             <div key={item.id} className="relative">
                                 {selectMode && (
                                     <button
                                         onClick={() => toggleSelect(item.id)}
-                                        className="absolute top-2 left-2 z-30 p-1 rounded bg-slate-800/80"
+                                        aria-label={selectedIds.has(item.id) ? 'Deselect item' : 'Select item'}
+                                        className={`absolute top-2 left-2 z-30 p-1.5 rounded-lg bg-surface/95 border border-line shadow-sm transition-colors ${FOCUS_RING}`}
                                     >
                                         {selectedIds.has(item.id) ? (
-                                            <CheckSquare className="w-5 h-5 text-orange-400" />
+                                            <CheckSquare className="w-5 h-5 text-accent" />
                                         ) : (
-                                            <Square className="w-5 h-5 text-slate-400" />
+                                            <Square className="w-5 h-5 text-inkmute" />
                                         )}
                                     </button>
                                 )}
                                 <Link
                                     href={selectMode ? '#' : `/news/${item.id}`}
                                     onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(item.id); } : undefined}
-                                    className={`block group bg-slate-900 border rounded-xl overflow-hidden transition relative ${!item.is_published ? 'opacity-60 grayscale-[0.5]' : ''} ${selectedIds.has(item.id)
-                                        ? 'border-orange-500 bg-orange-500/10'
-                                        : 'border-slate-800 hover:border-orange-500/50'
+                                    className={`block group bg-surface border rounded-2xl overflow-hidden shadow-card transition-all duration-200 ${!item.is_published ? 'opacity-60 grayscale-[0.5]' : ''} ${selectedIds.has(item.id)
+                                        ? 'border-accent bg-accentsoft/50'
+                                        : 'border-line hover:border-accent/40 hover:shadow-cardhover'
                                         }`}
                                 >
-                                    {item.is_premium && (
-                                        <div className="absolute top-2 right-2 z-10 bg-amber-500 text-black text-xs font-bold px-2 py-1 rounded shadow-lg flex items-center gap-1">
-                                            <Star className="w-3 h-3 fill-current" /> VIP
-                                        </div>
-                                    )}
-                                    {!item.is_published && (
-                                        <div className="absolute top-2 left-10 z-10 bg-slate-600/90 text-white text-xs font-bold px-2 py-1 rounded shadow-lg border border-slate-500">
-                                            DRAFT
-                                        </div>
-                                    )}
-
-                                    <div className="h-40 bg-slate-950 relative flex items-center justify-center overflow-hidden">
+                                    <div className="relative aspect-video bg-surface2 overflow-hidden">
                                         {imgUrl ? (
-                                            <img src={imgUrl} alt={item.title || 'News Image'} className="w-full h-full object-cover transition group-hover:scale-105" />
+                                            <img src={imgUrl} alt={item.title || 'News Image'} className="w-full h-full object-cover" />
                                         ) : (
-                                            <Film className="w-10 h-10 text-slate-700" />
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Film className="w-8 h-8 text-inkmute/50" />
+                                            </div>
+                                        )}
+
+                                        {!selectMode && (
+                                            <div className="absolute top-2 right-2 z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                <button
+                                                    onClick={(e) => handleDuplicate(e, item.id)}
+                                                    title="Duplicate as Draft"
+                                                    className={`p-2 rounded-lg bg-surface/95 border border-line text-inkmute hover:text-ink hover:bg-surface2 transition-colors ${FOCUS_RING}`}
+                                                >
+                                                    <Copy className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDelete(e, item.id)}
+                                                    title="Delete Article"
+                                                    className={`p-2 rounded-lg bg-surface/95 border border-line text-inkmute hover:text-danger hover:bg-dangersoft transition-colors ${FOCUS_RING}`}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-lg mb-2 truncate group-hover:text-orange-400 transition">{item.title || 'Untitled'}</h3>
-                                        <div className="flex items-center text-slate-500 text-xs mb-4">
-                                            <Calendar className="w-3 h-3 mr-1" />
-                                            {item.date ? new Date(item.date).toLocaleDateString() : 'No Date'}
-                                        </div>
 
-                                        <div className="flex justify-between items-center pt-4 border-t border-slate-800">
-                                            <span className="text-xs text-slate-500 font-mono">ID: {item.id}</span>
-                                            {!selectMode && (
-                                                <div className="flex gap-1">
-                                                    <button
-                                                        onClick={(e) => handleDuplicate(e, item.id)}
-                                                        className="text-orange-500 hover:bg-orange-500/10 p-2 rounded transition z-20 relative"
-                                                        title="Duplicate as Draft"
-                                                    >
-                                                        <Copy className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => handleDelete(e, item.id)}
-                                                        className="text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
-                                                        title="Delete Article"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
+                                    <div className="p-4">
+                                        <h3 className="font-semibold text-ink truncate mb-2">{item.title || 'Untitled'}</h3>
+                                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1.5 text-xs text-inkmute mb-3">
+                                            <span className="flex items-center gap-1">
+                                                <Calendar className="w-3 h-3" />
+                                                {item.date ? new Date(item.date).toLocaleDateString() : 'No Date'}
+                                            </span>
+                                            {item.is_premium && (
+                                                <span className="inline-flex items-center gap-1 bg-warnsoft text-warn px-2 py-0.5 rounded-full text-[11px] font-medium">
+                                                    <Star className="w-3 h-3 fill-current" />VIP
+                                                </span>
                                             )}
+                                            {!item.is_published && (
+                                                <span className="inline-flex items-center bg-infosoft text-info px-2 py-0.5 rounded-full text-[11px] font-medium">
+                                                    DRAFT
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="pt-3 border-t border-line">
+                                            <span className="text-xs text-inkmute font-mono tabular-nums">ID: {item.id}</span>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
                         )
                     })}
-                </div>
-            )}
-            {!loading && news.length === 0 && (
-                <div className="text-center p-10 text-slate-500 bg-slate-900/50 rounded-xl border border-slate-800">
-                    لا توجد مباريات كاملة. أضف واحدة للبدء.
                 </div>
             )}
         </div>

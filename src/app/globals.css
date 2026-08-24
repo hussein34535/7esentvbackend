@@ -1,13 +1,54 @@
 @import "tailwindcss";
 
-:root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 2, 6, 23;
-  /* Slate 950 */
-  --background-end-rgb: 2, 6, 23;
+@theme {
+    /* Soft iOS Light palette — no pure black, no pure white */
+    --color-canvas: oklch(0.96 0.006 250);
+    --color-surface: oklch(0.985 0.003 250);
+    --color-surface2: oklch(0.945 0.007 250);
+    --color-line: oklch(0.905 0.008 250);
+
+    --color-ink: oklch(0.32 0.028 255);
+    --color-inksoft: oklch(0.47 0.02 255);
+    --color-inkmute: oklch(0.585 0.015 255);
+
+    --color-accent: oklch(0.56 0.135 162);
+    --color-accentstrong: oklch(0.50 0.13 162);
+    --color-accentsoft: oklch(0.945 0.035 165);
+    --color-accentline: oklch(0.86 0.06 165);
+
+    --color-danger: oklch(0.55 0.2 27);
+    --color-dangersoft: oklch(0.95 0.03 27);
+
+    --color-warn: oklch(0.62 0.13 75);
+    --color-warnsoft: oklch(0.955 0.045 85);
+
+    --color-info: oklch(0.55 0.14 250);
+    --color-infosoft: oklch(0.95 0.03 250);
+
+    --shadow-card: 0 1px 2px rgb(30 41 59 / 0.04), 0 2px 8px rgb(30 41 59 / 0.04);
+    --shadow-cardhover: 0 2px 4px rgb(30 41 59 / 0.05), 0 8px 20px rgb(30 41 59 / 0.08);
+
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: var(--color-accentsoft);
+}
+
+/* Neutralize motion for users who prefer reduced */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

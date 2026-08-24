@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getCategory, updateCategory, getChannels } from '@/app/actions';
-import { Save, ArrowLeft, Search, Check, Tv, Hash, ImageIcon } from 'lucide-react';
+import { Save, ArrowLeft, Search, Check, Tv } from 'lucide-react';
 import Link from 'next/link';
 import { Database } from '@/types/database.types';
 import Uploader from '@/components/Uploader';
@@ -47,9 +47,9 @@ export default function EditCategory() {
 
                     // Pre-select channels
                     // The Action returns 'channels' as a JSON array of objects {id, name}
-                    const currentChannels = (catData as any).channels;
+                    const currentChannels = (catData as { channels?: Array<{ id: number | string }> }).channels;
                     if (Array.isArray(currentChannels)) {
-                        setSelectedChannelIds(currentChannels.map((c: any) => c.id));
+                        setSelectedChannelIds(currentChannels.map((c) => Number(c.id)));
                     }
                 }
             } catch (e) {
@@ -98,23 +98,23 @@ export default function EditCategory() {
         }
     };
 
-    if (loading) return <div className="p-10 text-center text-slate-500">Loading category...</div>;
+    if (loading) return <div className="p-10 text-center text-sm text-inkmute">Loading category...</div>;
 
     return (
-        <div className="font-sans">
-            <main className="max-w-4xl mx-auto px-4 py-8">
-                <div className="flex items-center gap-4 mb-8">
-                    <Link href="/categories" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
+        <div>
+            <main className="max-w-5xl mx-auto px-4 py-6 md:py-8">
+                <div className="flex items-center gap-3 mb-6 md:mb-8">
+                    <Link href="/categories" aria-label="Back to categories" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <h1 className="text-2xl font-bold">Edit Category #{categoryId}</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Edit Category #{categoryId}</h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                     {/* Left Column: Basic Info */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
-                            <h2 className="font-bold text-lg mb-4">Details</h2>
+                    <div className="lg:col-span-1 space-y-4 md:space-y-6">
+                        <section className="bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card space-y-5">
+                            <h2 className="font-semibold text-base text-ink">Details</h2>
 
                             <Uploader
                                 label="Category Icon"
@@ -122,101 +122,115 @@ export default function EditCategory() {
                                 onChange={(val) => { if (typeof val !== 'string') setImage(val); }}
                             />
 
-
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-1">Category Name</label>
+                                <label htmlFor="category-name" className="block text-sm font-medium text-ink mb-1.5">Category Name</label>
                                 <input
+                                    id="category-name"
                                     required
                                     type="text"
-                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 focus:border-blue-500 outline-none transition"
+                                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink outline-none transition-colors"
                                     value={name} onChange={e => setName(e.target.value)}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-400 mb-1">Sort Order</label>
+                                <label htmlFor="sort-order" className="block text-sm font-medium text-ink mb-1.5">Sort Order</label>
                                 <div className="relative">
-                                    <Hash className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none flex items-center justify-center">#</span>
                                     <input
+                                        id="sort-order"
                                         type="number"
-                                        className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-4 py-2 focus:border-blue-500 outline-none transition"
+                                        className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-8 pr-3 py-2 text-sm text-ink tabular-nums outline-none transition-colors"
                                         value={sortOrder} onChange={e => setSortOrder(parseInt(e.target.value) || 0)}
                                     />
                                 </div>
-                                <p className="text-xs text-slate-500 mt-1">Lower numbers appear first.</p>
+                                <p className="text-xs text-inkmute mt-1.5">Lower numbers appear first.</p>
                             </div>
 
-                            <div className="flex items-center justify-between p-3 bg-slate-950 rounded-lg border border-slate-700">
-                                <span className="font-medium text-sm">Premium Content</span>
-                                <div
+                            <div className="flex items-center justify-between p-4 bg-surface2/50 rounded-xl border border-line">
+                                <span className="font-medium text-sm text-ink">Premium Content</span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={isPremium}
+                                    aria-label="Toggle premium content"
                                     onClick={() => setIsPremium(!isPremium)}
-                                    className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors ${isPremium ? 'bg-amber-500' : 'bg-slate-700'}`}
+                                    className={`w-11 h-6 rounded-full p-0.5 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${isPremium ? 'bg-warn' : 'bg-line'}`}
                                 >
-                                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isPremium ? 'translate-x-6' : 'translate-x-0'}`} />
-                                </div>
+                                    <span className={`block w-5 h-5 rounded-full bg-surface shadow-sm transition-transform duration-200 ${isPremium ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
                             </div>
-                        </div>
+                        </section>
 
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition disabled:opacity-50"
-                        >
-                            {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
-                        </button>
+                        {/* Footer */}
+                        <div className="flex items-center justify-end gap-2">
+                            <Link href="/categories" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                                Cancel
+                            </Link>
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                            >
+                                {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Right Column: Channel Selection */}
-                    <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col h-[600px]">
+                    <section className="lg:col-span-2 bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card flex flex-col h-fit lg:h-[600px]">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="font-bold text-lg flex items-center gap-2">
-                                <Tv className="w-5 h-5 text-slate-400" /> Linked Channels
-                                <span className="bg-slate-800 text-xs px-2 py-0.5 rounded-full text-slate-300">
+                            <h2 className="font-semibold text-base text-ink flex items-center gap-2">
+                                <Tv className="w-4 h-4 text-inkmute" /> Linked Channels
+                                <span className="bg-surface2 border border-line text-xs px-2 py-0.5 rounded-full text-inksoft tabular-nums">
                                     {selectedChannelIds.length}
                                 </span>
                             </h2>
                         </div>
 
                         <div className="relative mb-4">
-                            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                             <input
                                 type="text"
                                 placeholder="Search channels to add..."
-                                className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-4 py-2 focus:border-blue-500 outline-none transition text-sm"
+                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                 value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                             />
                         </div>
 
-                        <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                            {filteredChannels.map((channel: Channel) => {
-                                const isSelected = selectedChannelIds.includes(channel.id);
-                                return (
-                                    <div
-                                        key={channel.id}
-                                        onClick={() => toggleChannel(channel.id)}
-                                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition group ${isSelected
-                                            ? 'bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20'
-                                            : 'bg-slate-950 border-slate-800 hover:border-slate-600'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-5 h-5 rounded flex items-center justify-center border transition ${isSelected ? 'bg-blue-500 border-blue-500' : 'border-slate-600 bg-slate-900'
-                                                }`}>
-                                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                        <div className="flex-1 overflow-y-auto pr-1">
+                            <div className="rounded-xl border border-line divide-y divide-line overflow-hidden">
+                                {filteredChannels.map((channel: Channel) => {
+                                    const isSelected = selectedChannelIds.includes(channel.id);
+                                    return (
+                                        <div
+                                            key={channel.id}
+                                            onClick={() => toggleChannel(channel.id)}
+                                            className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isSelected
+                                                ? 'bg-accentsoft/50'
+                                                : 'hover:bg-surface2/60'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-accent border-accent text-white' : 'border-inkmute/50 bg-surface'
+                                                    }`}>
+                                                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                                </div>
+                                                <span className={`text-sm font-medium truncate ${isSelected ? 'text-accentstrong' : 'text-ink'}`}>{channel.name}</span>
                                             </div>
-                                            <span className={`font-medium ${isSelected ? 'text-blue-200' : 'text-slate-300'}`}>{channel.name}</span>
+                                            <span className="text-xs text-inkmute tabular-nums shrink-0 ml-3">#{channel.id}</span>
                                         </div>
-                                        <span className="text-xs font-mono text-slate-600 group-hover:text-slate-500">#{channel.id}</span>
+                                    );
+                                })}
+                                {filteredChannels.length === 0 && (
+                                    <div className="text-center py-10 bg-surface2/50">
+                                        <Tv className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                                        <p className="text-sm text-inksoft">No channels found matching &quot;{searchQuery}&quot;</p>
                                     </div>
-                                );
-                            })}
-                            {filteredChannels.length === 0 && (
-                                <div className="text-center py-10 text-slate-500">
-                                    No channels found matching "{searchQuery}"
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </section>
                 </form>
             </main>
         </div>

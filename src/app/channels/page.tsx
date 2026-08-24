@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getChannelsWithCategories, deleteChannel, bulkDeleteChannels, duplicateChannel, getCategories, ChannelWithCategories } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, ArrowUpDown, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, X, ChevronDown, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Category = Database['public']['Tables']['channel_categories']['Row'];
@@ -128,13 +128,11 @@ export default function ChannelsPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 font-sans text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="flex items-center justify-between mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent">
-                        Channels
-                    </h1>
-                    <p className="text-slate-400 text-xs md:text-sm mt-1">
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Channels</h1>
+                    <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '...' : `${filtered.length} of ${channels.length} channels`}
                     </p>
                 </div>
@@ -142,13 +140,13 @@ export default function ChannelsPage() {
                 <div className="flex gap-2">
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
-                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition text-xs md:text-sm ${selectMode ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}
+                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none border ${selectMode ? 'bg-accentsoft border-accentline text-accentstrong' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
                     >
                         {selectMode ? <XSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
-                    <Link href="/channels/new" className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
+                    <Link href="/channels/new" className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Add Channel</span>
                     </Link>
@@ -158,48 +156,49 @@ export default function ChannelsPage() {
             {/* Toolbar: Search + Sort */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search by name or ID..."
-                        className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500/50 rounded-lg pl-9 pr-8 py-2 text-sm outline-none transition placeholder:text-slate-600"
+                        className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                     />
                     {search && (
                         <button
                             onClick={() => setSearch('')}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                            aria-label="Clear search"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-inkmute hover:text-ink transition-colors"
                         >
-                            <XSquare className="w-4 h-4" />
+                            <X className="w-4 h-4" />
                         </button>
                     )}
                 </div>
 
                 <div className="relative">
-                    <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
-                        className="appearance-none bg-slate-900 border border-slate-800 focus:border-emerald-500/50 rounded-lg pl-9 pr-8 py-2 text-sm outline-none transition cursor-pointer w-full sm:w-auto"
+                        className="appearance-none bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-accent/40"
                     >
                         <option value="id-asc">Default order</option>
                         <option value="name-asc">Name A → Z</option>
                         <option value="name-desc">Name Z → A</option>
                         <option value="newest">Newest first</option>
                     </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                 </div>
             </div>
 
             {/* Category filter chips */}
             {categories.length > 0 && (
-                <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-thin scrollbar-thumb-slate-700">
-                    <Tag className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
+                    <Tag className="w-3.5 h-3.5 text-inkmute shrink-0" />
                     <button
                         onClick={() => setCategoryFilter(null)}
-                        className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition ${categoryFilter === null
-                            ? 'bg-emerald-600 border-emerald-500 text-white'
-                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-200'
+                        className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === null
+                            ? 'bg-accent border-accent text-white'
+                            : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                             }`}
                     >
                         All ({channels.length})
@@ -208,9 +207,9 @@ export default function ChannelsPage() {
                         <button
                             key={cat.id}
                             onClick={() => setCategoryFilter(categoryFilter === cat.id ? null : cat.id)}
-                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition ${categoryFilter === cat.id
-                                ? 'bg-emerald-600 border-emerald-500 text-white'
-                                : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-200'
+                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === cat.id
+                                ? 'bg-accent border-accent text-white'
+                                : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                 }`}
                         >
                             {cat.name}
@@ -219,9 +218,9 @@ export default function ChannelsPage() {
                     {uncategorizedCount > 0 && (
                         <button
                             onClick={() => setCategoryFilter(categoryFilter === UNCATEGORIZED ? null : UNCATEGORIZED)}
-                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition flex items-center gap-1.5 ${categoryFilter === UNCATEGORIZED
-                                ? 'bg-red-600 border-red-500 text-white'
-                                : 'bg-slate-900 border-red-900/60 text-red-400/80 hover:border-red-500 hover:text-red-300'
+                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 flex items-center gap-1.5 ${categoryFilter === UNCATEGORIZED
+                                ? 'bg-danger border-danger text-white'
+                                : 'bg-dangersoft border-danger/20 text-danger hover:border-danger/50'
                                 }`}
                         >
                             <XSquare className="w-3 h-3" />
@@ -233,15 +232,15 @@ export default function ChannelsPage() {
 
             {/* Bulk Actions Bar */}
             {selectMode && (
-                <div className="flex items-center gap-3 mb-4 p-3 bg-slate-800 rounded-lg border border-slate-700">
-                    <span className="text-sm text-slate-300">{selectedIds.size} selected</span>
-                    <button onClick={selectAll} className="text-xs text-emerald-400 hover:text-emerald-300">Select All</button>
-                    <button onClick={deselectAll} className="text-xs text-slate-400 hover:text-slate-300">Deselect All</button>
+                <div className="flex items-center gap-3 mb-4 p-3 bg-surface rounded-2xl border border-line shadow-card">
+                    <span className="text-sm text-inksoft tabular-nums">{selectedIds.size} selected</span>
+                    <button onClick={selectAll} className="text-xs font-medium text-accentstrong hover:underline focus-visible:outline-none">Select All</button>
+                    <button onClick={deselectAll} className="text-xs font-medium text-inkmute hover:text-ink transition-colors focus-visible:outline-none">Deselect All</button>
                     <div className="flex-1" />
                     <button
                         onClick={handleBulkDelete}
                         disabled={selectedIds.size === 0 || deleting}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-slate-700 disabled:text-slate-500 text-white px-4 py-2 rounded-lg font-medium transition text-sm"
+                        className="flex items-center gap-2 bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-[10px] font-medium transition-all duration-200 active:scale-[0.98] shadow-sm text-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                     >
                         <Trash2 className="w-4 h-4" />
                         {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
@@ -250,63 +249,65 @@ export default function ChannelsPage() {
             )}
 
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6 animate-pulse">
-                    {[1, 2, 3].map(i => <div key={i} className="h-32 md:h-40 bg-slate-900 rounded-xl"></div>)}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {[1, 2, 3].map(i => <div key={i} className="h-32 md:h-40 bg-surface2 rounded-2xl animate-pulse"></div>)}
                 </div>
             ) : (
                 <>
                     {channels.length === 0 ? (
-                        <div className="p-8 md:p-10 text-center text-slate-500 bg-slate-900 rounded-xl border border-slate-800 text-sm md:text-base">
-                            No channels found.
+                        <div className="p-8 md:p-10 text-center bg-surface rounded-2xl border border-line">
+                            <Tv className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                            <p className="text-sm md:text-base text-inksoft">No channels found.</p>
                         </div>
                     ) : filtered.length === 0 ? (
-                        <div className="p-8 md:p-10 text-center bg-slate-900 rounded-xl border border-slate-800">
-                            <Tv className="w-8 h-8 text-slate-700 mx-auto mb-3" />
-                            <p className="text-slate-400 text-sm md:text-base mb-1">No matching channels</p>
-                            <button onClick={() => { setSearch(''); setCategoryFilter(null); }} className="text-emerald-400 hover:text-emerald-300 text-xs underline">
+                        <div className="p-8 md:p-10 text-center bg-surface rounded-2xl border border-line">
+                            <Tv className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                            <p className="text-inksoft text-sm md:text-base mb-2">No matching channels</p>
+                            <button onClick={() => { setSearch(''); setCategoryFilter(null); }} className="text-accentstrong hover:underline text-xs font-medium focus-visible:outline-none">
                                 Clear filters
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                             {paged.map((channel) => (
                                 <div key={channel.id} className="relative">
                                     {selectMode && (
                                         <button
                                             onClick={() => toggleSelect(channel.id)}
-                                            className="absolute top-2 left-2 z-30 p-1 rounded bg-slate-800/80"
+                                            aria-label="Toggle selection"
+                                            className="absolute top-3 left-3 z-30 p-1 rounded-md bg-surface border border-line shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                         >
                                             {selectedIds.has(channel.id) ? (
-                                                <CheckSquare className="w-5 h-5 text-emerald-400" />
+                                                <CheckSquare className="w-5 h-5 text-accent" />
                                             ) : (
-                                                <Square className="w-5 h-5 text-slate-400" />
+                                                <Square className="w-5 h-5 text-inkmute" />
                                             )}
                                         </button>
                                     )}
                                     <Link
                                         href={selectMode ? '#' : `/channels/${channel.id}`}
                                         onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(channel.id); } : undefined}
-                                        className={`group bg-slate-900 border rounded-xl p-3 md:p-5 transition relative block h-full ${selectedIds.has(channel.id)
-                                            ? 'border-emerald-500 bg-emerald-500/10'
-                                            : 'border-slate-800 hover:border-emerald-500/50'
+                                        className={`group bg-surface border rounded-2xl p-4 md:p-5 transition-all duration-200 relative block h-full ${selectedIds.has(channel.id)
+                                            ? 'border-accent bg-accentsoft/50'
+                                            : 'hover:border-accent/40 hover:shadow-cardhover'
                                             }`}
                                     >
                                         <div className="flex items-start justify-between mb-2 md:mb-4">
-                                            <div className="bg-slate-950 p-2 md:p-3 rounded-lg border border-slate-800 group-hover:border-emerald-500/30 transition">
-                                                <Tv className="w-5 h-5 md:w-6 md:h-6 text-emerald-500" />
+                                            <div className="bg-surface2 p-2 md:p-2.5 rounded-lg border border-line group-hover:border-accent/30 transition-colors">
+                                                <Tv className="w-5 h-5 md:w-6 md:h-6 text-accent" />
                                             </div>
                                             {!selectMode && (
                                                 <div className="flex gap-1">
                                                     <button
                                                         onClick={(e) => handleDuplicate(e, channel.id)}
-                                                        className="text-slate-600 hover:text-emerald-500 hover:bg-emerald-500/10 p-1.5 md:p-2 rounded transition z-20 relative"
+                                                        className="text-inkmute hover:text-ink hover:bg-surface2 p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                                         title="Duplicate"
                                                     >
                                                         <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                                     </button>
                                                     <button
                                                         onClick={(e) => handleDelete(e, channel.id)}
-                                                        className="text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-1.5 md:p-2 rounded transition z-20 relative"
+                                                        className="text-inkmute hover:text-danger hover:bg-dangersoft p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                                         title="Delete"
                                                     >
                                                         <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -315,15 +316,15 @@ export default function ChannelsPage() {
                                             )}
                                         </div>
 
-                                        <h3 className="font-bold text-sm md:text-lg mb-0.5 md:mb-1 group-hover:text-emerald-400 transition truncate">{channel.name}</h3>
-                                        <div className="flex items-center gap-2 text-[10px] md:text-xs text-slate-500 font-mono mb-2 md:mb-3">
+                                        <h3 className="font-semibold text-sm md:text-lg text-ink mb-0.5 md:mb-1 group-hover:text-accentstrong transition-colors truncate">{channel.name}</h3>
+                                        <div className="flex items-center gap-2 text-[10px] md:text-xs text-inkmute tabular-nums mb-2 md:mb-3">
                                             <Hash className="w-2.5 h-2.5 md:w-3 md:h-3" /> ID: {channel.id}
                                         </div>
 
                                         {channel.categories && channel.categories.length > 0 && (
                                             <div className="flex flex-wrap gap-1">
                                                 {channel.categories.map((cat) => (
-                                                    <span key={cat.id} className="text-[10px] md:text-[11px] bg-slate-800/80 text-slate-300 border border-slate-700 px-1.5 py-0.5 rounded-full truncate max-w-full">
+                                                    <span key={cat.id} className="text-[10px] md:text-[11px] bg-surface2 text-inksoft border border-line px-2 py-0.5 rounded-full truncate max-w-full">
                                                         {cat.name}
                                                     </span>
                                                 ))}
@@ -341,7 +342,8 @@ export default function ChannelsPage() {
                             <button
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
-                                className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:border-emerald-500/50 hover:text-white transition disabled:opacity-30 disabled:pointer-events-none"
+                                aria-label="Previous page"
+                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
@@ -349,12 +351,12 @@ export default function ChannelsPage() {
                                 .filter(pg => pg === 1 || pg === totalPages || Math.abs(pg - page) <= 1)
                                 .map((pg, idx, arr) => (
                                     <span key={pg} className="flex items-center gap-2">
-                                        {idx > 0 && arr[idx - 1] !== pg - 1 && <span className="text-slate-600 text-xs">…</span>}
+                                        {idx > 0 && arr[idx - 1] !== pg - 1 && <span className="text-inkmute text-xs">…</span>}
                                         <button
                                             onClick={() => setPage(pg)}
-                                            className={`min-w-[36px] h-9 px-2 rounded-lg text-sm font-medium transition border ${pg === page
-                                                ? 'bg-emerald-600 border-emerald-500 text-white'
-                                                : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-emerald-500/50 hover:text-white'
+                                            className={`min-w-[36px] h-9 px-2 rounded-[10px] text-sm font-medium transition-all duration-200 border focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${pg === page
+                                                ? 'bg-accent border-accent text-white shadow-sm'
+                                                : 'bg-surface border-line text-inksoft hover:bg-surface2 hover:text-ink'
                                                 }`}
                                         >
                                             {pg}
@@ -364,7 +366,8 @@ export default function ChannelsPage() {
                             <button
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
-                                className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:border-emerald-500/50 hover:text-white transition disabled:opacity-30 disabled:pointer-events-none"
+                                aria-label="Next page"
+                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 <ChevronRight className="w-4 h-4" />
                             </button>

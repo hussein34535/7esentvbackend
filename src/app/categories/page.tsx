@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getCategoriesWithCounts, updateCategoriesSortOrder, deleteCategory, bulkDeleteCategories, duplicateCategory, CategoryWithCount } from '@/app/actions';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
 import Link from 'next/link';
-import { Plus, Trash2, Hash, Star, CheckSquare, Square, XSquare, Copy, Search, ArrowUpDown, GripVertical, Save, ArrowLeftRight } from 'lucide-react';
+import { Plus, Trash2, Hash, Star, CheckSquare, Square, XSquare, Copy, Search, X, ChevronDown, GripVertical, Save, ArrowLeftRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type SortOption = 'sort-order' | 'name-asc' | 'name-desc' | 'most-channels';
@@ -155,13 +155,11 @@ export default function CategoriesPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans text-white">
-            <div className="flex items-center justify-between mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                        Categories
-                    </h1>
-                    <p className="text-slate-400 text-xs md:text-sm mt-1">
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Categories</h1>
+                    <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '...' : `${filtered.length} of ${categories.length} categories`}
                     </p>
                 </div>
@@ -171,7 +169,7 @@ export default function CategoriesPage() {
                         <button
                             onClick={() => { exitReorderMode(); setSelectMode(!selectMode); setSelectedIds(new Set()); }}
                             disabled={loading}
-                            className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition text-xs md:text-sm disabled:opacity-50 ${selectMode ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}
+                            className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none border disabled:opacity-40 disabled:pointer-events-none ${selectMode ? 'bg-accentsoft border-accentline text-accentstrong' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
                         >
                             {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
                             <span>{selectMode ? 'Cancel' : 'Select'}</span>
@@ -180,13 +178,13 @@ export default function CategoriesPage() {
                         <button
                             onClick={enterReorderMode}
                             disabled={loading || categories.length < 2}
-                            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition text-xs md:text-sm bg-slate-700 hover:bg-slate-600 disabled:opacity-50"
+                            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm bg-surface border border-line hover:bg-surface2 text-ink disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             <ArrowLeftRight className="w-4 h-4" />
                             <span>Reorder</span>
                         </button>
 
-                        <Link href="/categories/new" className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition cursor-pointer text-xs md:text-sm">
+                        <Link href="/categories/new" className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                             <Plus className="w-4 h-4" />
                             <span>Add Category</span>
                         </Link>
@@ -196,21 +194,21 @@ export default function CategoriesPage() {
 
             {/* Reorder mode bar */}
             {reorderMode && (
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 p-3 md:p-4 bg-purple-950/40 rounded-xl border border-purple-500/30">
-                    <GripVertical className="hidden sm:block w-5 h-5 text-purple-400" />
-                    <p className="text-sm text-purple-200 flex-1">Drag the cards to rearrange them. The new order is what the app will use.</p>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4 p-3 md:p-4 bg-accentsoft border border-accentline rounded-2xl">
+                    <GripVertical className="hidden sm:block w-5 h-5 text-accentstrong shrink-0" />
+                    <p className="text-sm text-inksoft flex-1">Drag the cards to rearrange them. The new order is what the app will use.</p>
                     <div className="flex gap-2">
                         <button
                             onClick={exitReorderMode}
                             disabled={savingOrder}
-                            className="px-4 py-2 rounded-lg text-sm font-medium bg-slate-700 hover:bg-slate-600 transition disabled:opacity-50"
+                            className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={saveOrder}
                             disabled={!hasOrderChanged || savingOrder}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 disabled:text-slate-500 transition"
+                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium bg-accent hover:bg-accentstrong text-white transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             <Save className="w-4 h-4" />
                             {savingOrder ? 'Saving...' : hasOrderChanged ? 'Save Order' : 'No Changes'}
@@ -221,53 +219,54 @@ export default function CategoriesPage() {
 
             {/* Toolbar: Search + Sort */}
             {!reorderMode && (
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-6">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search by name or ID..."
-                            className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500/50 rounded-lg pl-9 pr-8 py-2 text-sm outline-none transition placeholder:text-slate-600"
+                            className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                         />
                         {search && (
                             <button
                                 onClick={() => setSearch('')}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                                aria-label="Clear search"
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-inkmute hover:text-ink transition-colors"
                             >
-                                <XSquare className="w-4 h-4" />
+                                <X className="w-4 h-4" />
                             </button>
                         )}
                     </div>
 
                     <div className="relative">
-                        <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as SortOption)}
-                            className="appearance-none bg-slate-900 border border-slate-800 focus:border-purple-500/50 rounded-lg pl-9 pr-8 py-2 text-sm outline-none transition cursor-pointer w-full sm:w-auto"
+                            className="appearance-none bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-accent/40"
                         >
                             <option value="sort-order">Sort order</option>
                             <option value="name-asc">Name A → Z</option>
                             <option value="name-desc">Name Z → A</option>
                             <option value="most-channels">Most channels</option>
                         </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                     </div>
                 </div>
             )}
 
             {/* Bulk Actions Bar */}
             {selectMode && !reorderMode && (
-                <div className="flex items-center gap-3 mb-4 p-3 bg-slate-800 rounded-lg border border-slate-700">
-                    <span className="text-sm text-slate-300">{selectedIds.size} selected</span>
-                    <button onClick={selectAll} className="text-xs text-purple-400 hover:text-purple-300">Select All</button>
-                    <button onClick={deselectAll} className="text-xs text-slate-400 hover:text-slate-300">Deselect All</button>
+                <div className="flex items-center gap-3 mb-4 p-3 bg-surface rounded-2xl border border-line shadow-card">
+                    <span className="text-sm text-inksoft tabular-nums">{selectedIds.size} selected</span>
+                    <button onClick={selectAll} className="text-xs font-medium text-accentstrong hover:underline focus-visible:outline-none">Select All</button>
+                    <button onClick={deselectAll} className="text-xs font-medium text-inkmute hover:text-ink transition-colors focus-visible:outline-none">Deselect All</button>
                     <div className="flex-1" />
                     <button
                         onClick={handleBulkDelete}
                         disabled={selectedIds.size === 0 || deleting}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-500 disabled:bg-slate-700 disabled:text-slate-500 text-white px-4 py-2 rounded-lg font-medium transition text-sm"
+                        className="flex items-center gap-2 bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-[10px] font-medium transition-all duration-200 active:scale-[0.98] shadow-sm text-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                     >
                         <Trash2 className="w-4 h-4" />
                         {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
@@ -276,25 +275,26 @@ export default function CategoriesPage() {
             )}
 
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                    {[1, 2, 3].map(i => <div key={i} className="h-40 bg-slate-900 rounded-xl"></div>)}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {[1, 2, 3].map(i => <div key={i} className="h-40 bg-surface2 rounded-2xl animate-pulse"></div>)}
                 </div>
             ) : (
                 <>
                     {(reorderMode ? orderList : categories).length === 0 ? (
-                        <div className="p-10 text-center text-slate-500 bg-slate-900 rounded-xl border border-slate-800">
-                            No categories found.
+                        <div className="p-10 text-center bg-surface rounded-2xl border border-line">
+                            <Hash className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                            <p className="text-sm text-inksoft">No categories found.</p>
                         </div>
                     ) : !reorderMode && filtered.length === 0 ? (
-                        <div className="p-10 text-center bg-slate-900 rounded-xl border border-slate-800">
-                            <Hash className="w-8 h-8 text-slate-700 mx-auto mb-3" />
-                            <p className="text-slate-400 mb-1">No matching categories</p>
-                            <button onClick={() => setSearch('')} className="text-purple-400 hover:text-purple-300 text-xs underline">
+                        <div className="p-10 text-center bg-surface rounded-2xl border border-line">
+                            <Hash className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
+                            <p className="text-inksoft mb-2">No matching categories</p>
+                            <button onClick={() => setSearch('')} className="text-accentstrong hover:underline text-xs font-medium focus-visible:outline-none">
                                 Clear filters
                             </button>
                         </div>
                     ) : (
-                        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6 ${reorderMode ? 'transition-opacity' : ''}`}>
+                        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 ${reorderMode ? 'transition-opacity' : ''}`}>
                             {(reorderMode ? orderList : filtered).map((cat, index) => {
                                 const isDragging = reorderMode && dragIndex === index;
                                 const isOver = reorderMode && overIndex === index && dragIndex !== null && dragIndex !== index;
@@ -307,23 +307,24 @@ export default function CategoriesPage() {
                                         onDragOver={(e) => { if (reorderMode) e.preventDefault(); }}
                                         onDrop={(e) => { e.preventDefault(); if (dragIndex !== null) moveItem(dragIndex, index); }}
                                         onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
-                                        className={`relative ${isDragging ? 'opacity-40 scale-95' : ''} ${isOver ? 'ring-2 ring-purple-400 scale-[1.02]' : ''} ${reorderMode ? 'cursor-grab active:cursor-grabbing transition-all' : ''}`}
+                                        className={`relative transition-all duration-200 ${isDragging ? 'opacity-40 scale-95' : ''} ${isOver ? 'ring-2 ring-accent/60 scale-[1.02]' : ''} ${reorderMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
                                     >
                                         {reorderMode && (
-                                            <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-purple-950/80 backdrop-blur px-2 py-1 rounded-lg border border-purple-500/40 pointer-events-none">
-                                                <GripVertical className="w-4 h-4 text-purple-300" />
-                                                <span className="text-xs font-bold text-purple-200">{index + 1}</span>
+                                            <div className="absolute top-3 left-3 z-20 flex items-center gap-1 bg-surface px-2 py-1 rounded-lg border border-line shadow-card pointer-events-none">
+                                                <GripVertical className="w-4 h-4 text-inkmute" />
+                                                <span className="text-xs font-bold text-ink tabular-nums">{index + 1}</span>
                                             </div>
                                         )}
                                         {!reorderMode && selectMode && (
                                             <button
                                                 onClick={() => toggleSelect(cat.id)}
-                                                className="absolute top-4 left-4 z-30 p-1 rounded bg-slate-800/80"
+                                                aria-label="Toggle selection"
+                                                className="absolute top-3 left-3 z-30 p-1 rounded-md bg-surface border border-line shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                             >
                                                 {selectedIds.has(cat.id) ? (
-                                                    <CheckSquare className="w-5 h-5 text-purple-400" />
+                                                    <CheckSquare className="w-5 h-5 text-accent" />
                                                 ) : (
-                                                    <Square className="w-5 h-5 text-slate-400" />
+                                                    <Square className="w-5 h-5 text-inkmute" />
                                                 )}
                                             </button>
                                         )}
@@ -333,15 +334,15 @@ export default function CategoriesPage() {
                                                 if (reorderMode) { e.preventDefault(); return; }
                                                 if (selectMode) { e.preventDefault(); toggleSelect(cat.id); }
                                             }}
-                                            className={`group bg-slate-900 border rounded-xl p-4 md:p-6 transition relative block h-full ${reorderMode
-                                                ? 'border-purple-500/40 hover:border-purple-400'
+                                            className={`group bg-surface border rounded-2xl p-4 md:p-5 transition-all duration-200 relative block h-full ${reorderMode
+                                                ? 'border-accentline hover:border-accent/60'
                                                 : selectedIds.has(cat.id)
-                                                    ? 'border-purple-500 bg-purple-500/10'
-                                                    : 'border-slate-800 hover:border-purple-500/50'
+                                                    ? 'border-accent bg-accentsoft/50'
+                                                    : 'hover:border-accent/40 hover:shadow-cardhover'
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className="bg-slate-950 rounded-lg border border-slate-800 group-hover:border-purple-500/30 transition w-12 h-12 flex items-center justify-center overflow-hidden shrink-0 ml-12">
+                                                <div className="bg-surface2 rounded-lg border border-line group-hover:border-accent/30 transition-colors w-12 h-12 flex items-center justify-center overflow-hidden shrink-0 ml-12">
                                                     {(() => {
                                                         const img = cat.image as CloudinaryAsset | null;
                                                         const imgUrl = img?.url;
@@ -352,14 +353,14 @@ export default function CategoriesPage() {
                                                                 className="w-full h-full object-cover"
                                                             />
                                                         ) : (
-                                                            <Hash className="w-6 h-6 text-purple-500" />
+                                                            <Hash className="w-6 h-6 text-accent" />
                                                         );
                                                     })()}
                                                 </div>
                                                 {!reorderMode && (
                                                     <div className="flex gap-2 absolute top-4 right-4">
                                                         {cat.is_premium && (
-                                                            <span className="bg-amber-500/10 text-amber-500 text-xs font-bold px-2 py-1 rounded border border-amber-500/20 flex items-center gap-1">
+                                                            <span className="bg-warnsoft text-warn text-xs font-semibold px-2 py-1 rounded-full border border-warn/20 flex items-center gap-1">
                                                                 <Star className="w-3 h-3 fill-current" /> VIP
                                                             </span>
                                                         )}
@@ -367,14 +368,14 @@ export default function CategoriesPage() {
                                                             <div className="flex gap-1">
                                                                 <button
                                                                     onClick={(e) => handleDuplicate(e, cat.id)}
-                                                                    className="text-slate-600 hover:text-purple-500 hover:bg-purple-500/10 p-2 rounded transition z-20 relative"
+                                                                    className="text-inkmute hover:text-ink hover:bg-surface2 p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                                                     title="Duplicate"
                                                                 >
                                                                     <Copy className="w-4 h-4" />
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => handleDelete(e, cat.id)}
-                                                                    className="text-slate-600 hover:text-red-500 hover:bg-red-500/10 p-2 rounded transition z-20 relative"
+                                                                    className="text-inkmute hover:text-danger hover:bg-dangersoft p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                                                                     title="Delete"
                                                                 >
                                                                     <Trash2 className="w-4 h-4" />
@@ -385,12 +386,12 @@ export default function CategoriesPage() {
                                                 )}
                                             </div>
 
-                                            <h3 className="font-bold text-base md:text-xl mb-1 group-hover:text-purple-400 transition truncate">{cat.name}</h3>
-                                            <div className="flex items-center gap-3 text-xs text-slate-500">
-                                                <span className="bg-slate-800/80 border border-slate-700 px-2 py-0.5 rounded-full text-slate-300">
+                                            <h3 className="font-semibold text-base md:text-lg text-ink mb-1 group-hover:text-accentstrong transition-colors truncate">{cat.name}</h3>
+                                            <div className="flex items-center gap-3 text-xs text-inkmute">
+                                                <span className="bg-surface2 border border-line px-2 py-0.5 rounded-full text-inksoft tabular-nums">
                                                     {cat.channels_count} channel{cat.channels_count !== 1 ? 's' : ''}
                                                 </span>
-                                                <span>Order: {index + 1}</span>
+                                                <span className="tabular-nums">Order: {index + 1}</span>
                                             </div>
                                         </Link>
                                     </div>

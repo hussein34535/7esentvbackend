@@ -17,9 +17,11 @@ interface ScrapedMatch {
     champion: string;
     is_premium: boolean;
     is_published: boolean;
-    stream_link: any[];
+    stream_link: unknown[];
     status?: 'published' | 'already_published';
 }
+
+const primaryBtn = 'inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 
 export default function AutoImportMatches() {
     const router = useRouter();
@@ -49,77 +51,76 @@ export default function AutoImportMatches() {
             } else {
                 setMessage({ type: 'error', text: result.error || 'حدث خطأ غير معروف أثناء جلب ونشر المباريات.' });
             }
-        } catch (err: any) {
-            setMessage({ type: 'error', text: err.message || 'فشلت عملية الجلب والنشر.' });
+        } catch (err) {
+            setMessage({ type: 'error', text: err instanceof Error ? err.message : 'فشلت عملية الجلب والنشر.' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="font-sans text-white max-w-5xl mx-auto px-4 py-8" dir="rtl">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
-                    <Link href="/" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition flex-shrink-0">
+        <div className="font-sans max-w-5xl mx-auto px-4 py-6 md:py-8" dir="rtl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8">
+                <div className="flex items-start gap-3">
+                    <Link href="/" aria-label="رجوع" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5 rotate-180" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent flex items-center gap-2">
-                            <Sparkles className="w-6 h-6 text-purple-400" />
+                        <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-inkmute" />
                             الجلب والنشر التلقائي للمباريات
                         </h1>
-                        <p className="text-slate-400 text-sm mt-1">جلب مباريات اليوم ونشرها مباشرة بضغطة زر واحدة مع منع التكرار</p>
+                        <p className="text-sm text-inksoft mt-1">جلب مباريات اليوم ونشرها مباشرة بضغطة زر واحدة مع منع التكرار</p>
                     </div>
                 </div>
 
-                <div className="flex gap-3">
-                    <button
-                        onClick={handleFetchAndPublish}
-                        disabled={loading}
-                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 disabled:opacity-50 px-6 py-3 rounded-xl font-medium transition shadow-lg shadow-purple-950/20"
-                    >
-                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                        {loading ? 'جاري الجلب والنشر والتأكد من التكرار...' : 'جلب ونشر مباريات اليوم'}
-                    </button>
-                </div>
+                <button
+                    onClick={handleFetchAndPublish}
+                    disabled={loading}
+                    className={primaryBtn + " shrink-0"}
+                >
+                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    {loading ? 'جاري الجلب والنشر والتأكد من التكرار...' : 'جلب ونشر مباريات اليوم'}
+                </button>
             </div>
 
             {message && (
-                <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 border ${
+                <div className={`mb-6 p-4 rounded-2xl border flex items-center gap-3 ${
                     message.type === 'success' 
-                        ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                        ? 'bg-accentsoft border-accentline text-accentstrong' 
                         : message.type === 'error'
-                        ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                        : 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                        ? 'bg-dangersoft border-danger/20 text-danger'
+                        : 'bg-infosoft border-info/20 text-info'
                 }`}>
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <AlertCircle className="w-5 h-5 shrink-0" />
                     <span className="text-sm font-medium">{message.text}</span>
                 </div>
             )}
 
             {matches.length === 0 && !loading && (
-                <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-slate-800 border-dashed">
-                    <p className="text-slate-400 text-lg">لا يوجد مباريات معروضة حالياً.</p>
-                    <p className="text-slate-600 text-sm mt-1">اضغط على زر "جلب ونشر مباريات اليوم" للبدء بالعملية في خطوة واحدة.</p>
+                <div className="text-center py-16 bg-surface border border-line border-dashed rounded-2xl">
+                    <Sparkles className="w-10 h-10 text-inkmute/40 mx-auto" />
+                    <p className="text-sm text-inksoft mt-3">لا يوجد مباريات معروضة حالياً.</p>
+                    <p className="text-xs text-inkmute mt-1">اضغط على زر &quot;جلب ونشر مباريات اليوم&quot; للبدء بالعملية في خطوة واحدة.</p>
                 </div>
             )}
 
             {matches.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                     {matches.map((match, idx) => {
                         const isAlreadyPublished = match.status === 'already_published';
                         return (
                             <div 
                                 key={idx} 
-                                className={`bg-slate-900 border rounded-2xl overflow-hidden transition-all ${
+                                className={`rounded-2xl border p-4 md:p-5 shadow-card transition-all duration-200 ${
                                     isAlreadyPublished 
-                                        ? 'border-slate-800 bg-slate-900/40 opacity-80' 
-                                        : 'border-emerald-500/35 bg-emerald-500/5'
+                                        ? 'bg-surface border-line opacity-90' 
+                                        : 'bg-surface border-accent/40 hover:border-accent hover:shadow-cardhover'
                                 }`}
                             >
-                                <div className="p-5 flex flex-col h-full">
-                                    <div className="text-center mb-3 pb-3 border-b border-slate-800">
-                                        <span className="text-xs font-semibold text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full">
+                                <div className="flex flex-col h-full">
+                                    <div className="text-center mb-3 pb-3 border-b border-line">
+                                        <span className="text-xs font-medium text-inksoft bg-surface2 px-2.5 py-1 rounded-full">
                                             {match.champion || 'بطولة غير محددة'}
                                         </span>
                                     </div>
@@ -129,48 +130,48 @@ export default function AutoImportMatches() {
                                             {match.logo_a ? (
                                                 <img src={match.logo_a} alt={match.team_a} className="w-12 h-12 object-contain" />
                                             ) : (
-                                                <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-400">
+                                                <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center font-semibold text-inkmute">
                                                     {match.team_a.charAt(0)}
                                                 </div>
                                             )}
-                                            <p className="text-sm font-bold text-slate-200 truncate w-full" title={match.team_a}>
+                                            <p className="text-sm font-semibold text-ink truncate w-full" title={match.team_a}>
                                                 {match.team_a}
                                             </p>
                                         </div>
 
                                         <div className="text-center px-1">
-                                            <p className="text-xl font-mono font-bold text-slate-100">{match.match_time.slice(0, 5)}</p>
-                                            <p className="text-[10px] text-slate-500 uppercase">مكة المكرمة</p>
+                                            <p className="text-lg font-bold text-ink tabular-nums">{match.match_time.slice(0, 5)}</p>
+                                            <p className="text-[10px] text-inkmute">مكة المكرمة</p>
                                         </div>
 
                                         <div className="flex flex-col items-center gap-2 w-[40%]">
                                             {match.logo_b ? (
                                                 <img src={match.logo_b} alt={match.team_b} className="w-12 h-12 object-contain" />
                                             ) : (
-                                                <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center font-bold text-slate-400">
+                                                <div className="w-12 h-12 rounded-full bg-surface2 flex items-center justify-center font-semibold text-inkmute">
                                                     {match.team_b.charAt(0)}
                                                 </div>
                                             )}
-                                            <p className="text-sm font-bold text-slate-200 truncate w-full" title={match.team_b}>
+                                            <p className="text-sm font-semibold text-ink truncate w-full" title={match.team_b}>
                                                 {match.team_b}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2 mt-auto">
-                                        <div className="text-center text-xs text-slate-400 bg-slate-950/40 rounded-lg py-1 border border-slate-800">
+                                        <div className="text-center text-xs text-inksoft bg-surface2 rounded-[10px] py-1.5 px-2">
                                             {match.channel || 'القناة غير محددة'} {match.commentator ? `| ${match.commentator}` : ''}
                                         </div>
 
-                                        <div className="pt-2">
+                                        <div className="pt-1">
                                             {isAlreadyPublished ? (
-                                                <div className="w-full py-2 bg-slate-800/80 text-slate-400 border border-slate-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
-                                                    <Check className="w-4 h-4 text-slate-500" />
+                                                <div className="w-full py-2 bg-surface2 text-inkmute rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
+                                                    <Check className="w-4 h-4" />
                                                     منشورة بالفعل
                                                 </div>
                                             ) : (
-                                                <div className="w-full py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
-                                                    <Check className="w-4 h-4 text-emerald-400" />
+                                                <div className="w-full py-2 bg-accentsoft text-accentstrong rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
+                                                    <Check className="w-4 h-4" />
                                                     تم النشر بنجاح
                                                 </div>
                                             )}

@@ -3,10 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createNews } from '@/app/actions';
-import { Save, ArrowLeft, Newspaper, Link as LinkIcon, Star } from 'lucide-react';
+import { Save, ArrowLeft, Link as LinkIcon, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
+
+const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const INPUT_SKIN = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-4 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`;
+const BTN_PRIMARY = `inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-5 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`;
+const BTN_SECONDARY = `inline-flex items-center justify-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`;
 
 export default function NewNews() {
     const router = useRouter();
@@ -47,82 +52,116 @@ export default function NewNews() {
     };
 
     return (
-        <div className="font-sans">
-            <main className="max-w-xl mx-auto px-4 py-8">
-                <div className="flex items-center gap-4 mb-8">
-                    <Link href="/news" className="p-2 bg-slate-800 rounded-full hover:bg-slate-700 transition">
-                        <ArrowLeft className="w-5 h-5" />
-                    </Link>
-                    <h1 className="text-2xl font-bold">Add New Article</h1>
+        <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 md:py-8 font-sans">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6 md:mb-8">
+                <Link
+                    href="/news"
+                    aria-label="Back to full matches"
+                    className={`p-2 rounded-lg bg-surface border border-line text-inksoft hover:text-ink hover:bg-surface2 transition-colors shrink-0 ${FOCUS_RING}`}
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </Link>
+                <div>
+                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Add New Article</h1>
+                    <p className="text-sm text-inksoft mt-1">Full-match replay details.</p>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
-                    <div className="space-y-4">
-                        {/* Image Upload */}
-                        <Uploader label="Article Image" value={image} onChange={(val) => { if (typeof val !== 'string') setImage(val); }} />
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                {/* Content */}
+                <section className="bg-surface border border-line rounded-2xl p-4 md:p-6 shadow-card space-y-5">
+                    <h2 className="text-sm font-semibold text-ink">Content</h2>
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-1">Headline</label>
+                    <Uploader label="Article Image" value={image} onChange={(val) => { if (typeof val !== 'string') setImage(val); }} />
+
+                    <div>
+                        <label htmlFor="headline" className="block text-sm font-medium text-ink mb-1.5">Headline</label>
+                        <input
+                            id="headline"
+                            required
+                            type="text"
+                            placeholder="e.g. Transfer Rumors..."
+                            className={INPUT_SKIN}
+                            value={title} onChange={e => setTitle(e.target.value)}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="source-url" className="block text-sm font-medium text-ink mb-1.5">Source / Link URL</label>
+                        <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                             <input
+                                id="source-url"
                                 required
-                                type="text"
-                                placeholder="e.g. Transfer Rumors..."
-                                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 focus:border-orange-500 outline-none transition"
-                                value={title} onChange={e => setTitle(e.target.value)}
+                                type="url"
+                                placeholder="https://test.com/article"
+                                className={`${INPUT_SKIN} !pl-9`}
+                                value={url} onChange={e => setUrl(e.target.value)}
                             />
                         </div>
+                    </div>
+                </section>
 
+                {/* Visibility */}
+                <section className="bg-surface border border-line rounded-2xl p-4 md:p-6 shadow-card space-y-3">
+                    <h2 className="text-sm font-semibold text-ink mb-1">Visibility</h2>
+
+                    <button
+                        type="button"
+                        onClick={() => setIsPremium(!isPremium)}
+                        aria-pressed={isPremium}
+                        className={`w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPremium
+                            ? 'border-accent bg-accentsoft/50'
+                            : 'bg-surface2 border-line hover:border-inkmute/40'
+                            }`}
+                    >
+                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors shrink-0 ${isPremium ? 'bg-accent border-accent' : 'border-inkmute/60 bg-surface'}`}>
+                            {isPremium && <Star className="w-3 h-3 text-white fill-current" />}
+                        </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-400 mb-1">Source / Link URL</label>
-                            <div className="relative">
-                                <LinkIcon className="absolute left-3 top-2.5 w-5 h-5 text-slate-500" />
-                                <input
-                                    required
-                                    type="url"
-                                    placeholder="https://test.com/article"
-                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-10 pr-4 py-2 focus:border-orange-500 outline-none transition font-mono text-sm"
-                                    value={url} onChange={e => setUrl(e.target.value)}
-                                />
-                            </div>
+                            <div className="text-sm font-medium text-ink">Premium</div>
+                            <div className="text-xs text-inksoft">Subscribers only</div>
                         </div>
+                    </button>
 
-                        {/* Premium Toggle */}
-                        <div className="pt-2 grid grid-cols-2 gap-4">
-                            <div className="flex items-center gap-3 p-4 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer" onClick={() => setIsPremium(!isPremium)}>
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${isPremium ? 'bg-amber-500 border-amber-500' : 'border-slate-600'}`}>
-                                    {isPremium && <Star className="w-3 h-3 text-black fill-current" />}
-                                </div>
-                                <div>
-                                    <div className="font-medium text-white flex items-center gap-2">Premium</div>
-                                    <div className="text-xs text-slate-500">Subscribers only</div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3 p-4 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer" onClick={() => setIsPublished(!isPublished)}>
-                                <div className={`w-10 h-6 rounded-full p-1 transition-colors ${isPublished ? 'bg-emerald-500' : 'bg-slate-700'}`}>
-                                    <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
-                                </div>
-                                <div>
-                                    <div className="font-medium text-white flex items-center gap-2">
-                                        {isPublished ? 'Published' : 'Draft'}
-                                    </div>
-                                    <div className="text-xs text-slate-500">{isPublished ? 'Visible to all' : 'Hidden'}</div>
-                                </div>
-                            </div>
+                    <button
+                        type="button"
+                        onClick={() => setIsPublished(!isPublished)}
+                        aria-pressed={isPublished}
+                        className={`w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPublished
+                            ? 'border-accent bg-accentsoft/50'
+                            : 'bg-surface2 border-line hover:border-inkmute/40'
+                            }`}
+                    >
+                        <div className={`w-10 h-6 rounded-full p-0.5 transition-colors shrink-0 ${isPublished ? 'bg-accent' : 'bg-inkmute/40'}`}>
+                            <div className={`w-5 h-5 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
                         </div>
-                    </div>
+                        <div>
+                            <div className="text-sm font-medium text-ink">{isPublished ? 'Published' : 'Draft'}</div>
+                            <div className="text-xs text-inksoft">{isPublished ? 'Visible to all' : 'Hidden'}</div>
+                        </div>
+                    </button>
+                </section>
 
-                    <div className="pt-4 flex justify-end">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 rounded-lg font-medium transition disabled:opacity-50"
-                        >
-                            {loading ? 'Saving...' : <><Save className="w-4 h-4" /> Create Article</>}
-                        </button>
-                    </div>
-                </form>
-            </main>
-        </div>
+                {/* Footer */}
+                <div className="flex items-center justify-end gap-2 pt-1">
+                    <Link href="/news" className={BTN_SECONDARY}>Cancel</Link>
+                    <button type="submit" disabled={loading} className={`${BTN_PRIMARY} min-w-[150px]`}>
+                        {loading ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4" />
+                                Create Article
+                            </>
+                        )}
+                    </button>
+                </div>
+            </form>
+        </main>
     );
 }
