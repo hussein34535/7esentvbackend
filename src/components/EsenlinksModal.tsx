@@ -260,7 +260,7 @@ export default function EsenlinksModal({ isOpen, onClose, onAddStreams }: Esenli
                         <button
                             onClick={handleImport}
                             disabled={selectedLinkIds.size === 0}
-                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium bg-accent hover:bg-accentstrong text-white transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium btn-gradient-red text-white transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                         >
                             <Link2 className="w-4 h-4" />
                             استيراد الروابط المحددة

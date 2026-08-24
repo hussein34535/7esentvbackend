@@ -120,7 +120,7 @@ export default function NewsPage() {
             {/* Header */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">مباريات كاملة</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">مباريات كاملة</h1>
                     <p className="text-xs md:text-sm text-inkmute mt-1 tabular-nums">
                         {loading ? '...' : `${filtered.length} of ${news.length} items`}
                     </p>
@@ -140,15 +140,15 @@ export default function NewsPage() {
 
                     <Link
                         href="/news/auto-import"
-                        className={`flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                        className={`flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
                     >
-                        <Zap className="w-4 h-4 text-accent" />
+                        <Zap className="w-4 h-4" />
                         <span>جلب تلقائي</span>
                     </Link>
 
                     <Link
                         href="/news/new"
-                        className={`flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                        className={`flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
                     >
                         <Plus className="w-4 h-4" />
                         <span>إضافة يدوي</span>
@@ -230,7 +230,7 @@ export default function NewsPage() {
                     <p className="text-sm text-inksoft mb-5">لا توجد مباريات كاملة. أضف واحدة للبدء.</p>
                     <Link
                         href="/news/new"
-                        className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                        className={`inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
                     >
                         <Plus className="w-4 h-4" />
                         <span>إضافة يدوي</span>

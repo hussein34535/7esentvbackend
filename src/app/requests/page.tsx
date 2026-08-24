@@ -80,7 +80,7 @@ export default function RequestsPage() {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="mb-6 md:mb-8">
-                <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Payment Requests</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Payment Requests</h1>
                 {!loading && (
                     <p className="text-xs md:text-sm text-inkmute mt-1">
                         {filteredRequests.length} of {requests.length} requests

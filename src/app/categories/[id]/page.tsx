@@ -107,7 +107,7 @@ export default function EditCategory() {
                     <Link href="/categories" aria-label="Back to categories" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Edit Category #{categoryId}</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Edit Category #{categoryId}</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
@@ -170,7 +170,7 @@ export default function EditCategory() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                                className="flex items-center gap-2 btn-gradient-red text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
                             </button>

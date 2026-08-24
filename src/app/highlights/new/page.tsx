@@ -103,7 +103,7 @@ export default function NewHighlight() {
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Add New Highlight</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Add New Highlight</h1>
                     <p className="text-sm text-inksoft mt-1">Fill in the details or auto-fetch from beIN Sports</p>
                 </div>
             </div>
@@ -262,7 +262,7 @@ export default function NewHighlight() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-6 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
+                        className={`inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-6 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
                     >
                         {loading ? 'Saving...' : <><Save className="w-4 h-4" /> Create Highlight</>}
                     </button>

@@ -190,7 +190,7 @@ export default function Users() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8" dir="rtl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">
                         إدارة المستخدمين والاشتراكات
                     </h1>
                     <p className="text-sm text-inksoft mt-1">إدارة حسابات المستخدمين، باقاتهم وفترات اشتراكهم</p>
@@ -202,7 +202,7 @@ export default function Users() {
                 </div>
                 <button
                     onClick={() => setIsAdding(true)}
-                    className={`inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm shrink-0 ${btnFocus}`}
+                    className={`inline-flex items-center justify-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm shrink-0 ${btnFocus}`}
                 >
                     <Plus className="w-4 h-4" />
                     إضافة اشتراك يدوي
@@ -423,7 +423,7 @@ export default function Users() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className={`flex-1 py-2.5 rounded-[10px] bg-accent hover:bg-accentstrong text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
+                                    className={`flex-1 py-2.5 rounded-[10px] btn-gradient-red text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
                                 >
                                     {processing ? 'جاري المعالجة...' : 'إضافة الاشتراك'}
                                 </button>
@@ -546,7 +546,7 @@ export default function Users() {
                                 <button
                                     type="submit"
                                     disabled={savingEdit}
-                                    className={`flex-1 py-2.5 rounded-[10px] bg-accent hover:bg-accentstrong text-white font-semibold text-sm shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
+                                    className={`flex-1 py-2.5 rounded-[10px] btn-gradient-red text-white font-semibold text-sm shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
                                 >
                                     {savingEdit ? 'جاري الحفظ...' : 'حفظ التعديلات'}
                                 </button>

@@ -10,7 +10,7 @@ import { CloudinaryAsset } from '@/types/cloudinary.types';
 
 const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 const INPUT_SKIN = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-4 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`;
-const BTN_PRIMARY = `inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-5 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`;
+const BTN_PRIMARY = `inline-flex items-center justify-center gap-2 btn-gradient-red text-white rounded-[10px] px-5 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`;
 const BTN_SECONDARY = `inline-flex items-center justify-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`;
 const OPTION_CARD = (active: boolean) =>
     `w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${active
@@ -112,7 +112,7 @@ export default function EditNews() {
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Edit Article <span className="tabular-nums">#{newsId}</span></h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Edit Article <span className="tabular-nums">#{newsId}</span></h1>
                     <p className="text-sm text-inksoft mt-1">Full-match replay details.</p>
                 </div>
             </div>

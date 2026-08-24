@@ -131,7 +131,7 @@ export default function ChannelsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="flex items-center justify-between mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Channels</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Channels</h1>
                     <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '...' : `${filtered.length} of ${channels.length} channels`}
                     </p>
@@ -146,7 +146,7 @@ export default function ChannelsPage() {
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
-                    <Link href="/channels/new" className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                    <Link href="/channels/new" className="flex items-center gap-2 btn-gradient-red text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Add Channel</span>
                     </Link>

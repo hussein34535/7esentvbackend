@@ -44,7 +44,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="bg-surface border border-line rounded-2xl shadow-cardhover p-6 md:p-8">
-                    <h1 className="text-lg font-semibold text-ink">Admin Dashboard Login</h1>
+                    <h1 className="text-lg font-semibold text-gradient-brand">Admin Dashboard Login</h1>
                     <p className="text-sm text-inksoft mt-1">Secure Admin Access Only</p>
 
                     <form onSubmit={handleSubmit} className="mt-6 space-y-5">
@@ -94,7 +94,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                            className="w-full btn-gradient-red text-white rounded-[10px] px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                         >
                             {loading ? 'Signing in...' : 'Login'}
                         </button>

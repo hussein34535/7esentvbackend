@@ -12,7 +12,7 @@ type SortOption = 'newest' | 'oldest' | 'title';
 type HighlightItem = Database['public']['Tables']['highlights']['Row'];
 
 const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const primaryBtn = `flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`;
+const primaryBtn = `flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`;
 const secondaryBtn = `flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnBase}`;
 
 export default function HighlightsPage() {
@@ -111,7 +111,7 @@ export default function HighlightsPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Highlights</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Highlights</h1>
                     <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '…' : `${filtered.length} of ${highlights.length} items`}
                     </p>
@@ -128,7 +128,7 @@ export default function HighlightsPage() {
                         <span>{selectMode ? 'إلغاء' : 'تحديد'}</span>
                     </button>
 
-                    <Link href="/highlights/auto-import" className={secondaryBtn}>
+                    <Link href="/highlights/auto-import" className="flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm">
                         <Sparkles className="w-4 h-4" />
                         <span>جلب تلقائي</span>
                     </Link>

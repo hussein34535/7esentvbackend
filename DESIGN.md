@@ -102,9 +102,16 @@ Lucide only. Sizes: `w-4 h-4` inline, `w-5 h-5` nav/buttons, `w-6 h-6` feature i
 
 Page paddings per scaffold. Section gaps `mb-6 md:mb-8`. Grid gaps `gap-4 md:gap-6`. Cards breathe: `p-4 md:p-5`. Don't cram toolbars against headers — `mb-4`.
 
+## Brand gradient vocabulary (owner-mandated, from 7esen app hero)
+
+- `.text-gradient-brand` — pink→red gradient text for page `<h1>` titles and the sidebar logo.
+- `.btn-gradient-red` — red gradient + soft glow for PRIMARY actions (Add/Save/Create).
+- `.btn-gradient-violet` — violet→pink gradient + glow for FETCH/IMPORT actions (جلب تلقائي, scrape).
+- These classes live in globals.css; pair with `text-white rounded-[10px] px-4 py-2 ...` as usual.
+
 ## Bans (hard)
 
-Gradient text · side-stripe colored borders · glassmorphism cards (frosted blur allowed ONLY on sticky mobile header) · pure `#000`/`#fff` backgrounds · neon glow · identical repeated hero cards · `border` + `shadow-lg`+ combos · radius > 16px on cards · custom scrollbars · new dependencies (lucide-react + existing stack only).
+Side-stripe colored borders · glassmorphism cards (frosted blur allowed ONLY on sticky mobile header) · pure `#000` body backgrounds in light mode · neon glow outside the sanctioned gradient buttons · identical repeated hero cards · `border` + `shadow-lg`+ combos · radius > 16px on cards · custom scrollbars · new dependencies (lucide-react + existing stack only).
 
 ## Language
 

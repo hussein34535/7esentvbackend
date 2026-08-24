@@ -112,7 +112,7 @@ export default function AutoImportGoal() {
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-accent" />
                         جلب وإضافة الأهداف تلقائياً (Auto Goals)
                     </h1>
@@ -158,7 +158,7 @@ export default function AutoImportGoal() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full sm:w-auto flex justify-center items-center gap-2 bg-accent hover:bg-accentstrong disabled:opacity-40 disabled:pointer-events-none text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                            className="w-full sm:w-auto flex justify-center items-center gap-2 btn-gradient-violet disabled:opacity-40 disabled:pointer-events-none text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             {loading ? (
                                 <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الجلب...</>
@@ -288,7 +288,7 @@ export default function AutoImportGoal() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="flex items-center gap-2 bg-accent hover:bg-accentstrong disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                className="flex items-center gap-2 btn-gradient-red disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                             >
                                 {saving ? (
                                     <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الحفظ...</>

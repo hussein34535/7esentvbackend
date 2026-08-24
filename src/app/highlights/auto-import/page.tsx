@@ -113,7 +113,7 @@ export default function AutoImportHighlight() {
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-accent shrink-0" />
                         جلب وإضافة المباريات الكاملة تلقائياً
                     </h1>
@@ -153,7 +153,7 @@ export default function AutoImportHighlight() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full flex justify-center items-center gap-2 py-2 px-4 bg-accent hover:bg-accentstrong text-white rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
+                            className={`w-full flex justify-center items-center gap-2 py-2 px-4 btn-gradient-violet text-white rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
                         >
                             {loading ? (
                                 <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الجلب...</>
@@ -276,7 +276,7 @@ export default function AutoImportHighlight() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-6 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
+                                className={`inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-6 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
                             >
                                 {saving ? (
                                     <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الحفظ...</>

@@ -13,7 +13,7 @@ import EsenlinksModal from '@/components/EsenlinksModal';
 const inputClass = 'w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors';
 const streamInputClass = 'w-full bg-surface border border-line focus:border-accent/60 focus:bg-surface2 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors';
 const miniBtn = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const primaryBtn = 'inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const primaryBtn = 'inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 const secondaryBtn = 'inline-flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 const sectionCard = 'bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card space-y-4';
 const sectionTitle = 'text-sm font-semibold text-ink';
@@ -114,7 +114,7 @@ export default function NewMatch() {
                     <Link href="/" aria-label="Back to matches" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Add New Match</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Add New Match</h1>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">

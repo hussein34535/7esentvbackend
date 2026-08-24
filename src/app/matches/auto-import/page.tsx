@@ -21,7 +21,7 @@ interface ScrapedMatch {
     status?: 'published' | 'already_published';
 }
 
-const primaryBtn = 'inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const primaryBtn = 'inline-flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 
 export default function AutoImportMatches() {
     const router = useRouter();
@@ -66,7 +66,7 @@ export default function AutoImportMatches() {
                         <ArrowLeft className="w-5 h-5 rotate-180" />
                     </Link>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                        <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-inkmute" />
                             الجلب والنشر التلقائي للمباريات
                         </h1>

@@ -64,7 +64,7 @@ export default function NewGoal() {
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Add New Goal</h1>
+                        <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Add New Goal</h1>
                         <p className="text-sm text-inksoft mt-0.5">Create a new goal highlight clip.</p>
                     </div>
                 </div>
@@ -186,7 +186,7 @@ export default function NewGoal() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 bg-accent hover:bg-accentstrong disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                            className="flex items-center gap-2 btn-gradient-red disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             {loading ? 'Saving...' : <><Save className="w-4 h-4" /> Create Goal</>}
                         </button>

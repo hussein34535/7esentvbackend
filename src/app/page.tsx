@@ -137,7 +137,7 @@ export default function Home() {
   const secondaryBtn =
     'inline-flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
   const primaryBtn =
-    'inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+    'inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
   const iconBtn =
     'p-2 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 
@@ -145,7 +145,7 @@ export default function Home() {
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6 md:mb-8">
         <div className="min-w-0">
-          <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Matches</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Matches</h1>
           {!loading && (
             <p className="text-xs md:text-sm text-inkmute mt-1 tabular-nums">
               {filteredMatches.length} of {matches.length} matches
@@ -162,7 +162,7 @@ export default function Home() {
             <span>{selectMode ? 'إلغاء' : 'تحديد'}</span>
           </button>
 
-          <Link href="/matches/auto-import" className={secondaryBtn}>
+          <Link href="/matches/auto-import" className="flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm">
             <Sparkles className="w-4 h-4" />
             <span>جلب تلقائي</span>
           </Link>

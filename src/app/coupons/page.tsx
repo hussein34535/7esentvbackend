@@ -116,14 +116,14 @@ export default function Coupons() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Promo Codes</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Promo Codes</h1>
                     <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '…' : `${filtered.length} of ${coupons.length} codes`}
                     </p>
                 </div>
                 <button
                     onClick={resetForm}
-                    className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${btnBase}`}
+                    className={`inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${btnBase}`}
                 >
                     <Plus className="w-4 h-4" />
                     Create Code
@@ -327,7 +327,7 @@ export default function Coupons() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className={`flex-1 py-2.5 rounded-[10px] bg-accent hover:bg-accentstrong text-white text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${btnBase}`}
+                                    className={`flex-1 py-2.5 rounded-[10px] btn-gradient-red text-white text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${btnBase}`}
                                 >
                                     Save Coupon
                                 </button>

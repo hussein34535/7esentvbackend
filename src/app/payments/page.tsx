@@ -103,7 +103,7 @@ export default function Payments() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Payment Methods</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Payment Methods</h1>
                     <p className="text-sm text-inksoft mt-1">Manage payment options for users</p>
                     {!loading && (
                         <p className="text-xs md:text-sm text-inkmute mt-1">
@@ -113,7 +113,7 @@ export default function Payments() {
                 </div>
                 <button
                     onClick={resetForm}
-                    className={`inline-flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm shrink-0 ${btnFocus}`}
+                    className={`inline-flex items-center justify-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm shrink-0 ${btnFocus}`}
                 >
                     <Plus className="w-4 h-4" />
                     Add Method
@@ -266,7 +266,7 @@ export default function Payments() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className={`flex-1 py-2.5 rounded-[10px] bg-accent hover:bg-accentstrong text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-[0.98] ${btnFocus}`}
+                                    className={`flex-1 py-2.5 rounded-[10px] btn-gradient-red text-white font-medium text-sm shadow-sm transition-all duration-200 active:scale-[0.98] ${btnFocus}`}
                                 >
                                     Save Method
                                 </button>

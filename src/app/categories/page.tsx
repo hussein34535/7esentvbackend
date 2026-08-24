@@ -158,7 +158,7 @@ export default function CategoriesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <div className="flex items-center justify-between mb-6 md:mb-8">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight">Categories</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Categories</h1>
                     <p className="text-xs md:text-sm text-inkmute mt-1">
                         {loading ? '...' : `${filtered.length} of ${categories.length} categories`}
                     </p>
@@ -184,7 +184,7 @@ export default function CategoriesPage() {
                             <span>Reorder</span>
                         </button>
 
-                        <Link href="/categories/new" className="flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                        <Link href="/categories/new" className="flex items-center gap-2 btn-gradient-red text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
                             <Plus className="w-4 h-4" />
                             <span>Add Category</span>
                         </Link>
@@ -208,7 +208,7 @@ export default function CategoriesPage() {
                         <button
                             onClick={saveOrder}
                             disabled={!hasOrderChanged || savingOrder}
-                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium bg-accent hover:bg-accentstrong text-white transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium btn-gradient-red text-white transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                         >
                             <Save className="w-4 h-4" />
                             {savingOrder ? 'Saving...' : hasOrderChanged ? 'Save Order' : 'No Changes'}

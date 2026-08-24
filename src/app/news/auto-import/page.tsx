@@ -106,7 +106,7 @@ export default function AutoImportFullMatch() {
                     <ArrowLeft className="w-5 h-5 rotate-180" />
                 </Link>
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-ink tracking-tight flex items-center gap-2">
+                    <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
                         جلب مباراة كاملة تلقائياً
                         <Zap className="w-5 h-5 text-accent shrink-0" />
                     </h1>
@@ -136,7 +136,7 @@ export default function AutoImportFullMatch() {
                     <button
                         onClick={handleFetch}
                         disabled={fetching || saving || !videoUrl.trim()}
-                        className={`flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white px-5 py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap shrink-0 ${FOCUS_RING}`}
+                        className={`flex items-center justify-center gap-2 btn-gradient-violet text-white px-5 py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap shrink-0 ${FOCUS_RING}`}
                     >
                         {fetching ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -165,7 +165,7 @@ export default function AutoImportFullMatch() {
                         <div className="flex gap-2 mt-3">
                             <Link
                                 href="/news"
-                                className={`inline-flex items-center gap-2 bg-accent hover:bg-accentstrong text-white px-4 py-1.5 rounded-[10px] text-xs font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
+                                className={`inline-flex items-center gap-2 btn-gradient-red text-white px-4 py-1.5 rounded-[10px] text-xs font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`}
                             >
                                 عرض المباريات الكاملة
                             </Link>
@@ -321,7 +321,7 @@ export default function AutoImportFullMatch() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving || !editTitle.trim()}
-                                className={`flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accentstrong text-white py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`}
+                                className={`flex-1 flex items-center justify-center gap-2 btn-gradient-red text-white py-2.5 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`}
                             >
                                 {saving ? (
                                     <>
