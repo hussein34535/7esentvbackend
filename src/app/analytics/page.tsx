@@ -8,18 +8,18 @@ import { Users, Activity, TrendingUp } from 'lucide-react';
 type HistoryPoint = { date: string; active_users?: number; total_requests?: number; [key: string]: unknown };
 type Overview = { totalUsers: number; activeToday: number };
 
-const TICK_STYLE = { fill: '#64748b', fontSize: 12 };
+const TICK_STYLE = { fill: '#94a3b8', fontSize: 12 };
 const TOOLTIP_STYLE = {
     contentStyle: {
-        backgroundColor: '#f8fafc',
-        border: '1px solid #e2e8f0',
+        backgroundColor: 'var(--surface)',
+        border: '1px solid var(--line)',
         borderRadius: 12,
         boxShadow: '0 2px 8px rgba(30,41,59,0.08)',
         fontSize: 12,
     },
-    labelStyle: { color: '#334155', fontWeight: 600, marginBottom: 2 },
-    itemStyle: { color: '#334155' },
-    cursor: { fill: 'rgba(30,41,59,0.04)' },
+    labelStyle: { color: 'var(--ink)', fontWeight: 600, marginBottom: 2 },
+    itemStyle: { color: 'var(--ink)' },
+    cursor: { fill: 'rgba(100,116,139,0.10)' },
 };
 
 export default function AnalyticsPage() {
@@ -92,7 +92,7 @@ export default function AnalyticsPage() {
                     </h3>
                     <ResponsiveContainer width="100%" height="82%">
                         <BarChart data={history}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,41,59,0.06)" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(100,116,139,0.15)" vertical={false} />
                             <XAxis
                                 dataKey="date"
                                 tick={TICK_STYLE}
@@ -105,7 +105,7 @@ export default function AnalyticsPage() {
                                 axisLine={false}
                             />
                             <Tooltip {...TOOLTIP_STYLE} />
-                            <Bar dataKey="active_users" fill="#16a34a" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                            <Bar dataKey="active_users" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={40} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
                     </h3>
                     <ResponsiveContainer width="100%" height="82%">
                         <BarChart data={history}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,41,59,0.06)" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(100,116,139,0.15)" vertical={false} />
                             <XAxis
                                 dataKey="date"
                                 tick={TICK_STYLE}
@@ -131,7 +131,7 @@ export default function AnalyticsPage() {
                                 axisLine={false}
                             />
                             <Tooltip {...TOOLTIP_STYLE} />
-                            <Bar dataKey="total_requests" fill="#3b82f6" radius={[6, 6, 0, 0]} maxBarSize={40} />
+                            <Bar dataKey="total_requests" fill="#60a5fa" radius={[6, 6, 0, 0]} maxBarSize={40} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

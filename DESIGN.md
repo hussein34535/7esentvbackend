@@ -2,9 +2,13 @@
 
 Single source of truth for all UI work. Every page MUST follow this. When in doubt, match `src/app/channels/page.tsx` (reference implementation of toolbar + card grid patterns).
 
-## Theme: "Soft iOS Light"
+## Theme: Dual — "Plain White Light" + "Deep Slate Dark"
 
-No pure black, no pure white anywhere. Cool gray-blue tinted surfaces, emerald accent. Light and airy.
+Two themes via CSS variables flipped by a `.dark` class on `<html>` (toggle in sidebar, persisted in localStorage, defaults to system preference). All pages use semantic token utilities ONLY (`bg-surface`, `text-ink`, ...) so both themes work automatically — never hardcode light-only or dark-only colors in page code.
+
+- **Light:** plain neutral white surfaces (zero tint), soft gray canvas.
+- **Dark:** comfortable deep blue-gray (never pure black), brighter accent/badge foregrounds.
+- Charts/inline styles that can't use Tailwind classes must reference `var(--surface)` / `var(--ink)` / `var(--line)` or pick dual-mode-safe constants (#10b981 green, #60a5fa blue, #94a3b8 ticks).
 
 ## Tokens (defined in `src/app/globals.css` via Tailwind v4 `@theme`)
 

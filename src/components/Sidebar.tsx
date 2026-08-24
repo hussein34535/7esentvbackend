@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -19,12 +19,33 @@ import {
     BarChart3,
     Inbox,
     Video,
-    Film
+    Film,
+    Sun,
+    Moon
 } from 'lucide-react';
 
 export default function Sidebar() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const [isDark, setIsDark] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        const el = document.documentElement;
+        const apply = () => setIsDark(el.classList.contains('dark'));
+        const raf = requestAnimationFrame(apply);
+        const obs = new MutationObserver(apply);
+        obs.observe(el, { attributes: true, attributeFilter: ['class'] });
+        return () => {
+            cancelAnimationFrame(raf);
+            obs.disconnect();
+        };
+    }, []);
+
+    const toggleTheme = () => {
+        const next = !document.documentElement.classList.contains('dark');
+        document.documentElement.classList.toggle('dark', next);
+        try { localStorage.setItem('theme', next ? 'dark' : 'light'); } catch { }
+    };
 
     const sections = [
         {
@@ -131,6 +152,16 @@ export default function Sidebar() {
 
                 {/* Bottom actions */}
                 <div className="p-3 border-t border-line shrink-0">
+                    <button
+                        onClick={toggleTheme}
+                        aria-label="Toggle dark mode"
+                        className="flex items-center gap-3 px-3 py-2 w-full rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors"
+                    >
+                        {isDark
+                            ? <Sun className="w-[18px] h-[18px] text-warn" />
+                            : <Moon className="w-[18px] h-[18px] text-inkmute" />}
+                        {isDark === null ? 'Theme' : isDark ? 'Light Mode' : 'Dark Mode'}
+                    </button>
                     <button className="flex items-center gap-3 px-3 py-2 w-full rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors">
                         <Settings className="w-[18px] h-[18px] text-inkmute" />
                         Settings
