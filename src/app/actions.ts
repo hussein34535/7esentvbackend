@@ -16,7 +16,20 @@ type News = Database['public']['Tables']['news']['Row'];
 // --- MATCHES ---
 export async function getMatches(): Promise<Match[]> {
     try {
-        return await sql<Match[]>`SELECT * FROM matches ORDER BY match_time DESC`;
+        const rows = await sql<Match[]>`SELECT * FROM matches ORDER BY match_time DESC`;
+        // Filter out blocked champions if table exists
+        try {
+            const blocked = await sql<{name:string}[]>`SELECT name FROM blocked_champions`;
+            const blockedNames = blocked.map(b => (b.name||'').toLowerCase().trim()).filter(Boolean);
+            if (blockedNames.length > 0 && rows.length > 0) {
+                return rows.filter(r => {
+                    const c = (r.champion||'').toLowerCase().trim();
+                    if (!c) return true;
+                    return !blockedNames.some(b => c.includes(b) || b.includes(c));
+                });
+            }
+        } catch {}
+        return rows;
     } catch (error) { return []; }
 }
 
@@ -956,6 +969,12 @@ export async function fetchEsenlinks(): Promise<{ links: any[]; categories: stri
 }
 
 export async function scrapeMatches() {
+    // Try yallakora first (user requested)
+    const yallaResult = await scrapeYallaKora();
+    if (yallaResult.success && yallaResult.matches && yallaResult.matches.length > 0) {
+        return yallaResult;
+    }
+    // Fallback to MGA4K (Alba theme)
     try {
         const urls = ['https://www.mga4k.co/', 'https://mga4k.net/'];
         let html = '';
@@ -979,8 +998,6 @@ export async function scrapeMatches() {
 
         const $ = cheerio.load(html);
         const fetchedMatches: any[] = [];
-
-        // --- New Alba theme (alba-match-card) ---
         const albaCards = $('.alba-match-card');
         if (albaCards.length > 0) {
             albaCards.each((_i, el) => {
@@ -988,52 +1005,27 @@ export async function scrapeMatches() {
                 const team_a = $el.find('.alba-team-home .alba-team-name').text().trim();
                 const team_b = $el.find('.alba-team-away .alba-team-name').text().trim();
                 if (!team_a || !team_b) return;
-
                 let logo_a = $el.find('.alba-team-home .alba-team-logo img').attr('data-src') || $el.find('.alba-team-home .alba-team-logo img').attr('src') || '';
                 let logo_b = $el.find('.alba-team-away .alba-team-logo img').attr('data-src') || $el.find('.alba-team-away .alba-team-logo img').attr('src') || '';
                 if (logo_a.startsWith('data:image')) logo_a = '';
                 if (logo_b.startsWith('data:image')) logo_b = '';
-
                 const channel = $el.find('.alba-footer-right').text().trim().replace(/\s+/g, ' ');
                 const commentator = $el.find('.alba-footer-mid').text().trim().replace(/\s+/g, ' ');
                 const champion = $el.find('.alba-footer-left').text().trim().replace(/\s+/g, ' ');
                 const badge = $el.find('.alba-match-badge').text().trim();
-
-                // Skip ended matches — they show score, no time
                 if (badge.includes('انتهت')) return;
-
-                // Extract time from center/badge/data attrs
                 let rawTime = '';
                 const centerText = $el.find('.alba-match-center').text();
                 const timeMatch = centerText.match(/(\d{1,2}:\d{2})/);
                 if (timeMatch) rawTime = timeMatch[0];
-                if (!rawTime) {
-                    const badgeTime = badge.match(/(\d{1,2}:\d{2})/);
-                    if (badgeTime) rawTime = badgeTime[0];
-                }
+                if (!rawTime) { const badgeTime = badge.match(/(\d{1,2}:\d{2})/); if (badgeTime) rawTime = badgeTime[0]; }
                 if (!rawTime) rawTime = ($el.attr('data-time') || '').trim();
-                // Also try any time-like text in the card
-                if (!rawTime) {
-                    const cardText = $el.text();
-                    const anyTime = cardText.match(/(\d{1,2}:\d{2})/);
-                    if (anyTime) {
-                        // Make sure it's not a score like "0 - 2" (that's also digits but with dash)
-                        // Score pattern is single digit - single digit, time is HH:MM
-                        if (anyTime[0].includes(':')) rawTime = anyTime[0];
-                    }
-                }
-                if (!rawTime) return; // No time -> skip (ended or invalid)
-
+                if (!rawTime) { const anyTime = $el.text().match(/(\d{1,2}:\d{2})/); if (anyTime) rawTime = anyTime[0]; }
+                if (!rawTime) return;
                 const match_time = formatMatchTime(rawTime);
-                fetchedMatches.push({
-                    team_a, team_b, logo_a, logo_b, match_time,
-                    channel, commentator, champion,
-                    is_premium: false, is_published: true, stream_link: []
-                });
+                fetchedMatches.push({ team_a, team_b, logo_a, logo_b, match_time, channel, commentator, champion, is_premium: false, is_published: true, stream_link: [] });
             });
         }
-
-        // --- Legacy fallback (.match-container) ---
         if (fetchedMatches.length === 0) {
             $('.match-container').each((_i, el) => {
                 const $el = $(el);
@@ -1048,27 +1040,93 @@ export async function scrapeMatches() {
                 const commentator = infoItems[1] || '';
                 const champion = infoItems[2] || '';
                 const match_time = formatMatchTime(rawTime);
-                if (team_a && team_b) {
-                    fetchedMatches.push({ team_a, team_b, logo_a, logo_b, match_time, channel, commentator, champion, is_premium: false, is_published: true, stream_link: [] });
-                }
+                if (team_a && team_b) fetchedMatches.push({ team_a, team_b, logo_a, logo_b, match_time, channel, commentator, champion, is_premium: false, is_published: true, stream_link: [] });
             });
         }
-
-        return { success: true, matches: fetchedMatches };
+        if (fetchedMatches.length > 0) return { success: true, matches: fetchedMatches };
+        // If Alba fallback also empty, return yalla result (which had 0 but was successful) for better message
+        return yallaResult.success ? yallaResult : { success: true, matches: fetchedMatches };
     } catch (error: any) {
         console.error('scrapeMatches error:', error);
         return { success: false, error: error.message };
     }
 }
 
+async function scrapeYallaKora(): Promise<{ success: boolean; matches?: any[]; error?: string }> {
+    try {
+        const YALLA_URL = 'https://www.yallakora.com/matches-center';
+        const res = await fetch(YALLA_URL, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml',
+                'Accept-Language': 'ar,en;q=0.9',
+            },
+            next: { revalidate: 0 }
+        });
+        if (!res.ok) throw new Error(`YallaKora fetch failed: ${res.statusText}`);
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const fetchedMatches: any[] = [];
+
+        $('.matchCard').each((_i, card) => {
+            const champion = $(card).find('.title h2').first().text().trim();
+            $(card).find('.item').each((_j, el) => {
+                const $el = $(el);
+                // Skip ended if needed - yalla shows future with "لم تبدأ", we keep only those
+                const status = $el.find('.matchStatus').text().trim();
+                // Optionally skip if status indicates ended - keep all future
+                const team_a = $el.find('.teamA p').text().trim();
+                const team_b = $el.find('.teamB p').text().trim();
+                if (!team_a || !team_b) return;
+                let logo_a = $el.find('.teamA img').attr('src') || '';
+                let logo_b = $el.find('.teamB img').attr('src') || '';
+                if (logo_a.startsWith('data:image')) logo_a = '';
+                if (logo_b.startsWith('data:image')) logo_b = '';
+                const channel = $el.find('.channel').text().trim().replace(/\s+/g, ' ');
+                const timeRaw = $el.find('.MResult .time').text().trim() || $el.find('.time').first().text().trim();
+                if (!timeRaw || !/\d{1,2}:\d{2}/.test(timeRaw)) return;
+                const match_time = formatMatchTime(timeRaw);
+                // Use date text as extra champion detail if needed
+                const dateInfo = $el.find('.date').text().trim();
+                // Keep champion as tour title; if empty fallback to dateInfo
+                const finalChampion = champion || dateInfo || '';
+                fetchedMatches.push({
+                    team_a, team_b, logo_a, logo_b, match_time,
+                    channel, commentator: '', champion: finalChampion,
+                    is_premium: false, is_published: true, stream_link: []
+                });
+            });
+        });
+
+        return { success: true, matches: fetchedMatches };
+    } catch (error: any) {
+        console.error('scrapeYallaKora error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 export async function fetchAndPublishMatches() {
     try {
-        const scrapeResult = await scrapeMatches();
+        const scrapeResult: any = await scrapeMatches();
         if (!scrapeResult.success || !scrapeResult.matches) {
             return { success: false, error: scrapeResult.error || 'Failed to scrape matches' };
         }
 
-        const scraped = scrapeResult.matches;
+        let scraped = scrapeResult.matches;
+
+        // --- Filter out blocked champions ---
+        try {
+            const blockedRows = await sql<{name:string}[]>`SELECT name FROM blocked_champions`;
+            const blockedNames = blockedRows.map(r => (r.name||'').toLowerCase().trim()).filter(Boolean);
+            if (blockedNames.length > 0) {
+                const isBlocked = (champ: string) => {
+                    if (!champ) return false;
+                    const c = champ.toLowerCase().trim();
+                    return blockedNames.some(b => c.includes(b) || b.includes(c));
+                };
+                scraped = scraped.filter((m: any) => !isBlocked(m.champion));
+            }
+        } catch {}
 
         // Fetch existing matches from DB
         const existing = await sql<Match[]>`SELECT team_a, team_b, match_time FROM matches`;
@@ -1106,6 +1164,38 @@ export async function fetchAndPublishMatches() {
         console.error('fetchAndPublishMatches error:', error);
         return { success: false, error: error.message };
     }
+}
+
+// --- BLOCKED CHAMPIONS (leagues) ---
+export async function getBlockedChampions(): Promise<{id:number; name:string; created_at:string}[]> {
+    try { return await sql`SELECT * FROM blocked_champions ORDER BY created_at DESC`; } catch { return []; }
+}
+export async function getDistinctChampions(): Promise<string[]> {
+    try {
+        const rows = await sql<{champion:string}[]>`SELECT DISTINCT champion FROM matches WHERE champion IS NOT NULL AND champion <> '' ORDER BY champion ASC`;
+        const blocked = await getBlockedChampions();
+        const blockedSet = new Set(blocked.map(b=>b.name.toLowerCase()));
+        // Return all distinct plus blocked (so user can manage)
+        const all = new Set<string>([...rows.map(r=>r.champion), ...blocked.map(b=>b.name)]);
+        return [...all].filter(Boolean).sort();
+    } catch { return []; }
+}
+export async function blockChampion(name: string) {
+    const n = name?.trim();
+    if (!n) return { success: false, error: 'Name required' };
+    try {
+        await sql`INSERT INTO blocked_champions (name) VALUES (${n}) ON CONFLICT (name) DO NOTHING`;
+        revalidatePath('/'); revalidatePath('/matches'); revalidatePath('/matches/auto-import');
+        return { success: true };
+    } catch (e:any) { return { success: false, error: e.message }; }
+}
+export async function unblockChampion(id: number) {
+    try { await sql`DELETE FROM blocked_champions WHERE id = ${id}`; revalidatePath('/'); return { success: true }; }
+    catch (e:any) { return { success: false, error: e.message }; }
+}
+export async function unblockChampionByName(name: string) {
+    try { await sql`DELETE FROM blocked_champions WHERE LOWER(name) = LOWER(${name})`; revalidatePath('/'); return { success: true }; }
+    catch (e:any) { return { success: false, error: e.message }; }
 }
 
 function formatMatchTime(timeString: string): string {

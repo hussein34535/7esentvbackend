@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchAndPublishMatches } from '@/app/actions';
-import { ArrowLeft, RefreshCw, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { fetchAndPublishMatches, getBlockedChampions, getDistinctChampions, blockChampion, unblockChampion } from '@/app/actions';
+import { ArrowLeft, RefreshCw, Check, AlertCircle, Sparkles, ShieldOff, Shield, Ban, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface ScrapedMatch {
@@ -28,6 +28,39 @@ export default function AutoImportMatches() {
     const [loading, setLoading] = useState(false);
     const [matches, setMatches] = useState<ScrapedMatch[]>([]);
     const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+    const [blocked, setBlocked] = useState<{id:number; name:string}[]>([]);
+    const [allChampions, setAllChampions] = useState<string[]>([]);
+    const [newBlock, setNewBlock] = useState('');
+    const [blocking, setBlocking] = useState(false);
+
+    const loadBlockedData = async () => {
+        try {
+            const [b, c] = await Promise.all([getBlockedChampions(), getDistinctChampions()]);
+            setBlocked(b || []);
+            setAllChampions(c || []);
+        } catch {}
+    };
+    useEffect(() => { loadBlockedData(); }, []);
+
+    const handleBlock = async (name: string) => {
+        const n = name.trim();
+        if (!n) return;
+        setBlocking(true);
+        const res = await blockChampion(n);
+        if (res.success) {
+            setNewBlock('');
+            await loadBlockedData();
+            router.refresh();
+        } else {
+            setMessage({ type: 'error', text: res.error || 'فشل الحظر' });
+        }
+        setBlocking(false);
+    };
+    const handleUnblock = async (id: number) => {
+        await unblockChampion(id);
+        await loadBlockedData();
+        router.refresh();
+    };
 
     const handleFetchAndPublish = async () => {
         setLoading(true);
@@ -37,7 +70,7 @@ export default function AutoImportMatches() {
             if (result.success && result.matches) {
                 setMatches(result.matches);
                 if (result.matches.length === 0) {
-                    setMessage({ type: 'info', text: 'لا يوجد مباريات قادمة متاحة حالياً على المصدر (mga4k). جميع المباريات المعروضة منتهية. جرّب مرة أخرى لاحقاً عندما تُنشر مباريات الغد.' });
+                    setMessage({ type: 'info', text: 'لا يوجد مباريات قادمة متاحة حالياً على المصدر (يلا كورة). جميع المباريات المعروضة منتهية. جرّب مرة أخرى لاحقاً عندما تُنشر مباريات الغد.' });
                 } else if (result.newlyAdded !== undefined && result.newlyAdded > 0) {
                     setMessage({ 
                         type: 'success', 
@@ -98,6 +131,68 @@ export default function AutoImportMatches() {
                     <span className="text-sm font-medium">{message.text}</span>
                 </div>
             )}
+
+            {/* Blocked Champions Management */}
+            <div className="mb-6 bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card">
+                <div className="flex items-center gap-2 mb-3">
+                    <Shield className="w-4 h-4 text-accent" />
+                    <h2 className="text-sm font-bold text-ink">البطولات المحظورة</h2>
+                    <span className="text-xs text-inkmute">({blocked.length})</span>
+                </div>
+                <p className="text-xs text-inksoft mb-3">أي مباراة من بطولة محظورة لن تُجلب ولن تظهر في التطبيق. مثال: اكتب "القطري" أو "الدوري القطري" لحظر كل مبارياته.</p>
+                <div className="flex gap-2 mb-4">
+                    <input
+                        type="text"
+                        value={newBlock}
+                        onChange={(e)=>setNewBlock(e.target.value)}
+                        onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); handleBlock(newBlock); } }}
+                        placeholder="اسم البطولة للحظر... (مثال: الدوري القطري)"
+                        className="flex-1 bg-surface2 border border-line focus:border-accent/50 rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                    />
+                    <button
+                        onClick={()=>handleBlock(newBlock)}
+                        disabled={blocking || !newBlock.trim()}
+                        className="inline-flex items-center gap-1.5 btn-gradient-red text-white px-4 py-2 rounded-[10px] text-sm font-medium disabled:opacity-40 disabled:pointer-events-none transition-all active:scale-[0.98] shrink-0"
+                    >
+                        <Plus className="w-4 h-4" /> حظر
+                    </button>
+                </div>
+                {blocked.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {blocked.map(b=>(
+                            <span key={b.id} className="inline-flex items-center gap-1.5 bg-dangersoft text-danger border border-danger/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                <Ban className="w-3 h-3" /> {b.name}
+                                <button onClick={()=>handleUnblock(b.id)} className="mr-1 p-0.5 rounded-full hover:bg-danger/10 transition-colors" title="إلغاء الحظر">
+                                    <Trash2 className="w-3 h-3" />
+                                </button>
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-xs text-inkmute mb-4">لا يوجد بطولات محظورة حالياً.</p>
+                )}
+                {allChampions.length > 0 && (
+                    <div>
+                        <p className="text-xs font-semibold text-inksoft mb-2 flex items-center gap-1"><ShieldOff className="w-3 h-3" /> البطولات الحالية (اضغط للحظر):</p>
+                        <div className="flex flex-wrap gap-1.5">
+                            {allChampions.slice(0,20).map(ch=> {
+                                const isBlocked = blocked.some(b=> b.name.toLowerCase()===ch.toLowerCase() || ch.toLowerCase().includes(b.name.toLowerCase()));
+                                if (isBlocked) return null;
+                                return (
+                                    <button
+                                        key={ch}
+                                        onClick={()=>handleBlock(ch)}
+                                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-surface2 border border-line text-inksoft hover:border-accent/40 hover:text-accent hover:bg-accentsoft/40 transition-colors"
+                                        title={`حظر ${ch}`}
+                                    >
+                                        {ch}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {matches.length === 0 && !loading && (
                 <div className="text-center py-16 bg-surface border border-line border-dashed rounded-2xl">
