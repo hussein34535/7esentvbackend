@@ -957,58 +957,102 @@ export async function fetchEsenlinks(): Promise<{ links: any[]; categories: stri
 
 export async function scrapeMatches() {
     try {
-        const MGA4K_URL = 'https://www.mga4k.co/';
-        const res = await fetch(MGA4K_URL, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            },
-            next: { revalidate: 0 }
-        });
-
-        if (!res.ok) {
-            throw new Error(`Failed to fetch source website: ${res.statusText}`);
+        const urls = ['https://www.mga4k.co/', 'https://mga4k.net/'];
+        let html = '';
+        let lastError = '';
+        for (const url of urls) {
+            try {
+                const res = await fetch(url, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml',
+                        'Accept-Language': 'ar,en;q=0.9',
+                    },
+                    next: { revalidate: 0 }
+                });
+                if (!res.ok) { lastError = res.statusText; continue; }
+                html = await res.text();
+                if (html && html.length > 5000) break;
+            } catch (e: any) { lastError = e.message; }
         }
+        if (!html) throw new Error(`Failed to fetch source website: ${lastError}`);
 
-        const html = await res.text();
         const $ = cheerio.load(html);
         const fetchedMatches: any[] = [];
 
-        $('.match-container').each((_i, el) => {
-            const $el = $(el);
+        // --- New Alba theme (alba-match-card) ---
+        const albaCards = $('.alba-match-card');
+        if (albaCards.length > 0) {
+            albaCards.each((_i, el) => {
+                const $el = $(el);
+                const team_a = $el.find('.alba-team-home .alba-team-name').text().trim();
+                const team_b = $el.find('.alba-team-away .alba-team-name').text().trim();
+                if (!team_a || !team_b) return;
 
-            const team_a = $el.find('.right-team .team-name').text().trim();
-            const team_b = $el.find('.left-team .team-name').text().trim();
-            const logo_a = $el.find('.right-team .team-logo img').attr('data-src') || '';
-            const logo_b = $el.find('.left-team .team-logo img').attr('data-src') || '';
-            const rawTime = $el.find('.match-time').text().trim();
-            const infoItems: string[] = [];
-            $el.find('.match-info li span').each((_j, span) => {
-                infoItems.push($(span).text().trim());
-            });
+                let logo_a = $el.find('.alba-team-home .alba-team-logo img').attr('data-src') || $el.find('.alba-team-home .alba-team-logo img').attr('src') || '';
+                let logo_b = $el.find('.alba-team-away .alba-team-logo img').attr('data-src') || $el.find('.alba-team-away .alba-team-logo img').attr('src') || '';
+                if (logo_a.startsWith('data:image')) logo_a = '';
+                if (logo_b.startsWith('data:image')) logo_b = '';
 
-            const channel = infoItems[0] || '';
-            const commentator = infoItems[1] || '';
-            const champion = infoItems[2] || '';
+                const channel = $el.find('.alba-footer-right').text().trim().replace(/\s+/g, ' ');
+                const commentator = $el.find('.alba-footer-mid').text().trim().replace(/\s+/g, ' ');
+                const champion = $el.find('.alba-footer-left').text().trim().replace(/\s+/g, ' ');
+                const badge = $el.find('.alba-match-badge').text().trim();
 
-            // Format match_time for postgres
-            const match_time = formatMatchTime(rawTime);
+                // Skip ended matches — they show score, no time
+                if (badge.includes('انتهت')) return;
 
-            if (team_a && team_b) {
+                // Extract time from center/badge/data attrs
+                let rawTime = '';
+                const centerText = $el.find('.alba-match-center').text();
+                const timeMatch = centerText.match(/(\d{1,2}:\d{2})/);
+                if (timeMatch) rawTime = timeMatch[0];
+                if (!rawTime) {
+                    const badgeTime = badge.match(/(\d{1,2}:\d{2})/);
+                    if (badgeTime) rawTime = badgeTime[0];
+                }
+                if (!rawTime) rawTime = ($el.attr('data-time') || '').trim();
+                // Also try any time-like text in the card
+                if (!rawTime) {
+                    const cardText = $el.text();
+                    const anyTime = cardText.match(/(\d{1,2}:\d{2})/);
+                    if (anyTime) {
+                        // Make sure it's not a score like "0 - 2" (that's also digits but with dash)
+                        // Score pattern is single digit - single digit, time is HH:MM
+                        if (anyTime[0].includes(':')) rawTime = anyTime[0];
+                    }
+                }
+                if (!rawTime) return; // No time -> skip (ended or invalid)
+
+                const match_time = formatMatchTime(rawTime);
                 fetchedMatches.push({
-                    team_a,
-                    team_b,
-                    logo_a,
-                    logo_b,
-                    match_time,
-                    channel,
-                    commentator,
-                    champion,
-                    is_premium: false,
-                    is_published: true,
-                    stream_link: []
+                    team_a, team_b, logo_a, logo_b, match_time,
+                    channel, commentator, champion,
+                    is_premium: false, is_published: true, stream_link: []
                 });
-            }
-        });
+            });
+        }
+
+        // --- Legacy fallback (.match-container) ---
+        if (fetchedMatches.length === 0) {
+            $('.match-container').each((_i, el) => {
+                const $el = $(el);
+                const team_a = $el.find('.right-team .team-name').text().trim();
+                const team_b = $el.find('.left-team .team-name').text().trim();
+                const logo_a = $el.find('.right-team .team-logo img').attr('data-src') || '';
+                const logo_b = $el.find('.left-team .team-logo img').attr('data-src') || '';
+                const rawTime = $el.find('.match-time').text().trim();
+                const infoItems: string[] = [];
+                $el.find('.match-info li span').each((_j, span) => { infoItems.push($(span).text().trim()); });
+                const channel = infoItems[0] || '';
+                const commentator = infoItems[1] || '';
+                const champion = infoItems[2] || '';
+                const match_time = formatMatchTime(rawTime);
+                if (team_a && team_b) {
+                    fetchedMatches.push({ team_a, team_b, logo_a, logo_b, match_time, channel, commentator, champion, is_premium: false, is_published: true, stream_link: [] });
+                }
+            });
+        }
 
         return { success: true, matches: fetchedMatches };
     } catch (error: any) {

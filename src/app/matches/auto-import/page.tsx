@@ -36,7 +36,9 @@ export default function AutoImportMatches() {
             const result = await fetchAndPublishMatches();
             if (result.success && result.matches) {
                 setMatches(result.matches);
-                if (result.newlyAdded !== undefined && result.newlyAdded > 0) {
+                if (result.matches.length === 0) {
+                    setMessage({ type: 'info', text: 'لا يوجد مباريات قادمة متاحة حالياً على المصدر (mga4k). جميع المباريات المعروضة منتهية. جرّب مرة أخرى لاحقاً عندما تُنشر مباريات الغد.' });
+                } else if (result.newlyAdded !== undefined && result.newlyAdded > 0) {
                     setMessage({ 
                         type: 'success', 
                         text: `تم فحص وجلب مباريات اليوم بنجاح! تم نشر ${result.newlyAdded} مباراة جديدة بنجاح.` 
