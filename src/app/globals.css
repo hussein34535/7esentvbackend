@@ -31,12 +31,12 @@
     --infosoft: oklch(0.95 0.03 250);
 }
 
-/* ---------- DARK: black + navy cards, red brand (matches 7esen app identity) ---------- */
+/* ---------- DARK: black dominant, lead-gray minimal ---------- */
 .dark {
-    --canvas: oklch(0.105 0.005 270);
-    --surface: oklch(0.245 0.030 270);
-    --surface2: oklch(0.30 0.032 270);
-    --line: oklch(0.345 0.030 270);
+    --canvas: oklch(0.10 0.005 270);
+    --surface: oklch(0.155 0.008 270);
+    --surface2: oklch(0.205 0.010 270);
+    --line: oklch(0.255 0.012 270);
 
     --ink: oklch(0.95 0.005 270);
     --inksoft: oklch(0.79 0.015 265);
