@@ -179,7 +179,7 @@ export default function EditNews() {
                             </h3>
                             <p className="text-xs text-inksoft mt-0.5">{isPublished ? 'Visible to everyone' : 'Hidden from app'}</p>
                         </div>
-                        <div className={`w-10 h-6 rounded-full p-0.5 transition-colors shrink-0 ${isPublished ? 'bg-accent' : 'bg-inkmute/40'}`}>
+                        <div className={`w-10 h-6 rounded-full p-0.5 transition-colors shrink-0 ${isPublished ? 'bg-gradient-red' : 'bg-inkmute/40'}`}>
                             <div className={`w-5 h-5 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
                         </div>
                     </button>

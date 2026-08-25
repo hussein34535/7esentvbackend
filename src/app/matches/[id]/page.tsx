@@ -324,7 +324,7 @@ export default function EditMatch({ params }: { params: Promise<{ id: string }> 
                                 onClick={() => setIsPublished(!isPublished)}
                                 className="flex items-center gap-3 p-3.5 bg-surface2 border border-line rounded-xl text-left transition-all duration-200 hover:border-inkmute/30 active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
                             >
-                                <div className={`w-10 h-6 rounded-full p-1 transition-colors duration-200 shrink-0 ${isPublished ? 'bg-accent' : 'bg-inkmute/30'}`}>
+                                <div className={`w-10 h-6 rounded-full p-1 transition-colors duration-200 shrink-0 ${isPublished ? 'bg-gradient-red' : 'bg-inkmute/30'}`}>
                                     <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
                                 </div>
                                 <div>

@@ -197,7 +197,7 @@ export default function ChannelsPage() {
                     <button
                         onClick={() => setCategoryFilter(null)}
                         className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === null
-                            ? 'bg-accent border-accent text-white'
+                            ? 'bg-gradient-red border-transparent text-white'
                             : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                             }`}
                     >
@@ -208,7 +208,7 @@ export default function ChannelsPage() {
                             key={cat.id}
                             onClick={() => setCategoryFilter(categoryFilter === cat.id ? null : cat.id)}
                             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === cat.id
-                                ? 'bg-accent border-accent text-white'
+                                ? 'bg-gradient-red border-transparent text-white'
                                 : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                 }`}
                         >
@@ -355,7 +355,7 @@ export default function ChannelsPage() {
                                         <button
                                             onClick={() => setPage(pg)}
                                             className={`min-w-[36px] h-9 px-2 rounded-[10px] text-sm font-medium transition-all duration-200 border focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${pg === page
-                                                ? 'bg-accent border-accent text-white shadow-sm'
+                                                ? 'bg-gradient-red border-transparent text-white shadow-sm'
                                                 : 'bg-surface border-line text-inksoft hover:bg-surface2 hover:text-ink'
                                                 }`}
                                         >

@@ -235,7 +235,7 @@ export default function Users() {
                         onClick={() => setStatusFilter(f.key)}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 shrink-0 ${btnFocus} ${
                             statusFilter === f.key
-                                ? 'bg-accent border-accent text-white'
+                                ? 'bg-gradient-red border-transparent text-white'
                                 : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                         }`}
                     >

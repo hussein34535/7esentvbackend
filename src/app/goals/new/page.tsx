@@ -114,7 +114,7 @@ export default function NewGoal() {
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPublished(!isPublished); } }}
                                 className={`flex items-center gap-3 p-3.5 md:p-4 bg-surface2 border rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${isPublished ? 'border-accent/60' : 'border-line hover:border-inkmute/40'}`}
                             >
-                                <div className={`w-10 h-6 rounded-full p-1 shrink-0 transition-colors ${isPublished ? 'bg-accent' : 'bg-inkmute/40'}`}>
+                                <div className={`w-10 h-6 rounded-full p-1 shrink-0 transition-colors ${isPublished ? 'bg-gradient-red' : 'bg-inkmute/40'}`}>
                                     <div className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
                                 </div>
                                 <div>

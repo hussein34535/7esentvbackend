@@ -255,7 +255,7 @@ export default function AutoImportHighlight() {
                                     onClick={() => setIsPublished(!isPublished)}
                                     className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-accent/50' : 'border-line'} ${btnBase}`}
                                 >
-                                    <span className={`w-10 h-6 rounded-full p-1 transition-colors shrink-0 flex items-center ${isPublished ? 'bg-accent' : 'bg-line'}`}>
+                                    <span className={`w-10 h-6 rounded-full p-1 transition-colors shrink-0 flex items-center ${isPublished ? 'bg-gradient-red' : 'bg-line'}`}>
                                         <span className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
                                     </span>
                                     <span>
