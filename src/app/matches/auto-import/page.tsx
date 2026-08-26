@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchAndPublishMatches, getBlockedChampions, getDistinctChampions, blockChampion, unblockChampion } from '@/app/actions';
+import { previewMatches, publishSingleMatch, publishAllMatches, getBlockedChampions, getDistinctChampions, blockChampion, unblockChampion } from '@/app/actions';
 import { ArrowLeft, RefreshCw, Check, AlertCircle, Sparkles, Shield, Ban, Plus, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,6 +33,8 @@ export default function AutoImportMatches() {
     const [newBlock, setNewBlock] = useState('');
     const [blocking, setBlocking] = useState(false);
     const [showBlockedModal, setShowBlockedModal] = useState(false);
+    const [publishingAll, setPublishingAll] = useState(false);
+    const [publishingIdx, setPublishingIdx] = useState<string | null>(null);
 
     const loadBlockedData = async () => {
         try {
@@ -67,31 +69,65 @@ export default function AutoImportMatches() {
         setLoading(true);
         setMessage(null);
         try {
-            const result = await fetchAndPublishMatches();
+            const result: any = await previewMatches();
             if (result.success && result.matches) {
                 setMatches(result.matches);
                 if (result.matches.length === 0) {
-                    setMessage({ type: 'info', text: 'لا يوجد مباريات قادمة متاحة حالياً على المصدر (يلا كورة). جميع المباريات المعروضة منتهية. جرّب مرة أخرى لاحقاً عندما تُنشر مباريات الغد.' });
-                } else if (result.newlyAdded !== undefined && result.newlyAdded > 0) {
-                    setMessage({ 
-                        type: 'success', 
-                        text: `تم فحص وجلب مباريات اليوم بنجاح! تم نشر ${result.newlyAdded} مباراة جديدة بنجاح.` 
-                    });
+                    setMessage({ type: 'info', text: 'لا يوجد مباريات قادمة متاحة حالياً على المصدر (يلا كورة). جرّب مرة أخرى لاحقاً.' });
                 } else {
-                    setMessage({ 
-                        type: 'info', 
-                        text: 'تم فحص وجلب مباريات اليوم بنجاح. جميع المباريات منشورة بالفعل مسبقاً ولم يتم إضافة تكرار.' 
-                    });
+                    const newCount = result.matches.filter((m:any)=> m.status !== 'already_published').length;
+                    if (newCount === 0) {
+                        setMessage({ type: 'info', text: 'جميع المباريات المعروضة منشورة بالفعل. يمكنك نشرها واحداً واحداً أو الضغط على نشر الكل.' });
+                    } else {
+                        setMessage({ type: 'success', text: `تم جلب ${result.matches.length} مباراة — ${newCount} جديدة جاهزة للنشر (اختر واحدة واحدة أو انشر الكل).` });
+                    }
                 }
-                router.refresh();
+                await loadBlockedData();
             } else {
-                setMessage({ type: 'error', text: result.error || 'حدث خطأ غير معروف أثناء جلب ونشر المباريات.' });
+                setMessage({ type: 'error', text: result.error || 'حدث خطأ أثناء الجلب.' });
             }
         } catch (err) {
-            setMessage({ type: 'error', text: err instanceof Error ? err.message : 'فشلت عملية الجلب والنشر.' });
+            setMessage({ type: 'error', text: err instanceof Error ? err.message : 'فشلت عملية الجلب.' });
         } finally {
             setLoading(false);
         }
+    };
+
+    const handlePublishOne = async (match: ScrapedMatch, key: string) => {
+        setPublishingIdx(key);
+        try {
+            const res: any = await publishSingleMatch(match);
+            if (res.success) {
+                setMessage({ type: 'success', text: `تم نشر مباراة ${match.team_a} ضد ${match.team_b} بنجاح.` });
+                setMatches(prev => prev.map(m => (m.team_a===match.team_a && m.team_b===match.team_b && m.match_time===match.match_time) ? {...m, status:'already_published'} : m));
+                router.refresh();
+            } else {
+                setMessage({ type: 'error', text: res.error || 'فشل النشر' });
+            }
+        } catch (e:any) {
+            setMessage({ type: 'error', text: e.message || 'فشل النشر' });
+        } finally { setPublishingIdx(null); }
+    };
+
+    const handlePublishAll = async () => {
+        const toPublish = matches.filter(m => m.status !== 'already_published');
+        if (toPublish.length === 0) {
+            setMessage({ type: 'info', text: 'لا يوجد مباريات جديدة للنشر.' });
+            return;
+        }
+        setPublishingAll(true);
+        try {
+            const res: any = await publishAllMatches(toPublish);
+            if (res.success) {
+                setMessage({ type: 'success', text: res.published ? `تم نشر ${res.published} مباراة بنجاح.` : (res.message || 'تم النشر') });
+                setMatches(prev => prev.map(m => ({...m, status:'already_published'} as ScrapedMatch)));
+                router.refresh();
+            } else {
+                setMessage({ type: 'error', text: res.error || 'فشل نشر الكل' });
+            }
+        } catch (e:any) {
+            setMessage({ type: 'error', text: e.message });
+        } finally { setPublishingAll(false); }
     };
 
     return (
@@ -116,8 +152,18 @@ export default function AutoImportMatches() {
                     className={primaryBtn + " shrink-0"}
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                    {loading ? 'جاري الجلب والنشر والتأكد من التكرار...' : 'جلب ونشر مباريات اليوم'}
+                    {loading ? 'جاري الجلب...' : 'جلب المباريات'}
                 </button>
+                {matches.some(m=> m.status !== 'already_published') && (
+                    <button
+                        onClick={handlePublishAll}
+                        disabled={publishingAll || loading}
+                        className="inline-flex items-center gap-1.5 btn-gradient-red text-white px-4 py-2 rounded-[10px] text-sm font-medium disabled:opacity-40 shrink-0 transition-all active:scale-[0.98] shadow-sm"
+                    >
+                        <Check className={`w-4 h-4 ${publishingAll ? 'animate-pulse' : ''}`} />
+                        {publishingAll ? 'جاري النشر...' : `نشر الكل (${matches.filter(m=>m.status!=='already_published').length})`}
+                    </button>
+                )}
                 <button
                     onClick={()=>setShowBlockedModal(true)}
                     className="inline-flex items-center gap-1.5 bg-surface border border-line hover:bg-surface2 text-ink px-3 py-2 rounded-[10px] text-sm font-medium transition-colors shrink-0"
@@ -145,7 +191,7 @@ export default function AutoImportMatches() {
                 <div className="text-center py-16 bg-surface border border-line border-dashed rounded-2xl">
                     <Sparkles className="w-10 h-10 text-inkmute/40 mx-auto" />
                     <p className="text-sm text-inksoft mt-3">لا يوجد مباريات معروضة حالياً.</p>
-                    <p className="text-xs text-inkmute mt-1">اضغط على زر &quot;جلب ونشر مباريات اليوم&quot; للبدء بالعملية في خطوة واحدة.</p>
+                    <p className="text-xs text-inkmute mt-1">اضغط على زر &quot;جلب المباريات&quot; ثم انشر واحدة واحدة أو استخدم &quot;نشر الكل&quot;.</p>
                 </div>
             )}
 
@@ -239,10 +285,14 @@ export default function AutoImportMatches() {
                                                     منشورة بالفعل
                                                 </div>
                                             ) : (
-                                                <div className="w-full py-2 bg-successsoft text-success rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 cursor-default">
-                                                    <Check className="w-4 h-4" />
-                                                    تم النشر بنجاح
-                                                </div>
+                                                <button
+                                                    onClick={()=>handlePublishOne(match, `${champ}-${idx}`)}
+                                                    disabled={publishingIdx===`${champ}-${idx}`}
+                                                    className="w-full py-2 btn-gradient-red text-white rounded-[10px] text-xs font-semibold flex items-center justify-center gap-1.5 disabled:opacity-60 transition-all active:scale-[0.98]"
+                                                >
+                                                    {publishingIdx===`${champ}-${idx}` ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                                    {publishingIdx===`${champ}-${idx}` ? 'جاري النشر...' : 'نشر المباراة'}
+                                                </button>
                                             )}
                                         </div>
                                     </div>

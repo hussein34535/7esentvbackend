@@ -1166,6 +1166,91 @@ export async function fetchAndPublishMatches() {
     }
 }
 
+export async function previewMatches() {
+    try {
+        const scrapeResult: any = await scrapeMatches();
+        if (!scrapeResult.success || !scrapeResult.matches) return { success: false, error: scrapeResult.error || 'Failed to scrape' };
+        let scraped = scrapeResult.matches as any[];
+        try {
+            const blockedRows = await sql<{name:string}[]>`SELECT name FROM blocked_champions`;
+            const blockedNames = blockedRows.map(r => (r.name||'').toLowerCase().trim()).filter(Boolean);
+            if (blockedNames.length > 0) {
+                const isBlocked = (champ: string) => {
+                    if (!champ) return false;
+                    const c = champ.toLowerCase().trim();
+                    return blockedNames.some(b => c.includes(b) || b.includes(c));
+                };
+                scraped = scraped.filter((m: any) => !isBlocked(m.champion));
+            }
+        } catch {}
+        const existing = await sql<Match[]>`SELECT team_a, team_b, match_time FROM matches`;
+        const results = scraped.map((m: any) => {
+            const isDuplicate = existing.some(ext =>
+                ext.team_a.trim().toLowerCase() === m.team_a.trim().toLowerCase() &&
+                ext.team_b.trim().toLowerCase() === m.team_b.trim().toLowerCase() &&
+                ext.match_time.trim().slice(0, 5) === m.match_time.trim().slice(0, 5)
+            );
+            return { ...m, status: isDuplicate ? 'already_published' : 'new' as const };
+        });
+        return { success: true, matches: results };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function publishSingleMatch(match: any) {
+    try {
+        const existing = await sql<Match[]>`SELECT team_a, team_b, match_time FROM matches`;
+        const isDuplicate = existing.some(ext =>
+            ext.team_a.trim().toLowerCase() === match.team_a.trim().toLowerCase() &&
+            ext.team_b.trim().toLowerCase() === match.team_b.trim().toLowerCase() &&
+            ext.match_time.trim().slice(0, 5) === match.match_time.trim().slice(0, 5)
+        );
+        if (isDuplicate) return { success: false, error: 'المباراة منشورة بالفعل' };
+        // Also check blocked
+        try {
+            const blockedRows = await sql<{name:string}[]>`SELECT name FROM blocked_champions`;
+            const blockedNames = blockedRows.map(r => (r.name||'').toLowerCase().trim()).filter(Boolean);
+            const c = (match.champion||'').toLowerCase().trim();
+            if (blockedNames.some(b => c.includes(b) || b.includes(c))) return { success: false, error: 'البطولة محظورة' };
+        } catch {}
+        const res = await createMultipleMatches([match]);
+        if (!res.success) return res;
+        revalidatePath('/'); revalidatePath('/matches');
+        return { success: true };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
+export async function publishAllMatches(matches: any[]) {
+    try {
+        if (!matches || matches.length === 0) return { success: false, error: 'لا يوجد مباريات للنشر' };
+        // Filter to only new (not already_published) and not blocked
+        let toPublish = matches.filter((m: any) => m.status !== 'already_published');
+        try {
+            const blockedRows = await sql<{name:string}[]>`SELECT name FROM blocked_champions`;
+            const blockedNames = blockedRows.map(r => (r.name||'').toLowerCase().trim()).filter(Boolean);
+            if (blockedNames.length > 0) {
+                toPublish = toPublish.filter((m: any) => {
+                    const c = (m.champion||'').toLowerCase().trim();
+                    if (!c) return true;
+                    return !blockedNames.some(b => c.includes(b) || b.includes(c));
+                });
+            }
+        } catch {}
+        // Dedupe against DB again
+        const existing = await sql<Match[]>`SELECT team_a, team_b, match_time FROM matches`;
+        toPublish = toPublish.filter((m: any) => !existing.some(ext =>
+            ext.team_a.trim().toLowerCase() === m.team_a.trim().toLowerCase() &&
+            ext.team_b.trim().toLowerCase() === m.team_b.trim().toLowerCase() &&
+            ext.match_time.trim().slice(0, 5) === m.match_time.trim().slice(0, 5)
+        ));
+        if (toPublish.length === 0) return { success: true, published: 0, message: 'كل المباريات منشورة بالفعل' };
+        const res = await createMultipleMatches(toPublish);
+        if (res.success) revalidatePath('/');
+        return { success: true, published: toPublish.length };
+    } catch (e: any) { return { success: false, error: e.message }; }
+}
+
 // --- BLOCKED CHAMPIONS (leagues) ---
 export async function getBlockedChampions(): Promise<{id:number; name:string; created_at:string}[]> {
     try { return await sql`SELECT * FROM blocked_champions ORDER BY created_at DESC`; } catch { return []; }
