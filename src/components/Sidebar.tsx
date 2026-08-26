@@ -132,16 +132,16 @@ export default function Sidebar() {
                                             href={item.href}
                                             onClick={() => setIsOpen(false)}
                                             className={`
-                                                flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm font-medium transition-all duration-200
+                                                relative flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 overflow-hidden
                                                 ${isActive
-                                                    ? 'bg-surface2 text-ink font-semibold'
+                                                    ? 'bg-violet-500/10 text-ink font-semibold'
                                                     : 'text-inksoft hover:bg-surface2/60 hover:text-ink'
                                                 }
                                             `}
                                         >
+                                            {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-violet-500 rounded-full" />}
                                             <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-violet-500' : 'text-inkmute'}`} />
                                             <span className="truncate">{item.name}</span>
-                                            {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />}
                                         </Link>
                                     );
                                 })}
