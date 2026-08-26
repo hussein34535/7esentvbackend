@@ -13,8 +13,13 @@ interface MatchCardProps {
 
 export default function MatchCard({ match, onClick, selected }: MatchCardProps) {
     const formatTime = (timeStr: string) => {
-        // Basic time formatting, assumes UTC
-        return timeStr.slice(0, 5);
+        if (!timeStr) return '';
+        const [hStr, m] = timeStr.slice(0, 5).split(':');
+        let h = parseInt(hStr, 10);
+        if (isNaN(h) || m === undefined) return timeStr.slice(0, 5);
+        const isPM = h >= 12;
+        h = h % 12 || 12;
+        return `${h}:${m} ${isPM ? 'م' : 'ص'}`;
     };
 
     const getLogoUrl = (logo: unknown): string | null => {
@@ -98,7 +103,6 @@ export default function MatchCard({ match, onClick, selected }: MatchCardProps) 
                 <span className="inline-flex items-center gap-1.5 bg-accentsoft text-accentstrong rounded-full px-3 py-1.5 text-sm md:text-base font-semibold tabular-nums">
                     <Clock className="w-4 h-4" />
                     {formatTime(match.match_time)}
-                    <span className="text-[10px] font-medium text-accentstrong/70">UTC</span>
                 </span>
             </div>
 

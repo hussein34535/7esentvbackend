@@ -23,6 +23,16 @@ interface ScrapedMatch {
 
 const primaryBtn = 'inline-flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
 
+const formatTime12h = (timeStr: string) => {
+    if (!timeStr) return '';
+    const [hStr, m] = timeStr.slice(0, 5).split(':');
+    let h = parseInt(hStr, 10);
+    if (isNaN(h) || m === undefined) return timeStr.slice(0, 5);
+    const isPM = h >= 12;
+    h = h % 12 || 12;
+    return `${h}:${m} ${isPM ? 'م' : 'ص'}`;
+};
+
 export default function AutoImportMatches() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -255,7 +265,7 @@ export default function AutoImportMatches() {
                                         </div>
 
                                         <div className="text-center px-1">
-                                            <p className="text-lg font-bold text-ink tabular-nums">{match.match_time.slice(0, 5)}</p>
+                                            <p className="text-lg font-bold text-ink tabular-nums">{formatTime12h(match.match_time)}</p>
                                             <p className="text-[10px] text-inkmute">مكة المكرمة</p>
                                         </div>
 
