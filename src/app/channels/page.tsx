@@ -2,12 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getChannelsWithCategories, deleteChannel, bulkDeleteChannels, duplicateChannel, getCategoriesWithCounts, ChannelWithCategories, CategoryWithCount } from '@/app/actions';
-import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, ArrowUpDown, Tag, ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, Tag, ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-type Category = Database['public']['Tables']['channel_categories']['Row'];
 
 type SortOption = 'id-asc' | 'name-asc' | 'name-desc' | 'newest';
 

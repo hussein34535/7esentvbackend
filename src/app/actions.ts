@@ -158,7 +158,14 @@ export async function getChannelsWithCategories(): Promise<ChannelWithCategories
             GROUP BY c.id
             ORDER BY c.id ASC
         `;
-        return rows || [];
+        return (rows || []).map((row) => ({
+            ...row,
+            id: Number(row.id),
+            categories: (row.categories || []).map((category) => ({
+                ...category,
+                id: Number(category.id),
+            })),
+        }));
     } catch (e) { return []; }
 }
 
@@ -178,7 +185,11 @@ export async function getCategoriesWithCounts(): Promise<CategoryWithCount[]> {
             GROUP BY cc.id
             ORDER BY cc.sort_order ASC, cc.id ASC
         `;
-        return rows || [];
+        return (rows || []).map((row) => ({
+            ...row,
+            id: Number(row.id),
+            channels_count: Number(row.channels_count),
+        }));
     } catch (e) { return []; }
 }
 
