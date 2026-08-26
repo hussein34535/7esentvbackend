@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchAndPublishMatches, getBlockedChampions, getDistinctChampions, blockChampion, unblockChampion } from '@/app/actions';
-import { ArrowLeft, RefreshCw, Check, AlertCircle, Sparkles, ShieldOff, Shield, Ban, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Check, AlertCircle, Sparkles, Shield, Ban, Plus, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 
 interface ScrapedMatch {
@@ -32,6 +32,7 @@ export default function AutoImportMatches() {
     const [allChampions, setAllChampions] = useState<string[]>([]);
     const [newBlock, setNewBlock] = useState('');
     const [blocking, setBlocking] = useState(false);
+    const [showBlockedModal, setShowBlockedModal] = useState(false);
 
     const loadBlockedData = async () => {
         try {
@@ -117,6 +118,14 @@ export default function AutoImportMatches() {
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     {loading ? 'جاري الجلب والنشر والتأكد من التكرار...' : 'جلب ونشر مباريات اليوم'}
                 </button>
+                <button
+                    onClick={()=>setShowBlockedModal(true)}
+                    className="inline-flex items-center gap-1.5 bg-surface border border-line hover:bg-surface2 text-ink px-3 py-2 rounded-[10px] text-sm font-medium transition-colors shrink-0"
+                    title="إدارة البطولات المحظورة"
+                >
+                    <Shield className="w-4 h-4 text-inkmute" />
+                    {blocked.length>0 ? `محظورة (${blocked.length})` : 'حظر بطولات'}
+                </button>
             </div>
 
             {message && (
@@ -132,68 +141,6 @@ export default function AutoImportMatches() {
                 </div>
             )}
 
-            {/* Blocked Champions Management */}
-            <div className="mb-6 bg-surface border border-line rounded-2xl p-4 md:p-5 shadow-card">
-                <div className="flex items-center gap-2 mb-3">
-                    <Shield className="w-4 h-4 text-accent" />
-                    <h2 className="text-sm font-bold text-ink">البطولات المحظورة</h2>
-                    <span className="text-xs text-inkmute">({blocked.length})</span>
-                </div>
-                <p className="text-xs text-inksoft mb-3">أي مباراة من بطولة محظورة لن تُجلب ولن تظهر في التطبيق. مثال: اكتب "القطري" أو "الدوري القطري" لحظر كل مبارياته.</p>
-                <div className="flex gap-2 mb-4">
-                    <input
-                        type="text"
-                        value={newBlock}
-                        onChange={(e)=>setNewBlock(e.target.value)}
-                        onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); handleBlock(newBlock); } }}
-                        placeholder="اسم البطولة للحظر... (مثال: الدوري القطري)"
-                        className="flex-1 bg-surface2 border border-line focus:border-accent/50 rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
-                    />
-                    <button
-                        onClick={()=>handleBlock(newBlock)}
-                        disabled={blocking || !newBlock.trim()}
-                        className="inline-flex items-center gap-1.5 btn-gradient-red text-white px-4 py-2 rounded-[10px] text-sm font-medium disabled:opacity-40 disabled:pointer-events-none transition-all active:scale-[0.98] shrink-0"
-                    >
-                        <Plus className="w-4 h-4" /> حظر
-                    </button>
-                </div>
-                {blocked.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {blocked.map(b=>(
-                            <span key={b.id} className="inline-flex items-center gap-1.5 bg-dangersoft text-danger border border-danger/20 px-3 py-1.5 rounded-full text-xs font-medium">
-                                <Ban className="w-3 h-3" /> {b.name}
-                                <button onClick={()=>handleUnblock(b.id)} className="mr-1 p-0.5 rounded-full hover:bg-danger/10 transition-colors" title="إلغاء الحظر">
-                                    <Trash2 className="w-3 h-3" />
-                                </button>
-                            </span>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-xs text-inkmute mb-4">لا يوجد بطولات محظورة حالياً.</p>
-                )}
-                {allChampions.length > 0 && (
-                    <div>
-                        <p className="text-xs font-semibold text-inksoft mb-2 flex items-center gap-1"><ShieldOff className="w-3 h-3" /> البطولات الحالية (اضغط للحظر):</p>
-                        <div className="flex flex-wrap gap-1.5">
-                            {allChampions.slice(0,20).map(ch=> {
-                                const isBlocked = blocked.some(b=> b.name.toLowerCase()===ch.toLowerCase() || ch.toLowerCase().includes(b.name.toLowerCase()));
-                                if (isBlocked) return null;
-                                return (
-                                    <button
-                                        key={ch}
-                                        onClick={()=>handleBlock(ch)}
-                                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-surface2 border border-line text-inksoft hover:border-accent/40 hover:text-accent hover:bg-accentsoft/40 transition-colors"
-                                        title={`حظر ${ch}`}
-                                    >
-                                        {ch}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-            </div>
-
             {matches.length === 0 && !loading && (
                 <div className="text-center py-16 bg-surface border border-line border-dashed rounded-2xl">
                     <Sparkles className="w-10 h-10 text-inkmute/40 mx-auto" />
@@ -202,13 +149,38 @@ export default function AutoImportMatches() {
                 </div>
             )}
 
-            {matches.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-                    {matches.map((match, idx) => {
-                        const isAlreadyPublished = match.status === 'already_published';
-                        return (
+            {matches.length > 0 && (() => {
+                const grouped: Record<string, typeof matches> = {};
+                matches.forEach(m => {
+                    const k = (m.champion?.trim() || 'غير مصنف');
+                    if (!grouped[k]) grouped[k] = [];
+                    grouped[k].push(m);
+                });
+                const entries = Object.entries(grouped).sort(([a],[b])=> a.localeCompare(b, 'ar'));
+                return (
+                    <div className="space-y-8">
+                        {entries.map(([champ, list]) => (
+                            <div key={champ}>
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                                        <span className="w-1 h-5 bg-accent rounded-full"></span>
+                                        {champ}
+                                        <span className="text-xs font-normal text-inkmute">({list.length})</span>
+                                    </h3>
+                                    <button
+                                        onClick={()=>handleBlock(champ)}
+                                        className="inline-flex items-center gap-1 text-xs font-medium text-inkmute hover:text-danger hover:bg-dangersoft px-2.5 py-1 rounded-full border border-transparent hover:border-danger/20 transition-colors"
+                                        title={`حظر ${champ}`}
+                                    >
+                                        <Ban className="w-3 h-3" /> حظر الدوري
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+                                    {list.map((match, idx) => {
+                                        const isAlreadyPublished = match.status === 'already_published';
+                                        return (
                             <div 
-                                key={idx} 
+                                key={`${champ}-${idx}`} 
                                 className={`rounded-2xl border p-4 md:p-5 shadow-card transition-all duration-200 ${
                                     isAlreadyPublished 
                                         ? 'bg-surface border-line opacity-90' 
@@ -276,8 +248,61 @@ export default function AutoImportMatches() {
                                     </div>
                                 </div>
                             </div>
-                        );
-                    })}
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                );
+            })()}
+            {showBlockedModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setShowBlockedModal(false)} />
+                    <div className="relative bg-surface border border-line rounded-2xl shadow-cardhover w-full max-w-md p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-ink flex items-center gap-2"><Shield className="w-4 h-4 text-accent" /> البطولات المحظورة</h3>
+                            <button onClick={()=>setShowBlockedModal(false)} className="p-2 rounded-lg hover:bg-surface2 text-inkmute hover:text-ink transition-colors">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <p className="text-xs text-inksoft">اكتب أي جزء من اسم البطولة وسيتم حظر كل ما يحتويه. مثال: "القطري"</p>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={newBlock}
+                                onChange={(e)=>setNewBlock(e.target.value)}
+                                onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); handleBlock(newBlock); } }}
+                                placeholder="اسم البطولة..."
+                                className="flex-1 bg-surface2 border border-line focus:border-accent/50 rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none"
+                            />
+                            <button onClick={()=>handleBlock(newBlock)} disabled={blocking || !newBlock.trim()} className="btn-gradient-red text-white px-4 py-2 rounded-[10px] text-sm font-medium disabled:opacity-40 shrink-0 inline-flex items-center gap-1">
+                                <Plus className="w-4 h-4" /> حظر
+                            </button>
+                        </div>
+                        {blocked.length>0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {blocked.map(b=>(
+                                    <span key={b.id} className="inline-flex items-center gap-1.5 bg-dangersoft text-danger border border-danger/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                        {b.name}
+                                        <button onClick={()=>handleUnblock(b.id)} className="p-0.5 rounded-full hover:bg-danger/10"><Trash2 className="w-3 h-3" /></button>
+                                    </span>
+                                ))}
+                            </div>
+                        ) : <p className="text-xs text-inkmute">لا يوجد محظور حالياً.</p>}
+                        {allChampions.length>0 && (
+                            <div className="pt-3 border-t border-line">
+                                <p className="text-xs font-semibold text-inksoft mb-2">اقتراحات من البطولات الحالية:</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {allChampions.slice(0,12).map(ch=>{
+                                        const isBlocked = blocked.some(b=> b.name.toLowerCase()===ch.toLowerCase() || ch.toLowerCase().includes(b.name.toLowerCase()));
+                                        if(isBlocked) return null;
+                                        return <button key={ch} onClick={()=>handleBlock(ch)} className="px-2.5 py-1 rounded-full text-xs bg-surface2 border border-line text-inksoft hover:border-accent/40 hover:text-accent transition-colors">{ch}</button>
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
