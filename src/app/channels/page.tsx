@@ -140,13 +140,13 @@ export default function ChannelsPage() {
                 <div className="flex gap-2">
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
-                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none border ${selectMode ? 'bg-violet-500/10 border-violet-500/20 text-violet-600' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
+                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${selectMode ? 'bg-violet-500/10 border-violet-500/20 text-violet-600' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
                     >
                         {selectMode ? <XSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
-                    <Link href="/channels/new" className="flex items-center gap-2 btn-gradient-red text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
+                    <Link href="/channels/new" className="flex items-center gap-2 btn-gradient-red text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                         <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Add Channel</span>
                     </Link>
@@ -156,21 +156,21 @@ export default function ChannelsPage() {
             {/* Toolbar: Search + Sort */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-inkmute pointer-events-none" />
                     <input
                         type="text"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search by name or ID..."
-                        className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                        className="w-full ios-search pl-10 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-all"
                     />
                     {search && (
                         <button
                             onClick={() => setSearch('')}
                             aria-label="Clear search"
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-inkmute hover:text-ink transition-colors"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-ink/10 dark:bg-white/15 text-inkmute hover:text-ink flex items-center justify-center transition-colors"
                         >
-                            <X className="w-4 h-4" />
+                            <X className="w-3 h-3" />
                         </button>
                     )}
                 </div>
@@ -179,7 +179,7 @@ export default function ChannelsPage() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
-                        className="appearance-none bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-violet-500/40"
+                        className="appearance-none bg-ink/[0.06] dark:bg-white/10 border-0 focus:bg-ink/[0.08] dark:focus:bg-white/[0.13] rounded-full pl-4 pr-9 py-2.5 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-violet-500/30"
                     >
                         <option value="id-asc">Default order</option>
                         <option value="name-asc">Name A → Z</option>
@@ -287,7 +287,7 @@ export default function ChannelsPage() {
                                     <Link
                                         href={selectMode ? '#' : `/channels/${channel.id}`}
                                         onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(channel.id); } : undefined}
-                                        className={`group bg-surface border rounded-2xl p-4 md:p-5 transition-all duration-200 relative block h-full ${selectedIds.has(channel.id)
+                                        className={`group bg-surface border rounded-[20px] p-4 md:p-5 transition-all duration-200 relative block h-full ${selectedIds.has(channel.id)
                                             ? 'border-violet-500/70 bg-violet-500/10'
                                             : 'border-line hover:border-inkmute/40 hover:shadow-cardhover hover:-translate-y-0.5'
                                             }`}

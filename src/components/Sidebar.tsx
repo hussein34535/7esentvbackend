@@ -96,7 +96,7 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-40 w-64 bg-surface border-r border-line flex flex-col font-sans
+                fixed inset-y-0 left-0 z-40 w-64 bg-surface/80 backdrop-blur-xl supports-[backdrop-filter]:bg-surface/70 border-r border-line/60 flex flex-col font-sans
                 transition-transform duration-300 ease-out
                 ${isOpen ? 'translate-x-0 shadow-cardhover' : '-translate-x-full'}
                 md:relative md:translate-x-0 md:shadow-none
