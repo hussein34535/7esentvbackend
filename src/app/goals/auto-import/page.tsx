@@ -107,13 +107,13 @@ export default function AutoImportGoal() {
                 <Link
                     href="/goals"
                     aria-label="Back to goals"
-                    className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                    className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <div>
                     <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-accent" />
+                        <Sparkles className="w-5 h-5 text-violet-500" />
                         جلب وإضافة الأهداف تلقائياً (Auto Goals)
                     </h1>
                     <p className="text-sm text-inksoft mt-0.5">أدخل روابط beIN Sports لتعبئة وحفظ تفاصيل الهدف فوراً</p>
@@ -134,7 +134,7 @@ export default function AutoImportGoal() {
                                 type="url"
                                 required
                                 placeholder="https://www.beinsports.com/..."
-                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent/40"
+                                className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40"
                                 value={pageUrl}
                                 onChange={e => setPageUrl(e.target.value)}
                             />
@@ -149,7 +149,7 @@ export default function AutoImportGoal() {
                                 type="url"
                                 required
                                 placeholder="https://...mp4 or embed"
-                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent/40"
+                                className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40"
                                 value={videoUrl}
                                 onChange={e => setVideoUrl(e.target.value)}
                             />
@@ -158,7 +158,7 @@ export default function AutoImportGoal() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full sm:w-auto flex justify-center items-center gap-2 btn-gradient-violet disabled:opacity-40 disabled:pointer-events-none text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                            className="w-full sm:w-auto flex justify-center items-center gap-2 btn-gradient-violet disabled:opacity-40 disabled:pointer-events-none text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                         >
                             {loading ? (
                                 <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الجلب...</>
@@ -173,7 +173,7 @@ export default function AutoImportGoal() {
                 {message && (
                     <div className={`flex items-start gap-2.5 p-4 rounded-xl border ${
                         message.type === 'success'
-                            ? 'bg-accentsoft border-accentline text-accentstrong'
+                            ? 'bg-violet-500/10 border-violet-500/20 text-violet-600'
                             : message.type === 'error'
                             ? 'bg-dangersoft border-danger/30 text-danger'
                             : 'bg-infosoft border-info/30 text-info'
@@ -216,7 +216,7 @@ export default function AutoImportGoal() {
                                     id="scraped-title"
                                     type="text"
                                     required
-                                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent/40"
+                                    className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink outline-none transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40"
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
                                 />
@@ -252,9 +252,9 @@ export default function AutoImportGoal() {
                                     tabIndex={0}
                                     onClick={() => setIsPremium(!isPremium)}
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPremium(!isPremium); } }}
-                                    className={`flex items-center gap-3 p-3.5 md:p-4 bg-surface2 border rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${isPremium ? 'border-accent/60' : 'border-line hover:border-inkmute/40'}`}
+                                    className={`flex items-center gap-3 p-3.5 md:p-4 bg-surface2 border rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${isPremium ? 'border-violet-500/60' : 'border-line hover:border-inkmute/40'}`}
                                 >
-                                    <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${isPremium ? 'bg-accent border-accent' : 'border-inkmute/50 bg-surface'}`}>
+                                    <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${isPremium ? 'bg-violet-500 border-violet-500' : 'border-inkmute/50 bg-surface'}`}>
                                         {isPremium && <Star className="w-3 h-3 text-surface fill-current" />}
                                     </div>
                                     <div>
@@ -269,7 +269,7 @@ export default function AutoImportGoal() {
                                     tabIndex={0}
                                     onClick={() => setIsPublished(!isPublished)}
                                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsPublished(!isPublished); } }}
-                                    className={`flex items-center gap-3 p-3.5 md:p-4 bg-surface2 border rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${isPublished ? 'border-accent/60' : 'border-line hover:border-inkmute/40'}`}
+                                    className={`flex items-center gap-3 p-3.5 md:p-4 bg-surface2 border rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${isPublished ? 'border-violet-500/60' : 'border-line hover:border-inkmute/40'}`}
                                 >
                                     <div className={`w-10 h-6 rounded-full p-1 shrink-0 transition-colors ${isPublished ? 'bg-gradient-red' : 'bg-inkmute/40'}`}>
                                         <div className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />
@@ -288,7 +288,7 @@ export default function AutoImportGoal() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="flex items-center gap-2 btn-gradient-red disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                className="flex items-center gap-2 btn-gradient-red disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                             >
                                 {saving ? (
                                     <><RefreshCw className="w-4 h-4 animate-spin" /> جاري الحفظ...</>

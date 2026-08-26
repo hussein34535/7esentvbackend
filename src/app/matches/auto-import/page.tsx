@@ -21,7 +21,7 @@ interface ScrapedMatch {
     status?: 'published' | 'already_published';
 }
 
-const primaryBtn = 'inline-flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const primaryBtn = 'inline-flex items-center gap-2 btn-gradient-violet text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
 
 const formatTime12h = (timeStr: string) => {
     if (!timeStr) return '';
@@ -144,7 +144,7 @@ export default function AutoImportMatches() {
         <div className="font-sans max-w-5xl mx-auto px-4 py-6 md:py-8" dir="rtl">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 md:mb-8">
                 <div className="flex items-start gap-3">
-                    <Link href="/" aria-label="رجوع" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                    <Link href="/" aria-label="رجوع" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5 rotate-180" />
                     </Link>
                     <div>
@@ -187,7 +187,7 @@ export default function AutoImportMatches() {
             {message && (
                 <div className={`mb-6 p-4 rounded-2xl border flex items-center gap-3 ${
                     message.type === 'success' 
-                        ? 'bg-accentsoft border-accentline text-accentstrong' 
+                        ? 'bg-violet-500/10 border-violet-500/20 text-violet-600' 
                         : message.type === 'error'
                         ? 'bg-dangersoft border-danger/20 text-danger'
                         : 'bg-infosoft border-info/20 text-info'
@@ -219,7 +219,7 @@ export default function AutoImportMatches() {
                             <div key={champ}>
                                 <div className="flex items-center justify-between mb-3">
                                     <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-                                        <span className="w-1 h-5 bg-accent rounded-full"></span>
+                                        <span className="w-1 h-5 bg-violet-500 rounded-full"></span>
                                         {champ}
                                         <span className="text-xs font-normal text-inkmute">({list.length})</span>
                                     </h3>
@@ -240,7 +240,7 @@ export default function AutoImportMatches() {
                                 className={`rounded-2xl border p-4 md:p-5 shadow-card transition-all duration-200 ${
                                     isAlreadyPublished 
                                         ? 'bg-surface border-line opacity-90' 
-                                        : 'bg-surface border-accent/40 hover:border-accent hover:shadow-cardhover'
+                                        : 'bg-surface border-violet-500/40 hover:border-violet-500 hover:shadow-cardhover'
                                 }`}
                             >
                                 <div className="flex flex-col h-full">
@@ -321,7 +321,7 @@ export default function AutoImportMatches() {
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={()=>setShowBlockedModal(false)} />
                     <div className="relative bg-surface border border-line rounded-2xl shadow-cardhover w-full max-w-md p-5 space-y-4 max-h-[80vh] overflow-y-auto">
                         <div className="flex items-center justify-between">
-                            <h3 className="font-bold text-ink flex items-center gap-2"><Shield className="w-4 h-4 text-accent" /> البطولات المحظورة</h3>
+                            <h3 className="font-bold text-ink flex items-center gap-2"><Shield className="w-4 h-4 text-violet-500" /> البطولات المحظورة</h3>
                             <button onClick={()=>setShowBlockedModal(false)} className="p-2 rounded-lg hover:bg-surface2 text-inkmute hover:text-ink transition-colors">
                                 <X className="w-4 h-4" />
                             </button>
@@ -334,7 +334,7 @@ export default function AutoImportMatches() {
                                 onChange={(e)=>setNewBlock(e.target.value)}
                                 onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); handleBlock(newBlock); } }}
                                 placeholder="اسم البطولة..."
-                                className="flex-1 bg-surface2 border border-line focus:border-accent/50 rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none"
+                                className="flex-1 bg-surface2 border border-line focus:border-violet-500/50 rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none"
                             />
                             <button onClick={()=>handleBlock(newBlock)} disabled={blocking || !newBlock.trim()} className="btn-gradient-red text-white px-4 py-2 rounded-[10px] text-sm font-medium disabled:opacity-40 shrink-0 inline-flex items-center gap-1">
                                 <Plus className="w-4 h-4" /> حظر
@@ -357,7 +357,7 @@ export default function AutoImportMatches() {
                                     {allChampions.slice(0,12).map(ch=>{
                                         const isBlocked = blocked.some(b=> b.name.toLowerCase()===ch.toLowerCase() || ch.toLowerCase().includes(b.name.toLowerCase()));
                                         if(isBlocked) return null;
-                                        return <button key={ch} onClick={()=>handleBlock(ch)} className="px-2.5 py-1 rounded-full text-xs bg-surface2 border border-line text-inksoft hover:border-accent/40 hover:text-accent transition-colors">{ch}</button>
+                                        return <button key={ch} onClick={()=>handleBlock(ch)} className="px-2.5 py-1 rounded-full text-xs bg-surface2 border border-line text-inksoft hover:border-violet-500/40 hover:text-violet-500 transition-colors">{ch}</button>
                                     })}
                                 </div>
                             </div>

@@ -104,7 +104,7 @@ export default function EditCategory() {
         <div>
             <main className="max-w-5xl mx-auto px-4 py-6 md:py-8">
                 <div className="flex items-center gap-3 mb-6 md:mb-8">
-                    <Link href="/categories" aria-label="Back to categories" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                    <Link href="/categories" aria-label="Back to categories" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">Edit Category #{categoryId}</h1>
@@ -128,7 +128,7 @@ export default function EditCategory() {
                                     id="category-name"
                                     required
                                     type="text"
-                                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink outline-none transition-colors"
+                                    className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink outline-none transition-colors"
                                     value={name} onChange={e => setName(e.target.value)}
                                 />
                             </div>
@@ -140,7 +140,7 @@ export default function EditCategory() {
                                     <input
                                         id="sort-order"
                                         type="number"
-                                        className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-8 pr-3 py-2 text-sm text-ink tabular-nums outline-none transition-colors"
+                                        className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-8 pr-3 py-2 text-sm text-ink tabular-nums outline-none transition-colors"
                                         value={sortOrder} onChange={e => setSortOrder(parseInt(e.target.value) || 0)}
                                     />
                                 </div>
@@ -155,7 +155,7 @@ export default function EditCategory() {
                                     aria-checked={isPremium}
                                     aria-label="Toggle premium content"
                                     onClick={() => setIsPremium(!isPremium)}
-                                    className={`w-11 h-6 rounded-full p-0.5 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${isPremium ? 'bg-warn' : 'bg-line'}`}
+                                    className={`w-11 h-6 rounded-full p-0.5 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${isPremium ? 'bg-warn' : 'bg-line'}`}
                                 >
                                     <span className={`block w-5 h-5 rounded-full bg-surface shadow-sm transition-transform duration-200 ${isPremium ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </button>
@@ -164,13 +164,13 @@ export default function EditCategory() {
 
                         {/* Footer */}
                         <div className="flex items-center justify-end gap-2">
-                            <Link href="/categories" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            <Link href="/categories" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                 Cancel
                             </Link>
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 btn-gradient-red text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                                className="flex items-center gap-2 btn-gradient-red text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
                             </button>
@@ -193,7 +193,7 @@ export default function EditCategory() {
                             <input
                                 type="text"
                                 placeholder="Search channels to add..."
-                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                                className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                 value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                             />
                         </div>
@@ -207,7 +207,7 @@ export default function EditCategory() {
                                             key={channel.id}
                                             onClick={() => toggleChannel(channel.id)}
                                             className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${isSelected
-                                                ? 'bg-accentsoft/50'
+                                                ? 'bg-violet-500/10'
                                                 : 'hover:bg-surface2/60'
                                                 }`}
                                         >

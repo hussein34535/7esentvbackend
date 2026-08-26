@@ -96,8 +96,8 @@ export default function Payments() {
         (m.number && m.number.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    const inputSkin = "w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
-    const btnFocus = "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none";
+    const inputSkin = "w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
+    const btnFocus = "focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none";
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -127,7 +127,7 @@ export default function Payments() {
                     placeholder="Search methods..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                    className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                 />
                 {searchTerm && (
                     <button
@@ -159,7 +159,7 @@ export default function Payments() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {filteredMethods.map((method) => (
-                        <div key={method.id} className="bg-surface border border-line rounded-2xl p-4 md:p-5 flex flex-col hover:border-accent/40 hover:shadow-cardhover transition-all duration-200">
+                        <div key={method.id} className="bg-surface border border-line rounded-2xl p-4 md:p-5 flex flex-col hover:border-violet-500/40 hover:shadow-cardhover transition-all duration-200">
                             <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold text-ink flex items-center gap-2">
                                     <CreditCard className="w-5 h-5 text-inkmute" />
@@ -251,7 +251,7 @@ export default function Payments() {
                                     type="checkbox"
                                     checked={formData.is_active}
                                     onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-4 h-4 accent-accent focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                    className="w-4 h-4 accent-accent focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                                 />
                                 <span className="text-sm text-inksoft">Active</span>
                             </label>

@@ -8,8 +8,8 @@ import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
 
-const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const inputSkin = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
+const btnBase = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
+const inputSkin = `w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
 const fieldLabel = 'block text-sm font-medium text-ink mb-1.5';
 const cardSkin = 'bg-surface border border-line rounded-2xl p-4 md:p-5 space-y-4';
 
@@ -112,7 +112,7 @@ export default function NewHighlight() {
                 {/* Auto-fill */}
                 <section className={cardSkin}>
                     <h2 className="text-sm font-semibold text-ink flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-accent" /> جلب بيانات المباراة تلقائياً
+                        <Sparkles className="w-4 h-4 text-violet-500" /> جلب بيانات المباراة تلقائياً
                     </h2>
                     <div className="grid grid-cols-1 gap-3">
                         <div>
@@ -142,7 +142,7 @@ export default function NewHighlight() {
                         disabled={autoLoading}
                         className={`w-full flex items-center justify-center gap-2 py-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${btnBase}`}
                     >
-                        <Sparkles className="w-4 h-4 text-accent" />
+                        <Sparkles className="w-4 h-4 text-violet-500" />
                         {autoLoading ? 'جاري جلب وتعبئة البيانات...' : 'جلب وتعبئة البيانات'}
                     </button>
                     {autoMessage && (
@@ -201,7 +201,7 @@ export default function NewHighlight() {
                                         required
                                         type="url"
                                         placeholder="https://..."
-                                        className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors font-mono ${btnBase}`}
+                                        className={`w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors font-mono ${btnBase}`}
                                         value={link.url} onChange={e => updateLink(idx, 'url', e.target.value)}
                                     />
                                 </div>
@@ -241,7 +241,7 @@ export default function NewHighlight() {
                         <button
                             type="button"
                             onClick={() => setIsPublished(!isPublished)}
-                            className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-accent/50' : 'border-line'} ${btnBase}`}
+                            className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-violet-500/50' : 'border-line'} ${btnBase}`}
                         >
                             <span className={`w-10 h-6 rounded-full p-1 transition-colors shrink-0 flex items-center ${isPublished ? 'bg-gradient-red' : 'bg-line'}`}>
                                 <span className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />

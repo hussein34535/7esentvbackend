@@ -16,7 +16,7 @@ interface FetchedData {
     videoId: string | null;
 }
 
-const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
 
 export default function AutoImportFullMatch() {
     const [videoUrl, setVideoUrl] = useState('');
@@ -108,7 +108,7 @@ export default function AutoImportFullMatch() {
                 <div>
                     <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
                         جلب مباراة كاملة تلقائياً
-                        <Zap className="w-5 h-5 text-accent shrink-0" />
+                        <Zap className="w-5 h-5 text-violet-500 shrink-0" />
                     </h1>
                     <p className="text-sm text-inksoft mt-1">
                         أدخل رابط الفيديو (Dailymotion / YouTube) ويجلب العنوان والصورة تلقائياً
@@ -119,7 +119,7 @@ export default function AutoImportFullMatch() {
             {/* Input Card */}
             <section className="bg-surface border border-line rounded-2xl p-4 md:p-6 shadow-card space-y-3 mb-4 md:mb-6">
                 <label htmlFor="video-url" className="flex items-center gap-2 text-sm font-medium text-ink">
-                    <Play className="w-3.5 h-3.5 text-accent" />
+                    <Play className="w-3.5 h-3.5 text-violet-500" />
                     رابط الفيديو
                 </label>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -127,7 +127,7 @@ export default function AutoImportFullMatch() {
                         id="video-url"
                         type="url"
                         placeholder="https://www.dailymotion.com/video/... أو YouTube"
-                        className={`flex-1 bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-4 py-2.5 text-sm text-ink outline-none transition-colors font-mono placeholder:text-inkmute placeholder:font-sans ${FOCUS_RING}`}
+                        className={`flex-1 bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-4 py-2.5 text-sm text-ink outline-none transition-colors font-mono placeholder:text-inkmute placeholder:font-sans ${FOCUS_RING}`}
                         value={videoUrl}
                         onChange={e => setVideoUrl(e.target.value)}
                         disabled={fetching || saving}
@@ -158,7 +158,7 @@ export default function AutoImportFullMatch() {
 
             {/* Success */}
             {successMsg && (
-                <div className="mb-4 md:mb-5 p-4 bg-accentsoft border border-accentline rounded-xl flex items-start gap-3 text-accentstrong">
+                <div className="mb-4 md:mb-5 p-4 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-start gap-3 text-accentstrong">
                     <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
                     <div className="flex-1">
                         <p className="text-sm font-semibold">{successMsg}</p>
@@ -185,7 +185,7 @@ export default function AutoImportFullMatch() {
                 <div className="flex flex-col items-center justify-center py-14 bg-surface border border-line rounded-2xl gap-4">
                     <div className="relative">
                         <div className="w-12 h-12 rounded-full border-[3px] border-surface2 border-t-accent animate-spin" />
-                        <Film className="w-4 h-4 text-accent absolute inset-0 m-auto" />
+                        <Film className="w-4 h-4 text-violet-500 absolute inset-0 m-auto" />
                     </div>
                     <p className="text-inksoft text-sm">جاري جلب بيانات الفيديو...</p>
                 </div>
@@ -217,7 +217,7 @@ export default function AutoImportFullMatch() {
                             </div>
                         )}
                         <div className="absolute bottom-3 right-3 bg-ink/80 text-white text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5">
-                            <Film className="w-3 h-3 text-accent" />
+                            <Film className="w-3 h-3 text-violet-500" />
                             مباراة كاملة
                         </div>
                     </div>
@@ -231,7 +231,7 @@ export default function AutoImportFullMatch() {
                                 type="text"
                                 value={editTitle}
                                 onChange={e => setEditTitle(e.target.value)}
-                                className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-inkmute ${FOCUS_RING}`}
+                                className={`w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-inkmute ${FOCUS_RING}`}
                                 placeholder="عنوان المباراة..."
                             />
                         </div>
@@ -241,14 +241,14 @@ export default function AutoImportFullMatch() {
                             {/* Converted URL (saved to DB) */}
                             <div>
                                 <label className="flex items-center gap-1.5 text-xs font-medium text-ink mb-1.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-violet-500 inline-block" />
                                     الرابط المحوَّل (يُحفظ هكذا)
                                 </label>
-                                <div className="flex items-center gap-2 bg-accentsoft border border-accentline rounded-[10px] px-3 py-2.5">
-                                    <Play className="w-3.5 h-3.5 text-accent shrink-0" />
+                                <div className="flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 rounded-[10px] px-3 py-2.5">
+                                    <Play className="w-3.5 h-3.5 text-violet-500 shrink-0" />
                                     <span className="text-xs text-accentstrong font-mono truncate">{fetchedData.videoUrl}</span>
                                     {fetchedData.videoId && (
-                                        <span className="shrink-0 text-[10px] bg-surface border border-accentline text-accentstrong px-2 py-0.5 rounded-md font-mono font-semibold tabular-nums">
+                                        <span className="shrink-0 text-[10px] bg-surface border border-violet-500/20 text-accentstrong px-2 py-0.5 rounded-md font-mono font-semibold tabular-nums">
                                             ID: {fetchedData.videoId}
                                         </span>
                                     )}
@@ -277,7 +277,7 @@ export default function AutoImportFullMatch() {
                                 onClick={() => setIsPremium(!isPremium)}
                                 aria-pressed={isPremium}
                                 className={`flex items-center gap-3 p-3 border rounded-xl text-right transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPremium
-                                    ? 'border-accent bg-accentsoft/50'
+                                    ? 'border-violet-500 bg-violet-500/10'
                                     : 'bg-surface2 border-line hover:border-inkmute/40'
                                     }`}
                             >
@@ -295,7 +295,7 @@ export default function AutoImportFullMatch() {
                                 onClick={() => setIsPublished(!isPublished)}
                                 aria-pressed={isPublished}
                                 className={`flex items-center gap-3 p-3 border rounded-xl text-right transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPublished
-                                    ? 'border-accent bg-accentsoft/50'
+                                    ? 'border-violet-500 bg-violet-500/10'
                                     : 'bg-surface2 border-line hover:border-inkmute/40'
                                     }`}
                             >

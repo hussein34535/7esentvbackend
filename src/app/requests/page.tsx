@@ -75,7 +75,7 @@ export default function RequestsPage() {
         { key: 'rejected', label: 'Rejected' },
     ];
 
-    const btnFocus = "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none";
+    const btnFocus = "focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none";
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -126,7 +126,7 @@ export default function RequestsPage() {
             ) : (
                 <div className="grid gap-4">
                     {filteredRequests.map((req) => (
-                        <div key={req.id} className="bg-surface border border-line rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-6 hover:border-accent/40 hover:shadow-cardhover transition-all duration-200">
+                        <div key={req.id} className="bg-surface border border-line rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-6 hover:border-violet-500/40 hover:shadow-cardhover transition-all duration-200">
 
                             <div className="w-24 h-24 bg-surface2 rounded-xl overflow-hidden flex-shrink-0 relative border border-line">
                                 {req.receipt_image ? (
@@ -181,7 +181,7 @@ export default function RequestsPage() {
                                     <button
                                         onClick={() => handleApprove(req)}
                                         disabled={processingId === req.id}
-                                        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium text-accentstrong hover:bg-accentsoft transition-colors disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium text-accentstrong hover:bg-violet-500/10 transition-colors disabled:opacity-40 disabled:pointer-events-none ${btnFocus}`}
                                     >
                                         <Check className="w-4 h-4" />
                                         Approve

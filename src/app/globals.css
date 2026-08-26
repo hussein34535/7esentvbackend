@@ -75,7 +75,7 @@
 
 /* Gradient fill without glow — for small interactive elements (chips, toggles, pagination) */
 .bg-gradient-red {
-    background-image: linear-gradient(135deg, #ff2749 0%, #e50f3c 60%, #c40833 100%);
+    background-image: linear-gradient(135deg, #8b5cf6 0%, #d946ef 55%, #ec4899 100%);
 }
 
 .btn-gradient-red:hover {

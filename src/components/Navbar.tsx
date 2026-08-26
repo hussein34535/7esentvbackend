@@ -11,33 +11,33 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
                         <Link href="/" className="text-2xl font-bold text-ink tracking-tight">
-                            7ESEN<span className="text-accent">TV</span>
+                            7ESEN<span className="text-violet-500">TV</span>
                         </Link>
                     </div>
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-1">
-                            <Link href="/" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            <Link href="/" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                 Matches
                             </Link>
-                            <Link href="/channels" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            <Link href="/channels" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                 Channels
                             </Link>
-                            <Link href="/news" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            <Link href="/news" className="px-3 py-2 rounded-[10px] text-sm font-medium text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                 News
                             </Link>
-                            <Link href="/users" className="px-3 py-2 rounded-[10px] text-sm font-medium text-accentstrong hover:bg-accentsoft transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                            <Link href="/users" className="px-3 py-2 rounded-[10px] text-sm font-medium text-accentstrong hover:bg-violet-500/10 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                 Users
                             </Link>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <button className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none" aria-label="Search">
+                        <button className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none" aria-label="Search">
                             <Search className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             aria-label="Toggle menu"
-                            className="md:hidden p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                            className="md:hidden p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                         >
                             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
@@ -73,7 +73,7 @@ export default function Navbar() {
                         <Link
                             href="/users"
                             onClick={() => setIsOpen(false)}
-                            className="block px-3 py-2 rounded-[10px] text-base font-medium text-accentstrong hover:bg-accentsoft transition-colors"
+                            className="block px-3 py-2 rounded-[10px] text-base font-medium text-accentstrong hover:bg-violet-500/10 transition-colors"
                         >
                             Users
                         </Link>

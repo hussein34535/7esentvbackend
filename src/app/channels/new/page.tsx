@@ -121,7 +121,7 @@ export default function NewChannel() {
         <div>
             <main className="max-w-3xl mx-auto px-4 py-6 md:py-8">
                 <div className="flex items-center gap-3 mb-6 md:mb-8">
-                    <Link href="/channels" aria-label="Back to channels" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                    <Link href="/channels" aria-label="Back to channels" className="p-2 rounded-lg text-inkmute hover:text-ink hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight">New Channel</h1>
@@ -139,7 +139,7 @@ export default function NewChannel() {
                                 required
                                 type="text"
                                 placeholder="e.g. beIN Sports 1"
-                                className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                                className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                 value={name} onChange={e => setName(e.target.value)}
                             />
                         </div>
@@ -179,13 +179,13 @@ export default function NewChannel() {
                                                 }
                                             }}
                                             className={`cursor-pointer px-4 py-3 rounded-xl border transition-all duration-200 flex items-center justify-between ${selectedCats.includes(cat.id)
-                                                ? 'border-accent bg-accentsoft/50 text-ink'
+                                                ? 'border-violet-500 bg-violet-500/10 text-ink'
                                                 : 'bg-surface2/50 border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                                 }`}
                                         >
                                             <span className="text-sm font-medium truncate" title={cat.name}>{cat.name}</span>
                                             {selectedCats.includes(cat.id) && (
-                                                <span className="w-2 h-2 rounded-full bg-accent shrink-0 ml-2" />
+                                                <span className="w-2 h-2 rounded-full bg-violet-500 shrink-0 ml-2" />
                                             )}
                                         </div>
                                     ))}
@@ -205,13 +205,13 @@ export default function NewChannel() {
                                 <p className="text-xs text-inkmute mt-0.5">Add multiple qualities or sources.</p>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-accentline bg-accentsoft text-accentstrong hover:bg-accentsoft/70 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                                <button type="button" onClick={() => setIsEsenlinksOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-violet-500/20 bg-violet-500/10 text-accentstrong hover:bg-violet-500/10/70 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                     <Sparkles className="w-3.5 h-3.5" /> Import Esenlinks
                                 </button>
-                                <button type="button" onClick={parseRichTextJson} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-inksoft hover:bg-surface2 hover:text-ink transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                                <button type="button" onClick={parseRichTextJson} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-inksoft hover:bg-surface2 hover:text-ink transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                     <Wand2 className="w-3.5 h-3.5" /> Import JSON
                                 </button>
-                                <button type="button" onClick={addStream} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-accentstrong hover:bg-surface2 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                                <button type="button" onClick={addStream} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-medium border border-line bg-surface text-accentstrong hover:bg-surface2 transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                                     <Plus className="w-3.5 h-3.5" /> Add Stream
                                 </button>
                             </div>
@@ -229,7 +229,7 @@ export default function NewChannel() {
                                             <input
                                                 type="text"
                                                 placeholder="e.g. FHD"
-                                                className="w-full bg-surface border border-line focus:border-accent/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                                                className="w-full bg-surface border border-line focus:border-violet-500/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                                 value={stream.name}
                                                 onChange={e => handleStreamChange(idx, 'name', e.target.value)}
                                             />
@@ -241,7 +241,7 @@ export default function NewChannel() {
                                             <input
                                                 type="text"
                                                 placeholder="https://..."
-                                                className="w-full bg-surface border border-line focus:border-accent/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                                                className="w-full bg-surface border border-line focus:border-violet-500/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                                                 value={stream.url}
                                                 onChange={e => handleStreamChange(idx, 'url', e.target.value)}
                                             />
@@ -252,7 +252,7 @@ export default function NewChannel() {
                                             <button
                                                 type="button"
                                                 onClick={() => handleStreamChange(idx, 'is_premium', !stream.is_premium)}
-                                                className={`flex items-center gap-2 px-3 py-1.5 rounded-[10px] border transition-all duration-200 w-full justify-center focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${stream.is_premium
+                                                className={`flex items-center gap-2 px-3 py-1.5 rounded-[10px] border transition-all duration-200 w-full justify-center focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${stream.is_premium
                                                     ? 'bg-warnsoft border-warn/40 text-warn'
                                                     : 'bg-surface border-line text-inksoft hover:bg-surface2'
                                                     }`}
@@ -267,7 +267,7 @@ export default function NewChannel() {
                                         type="button"
                                         onClick={() => removeStream(idx)}
                                         disabled={streams.length <= 1}
-                                        className="mt-6 p-1.5 rounded-lg text-inkmute hover:text-danger hover:bg-dangersoft transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-30 disabled:pointer-events-none"
+                                        className="mt-6 p-1.5 rounded-lg text-inkmute hover:text-danger hover:bg-dangersoft transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-30 disabled:pointer-events-none"
                                         title="Remove Stream"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -279,13 +279,13 @@ export default function NewChannel() {
 
                     {/* Footer */}
                     <div className="pt-2 flex items-center justify-end gap-2">
-                        <Link href="/channels" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                        <Link href="/channels" className="px-4 py-2 rounded-[10px] text-sm font-medium bg-surface border border-line hover:bg-surface2 text-ink transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                             Cancel
                         </Link>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 btn-gradient-red text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                            className="flex items-center gap-2 btn-gradient-red text-white px-6 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                         >
                             {loading ? 'Creating...' : <><Save className="w-4 h-4" /> Create Channel</>}
                         </button>

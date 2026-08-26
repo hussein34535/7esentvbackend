@@ -135,11 +135,11 @@ export default function Home() {
     : matches;
 
   const secondaryBtn =
-    'inline-flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+    'inline-flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
   const primaryBtn =
-    'inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+    'inline-flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-3 md:px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
   const iconBtn =
-    'p-2 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+    'p-2 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -156,7 +156,7 @@ export default function Home() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
-            className={`${secondaryBtn} ${selectMode ? 'bg-accent border-accent text-white hover:bg-accentstrong' : ''}`}
+            className={`${secondaryBtn} ${selectMode ? 'bg-violet-500 border-violet-500 text-white hover:bg-accentstrong' : ''}`}
           >
             {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
             <span>{selectMode ? 'إلغاء' : 'تحديد'}</span>
@@ -182,7 +182,7 @@ export default function Home() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by team name..."
-            className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+            className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
           />
           {search && (
             <button
@@ -203,13 +203,13 @@ export default function Home() {
           </span>
           <button
             onClick={selectAll}
-            className="text-xs font-medium text-accent hover:text-accentstrong px-2 py-1.5 rounded-lg hover:bg-accentsoft transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+            className="text-xs font-medium text-violet-500 hover:text-accentstrong px-2 py-1.5 rounded-lg hover:bg-violet-500/10 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
           >
             Select All
           </button>
           <button
             onClick={deselectAll}
-            className="text-xs font-medium text-inksoft hover:text-ink px-2 py-1.5 rounded-lg hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+            className="text-xs font-medium text-inksoft hover:text-ink px-2 py-1.5 rounded-lg hover:bg-surface2 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
           >
             Deselect All
           </button>
@@ -217,7 +217,7 @@ export default function Home() {
           <button
             onClick={handleBulkDelete}
             disabled={selectedIds.size === 0 || deleting}
-            className="inline-flex items-center gap-2 bg-danger hover:bg-red-600 disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+            className="inline-flex items-center gap-2 bg-danger hover:bg-red-600 disabled:opacity-40 disabled:pointer-events-none text-white px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
           >
             <Trash2 className="w-4 h-4" />
             {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
@@ -225,7 +225,7 @@ export default function Home() {
           <button
             onClick={handleDeleteAll}
             disabled={deleting || matches.length === 0}
-            className="inline-flex items-center gap-2 bg-surface border border-line hover:bg-dangersoft hover:border-danger/40 hover:text-danger disabled:opacity-40 disabled:pointer-events-none text-ink px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+            className="inline-flex items-center gap-2 bg-surface border border-line hover:bg-dangersoft hover:border-danger/40 hover:text-danger disabled:opacity-40 disabled:pointer-events-none text-ink px-4 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
           >
             <Trash2 className="w-4 h-4" />
             Delete All
@@ -262,7 +262,7 @@ export default function Home() {
               <p className="text-sm text-inksoft mb-3">No matches found for your search.</p>
               <button
                 onClick={() => setSearch('')}
-                className="text-sm font-medium text-accent hover:text-accentstrong transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 rounded-lg focus-visible:outline-none"
+                className="text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 rounded-lg focus-visible:outline-none"
               >
                 Clear search
               </button>
@@ -272,7 +272,7 @@ export default function Home() {
               <p className="text-sm text-inksoft mb-3">No matches yet.</p>
               <Link
                 href="/matches/new"
-                className="inline-block text-sm font-medium text-accent hover:text-accentstrong transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 rounded-lg focus-visible:outline-none"
+                className="inline-block text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 rounded-lg focus-visible:outline-none"
               >
                 Add your first match
               </Link>
@@ -287,9 +287,9 @@ export default function Home() {
                 <button
                   onClick={() => toggleSelect(match.id)}
                   aria-label="Toggle selection"
-                  className={`absolute top-2 left-2 z-30 p-2 rounded-lg bg-surface border border-line transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${
+                  className={`absolute top-2 left-2 z-30 p-2 rounded-lg bg-surface border border-line transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${
                     selectedIds.has(match.id)
-                      ? 'border-accent text-accentstrong'
+                      ? 'border-violet-500 text-accentstrong'
                       : 'text-inkmute hover:text-ink hover:bg-surface2'
                   }`}
                 >
@@ -315,14 +315,14 @@ export default function Home() {
                   <button
                     onClick={(e) => handleDuplicate(e, match.id)}
                     title="Duplicate as Draft"
-                    className={`p-2 rounded-lg bg-surface border border-line text-inkmute hover:text-accentstrong hover:border-accent/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none`}
+                    className={`p-2 rounded-lg bg-surface border border-line text-inkmute hover:text-accentstrong hover:border-violet-500/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none`}
                   >
                     <Copy className="w-4 h-4" />
                   </button>
                   <button
                     onClick={(e) => handleDelete(e, match.id)}
                     title="Delete Match"
-                    className={`p-2 rounded-lg bg-surface border border-line text-inkmute hover:text-danger hover:bg-dangersoft hover:border-danger/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none`}
+                    className={`p-2 rounded-lg bg-surface border border-line text-inkmute hover:text-danger hover:bg-dangersoft hover:border-danger/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none`}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

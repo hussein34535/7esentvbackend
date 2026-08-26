@@ -8,8 +8,8 @@ import Link from 'next/link';
 import Uploader from '@/components/Uploader';
 import { CloudinaryAsset } from '@/types/cloudinary.types';
 
-const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const INPUT_SKIN = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-4 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`;
+const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
+const INPUT_SKIN = `w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-4 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`;
 const BTN_PRIMARY = `inline-flex items-center justify-center gap-2 btn-gradient-red text-white rounded-[10px] px-5 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${FOCUS_RING}`;
 const BTN_SECONDARY = `inline-flex items-center justify-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING}`;
 
@@ -112,11 +112,11 @@ export default function NewNews() {
                         onClick={() => setIsPremium(!isPremium)}
                         aria-pressed={isPremium}
                         className={`w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPremium
-                            ? 'border-accent bg-accentsoft/50'
+                            ? 'border-violet-500 bg-violet-500/10'
                             : 'bg-surface2 border-line hover:border-inkmute/40'
                             }`}
                     >
-                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors shrink-0 ${isPremium ? 'bg-accent border-accent' : 'border-inkmute/60 bg-surface'}`}>
+                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors shrink-0 ${isPremium ? 'bg-violet-500 border-violet-500' : 'border-inkmute/60 bg-surface'}`}>
                             {isPremium && <Star className="w-3 h-3 text-white fill-current" />}
                         </div>
                         <div>
@@ -130,7 +130,7 @@ export default function NewNews() {
                         onClick={() => setIsPublished(!isPublished)}
                         aria-pressed={isPublished}
                         className={`w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-all duration-200 active:scale-[0.99] ${FOCUS_RING} ${isPublished
-                            ? 'border-accent bg-accentsoft/50'
+                            ? 'border-violet-500 bg-violet-500/10'
                             : 'bg-surface2 border-line hover:border-inkmute/40'
                             }`}
                     >

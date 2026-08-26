@@ -140,13 +140,13 @@ export default function ChannelsPage() {
                 <div className="flex gap-2">
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
-                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none border ${selectMode ? 'bg-accentsoft border-accentline text-accentstrong' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
+                        className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none border ${selectMode ? 'bg-violet-500/10 border-violet-500/20 text-violet-600' : 'bg-surface border-line hover:bg-surface2 text-ink'}`}
                     >
                         {selectMode ? <XSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />}
                         <span>{selectMode ? 'Cancel' : 'Select'}</span>
                     </button>
 
-                    <Link href="/channels/new" className="flex items-center gap-2 btn-gradient-red text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none">
+                    <Link href="/channels/new" className="flex items-center gap-2 btn-gradient-red text-white px-3 py-1.5 md:px-4 md:py-2 rounded-[10px] text-xs md:text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none">
                         <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         <span>Add Channel</span>
                     </Link>
@@ -162,7 +162,7 @@ export default function ChannelsPage() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search by name or ID..."
-                        className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                        className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                     />
                     {search && (
                         <button
@@ -179,7 +179,7 @@ export default function ChannelsPage() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
-                        className="appearance-none bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-accent/40"
+                        className="appearance-none bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-violet-500/40"
                     >
                         <option value="id-asc">Default order</option>
                         <option value="name-asc">Name A → Z</option>
@@ -240,7 +240,7 @@ export default function ChannelsPage() {
                     <button
                         onClick={handleBulkDelete}
                         disabled={selectedIds.size === 0 || deleting}
-                        className="flex items-center gap-2 bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-[10px] font-medium transition-all duration-200 active:scale-[0.98] shadow-sm text-sm focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                        className="flex items-center gap-2 bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-[10px] font-medium transition-all duration-200 active:scale-[0.98] shadow-sm text-sm focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                     >
                         <Trash2 className="w-4 h-4" />
                         {deleting ? 'Deleting...' : `Delete (${selectedIds.size})`}
@@ -275,10 +275,10 @@ export default function ChannelsPage() {
                                         <button
                                             onClick={() => toggleSelect(channel.id)}
                                             aria-label="Toggle selection"
-                                            className="absolute top-3 left-3 z-30 p-1 rounded-md bg-surface border border-line shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                            className="absolute top-3 left-3 z-30 p-1 rounded-md bg-surface border border-line shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                                         >
                                             {selectedIds.has(channel.id) ? (
-                                                <CheckSquare className="w-5 h-5 text-accent" />
+                                                <CheckSquare className="w-5 h-5 text-violet-500" />
                                             ) : (
                                                 <Square className="w-5 h-5 text-inkmute" />
                                             )}
@@ -288,7 +288,7 @@ export default function ChannelsPage() {
                                         href={selectMode ? '#' : `/channels/${channel.id}`}
                                         onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(channel.id); } : undefined}
                                         className={`group bg-surface border rounded-2xl p-4 md:p-5 transition-all duration-200 relative block h-full ${selectedIds.has(channel.id)
-                                            ? 'border-accent/70 bg-accentsoft/40'
+                                            ? 'border-violet-500/70 bg-violet-500/10'
                                             : 'border-line hover:border-inkmute/40 hover:shadow-cardhover hover:-translate-y-0.5'
                                             }`}
                                     >
@@ -300,14 +300,14 @@ export default function ChannelsPage() {
                                                 <div className="flex gap-1">
                                                     <button
                                                         onClick={(e) => handleDuplicate(e, channel.id)}
-                                                        className="text-inkmute hover:text-ink hover:bg-surface2 p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                                        className="text-inkmute hover:text-ink hover:bg-surface2 p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                                                         title="Duplicate"
                                                     >
                                                         <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                                     </button>
                                                     <button
                                                         onClick={(e) => handleDelete(e, channel.id)}
-                                                        className="text-inkmute hover:text-danger hover:bg-dangersoft p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                                        className="text-inkmute hover:text-danger hover:bg-dangersoft p-1.5 md:p-2 rounded-lg transition-colors z-20 relative focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                                                         title="Delete"
                                                     >
                                                         <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -343,7 +343,7 @@ export default function ChannelsPage() {
                                 onClick={() => setPage(p => Math.max(1, p - 1))}
                                 disabled={page === 1}
                                 aria-label="Previous page"
-                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
@@ -354,7 +354,7 @@ export default function ChannelsPage() {
                                         {idx > 0 && arr[idx - 1] !== pg - 1 && <span className="text-inkmute text-xs">…</span>}
                                         <button
                                             onClick={() => setPage(pg)}
-                                            className={`min-w-[36px] h-9 px-2 rounded-[10px] text-sm font-medium transition-all duration-200 border focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none ${pg === page
+                                            className={`min-w-[36px] h-9 px-2 rounded-[10px] text-sm font-medium transition-all duration-200 border focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none ${pg === page
                                                 ? 'bg-gradient-red border-transparent text-white shadow-sm'
                                                 : 'bg-surface border-line text-inksoft hover:bg-surface2 hover:text-ink'
                                                 }`}
@@ -367,7 +367,7 @@ export default function ChannelsPage() {
                                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                 disabled={page === totalPages}
                                 aria-label="Next page"
-                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
+                                className="p-2 rounded-[10px] bg-surface border border-line text-inksoft hover:bg-surface2 hover:text-ink transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none disabled:opacity-40 disabled:pointer-events-none"
                             >
                                 <ChevronRight className="w-4 h-4" />
                             </button>

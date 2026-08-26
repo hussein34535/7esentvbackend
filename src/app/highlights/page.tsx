@@ -11,7 +11,7 @@ type SortOption = 'newest' | 'oldest' | 'title';
 
 type HighlightItem = Database['public']['Tables']['highlights']['Row'];
 
-const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const btnBase = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
 const primaryBtn = `flex items-center gap-2 btn-gradient-red text-white rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm disabled:opacity-40 disabled:pointer-events-none ${btnBase}`;
 const secondaryBtn = `flex items-center gap-2 bg-surface border border-line hover:bg-surface2 text-ink rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnBase}`;
 
@@ -121,7 +121,7 @@ export default function HighlightsPage() {
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
                         className={selectMode
-                            ? `flex items-center gap-2 bg-accentsoft border border-accentline text-accentstrong rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnBase}`
+                            ? `flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 text-accentstrong rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${btnBase}`
                             : secondaryBtn}
                     >
                         {selectMode ? <XSquare className="w-4 h-4" /> : <CheckSquare className="w-4 h-4" />}
@@ -149,7 +149,7 @@ export default function HighlightsPage() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="ابحث بالعنوان…"
-                        className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`}
+                        className={`w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`}
                     />
                     {search && (
                         <button
@@ -167,7 +167,7 @@ export default function HighlightsPage() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
-                        className={`appearance-none bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto ${btnBase}`}
+                        className={`appearance-none bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto ${btnBase}`}
                     >
                         <option value="newest">الأحدث أولاً</option>
                         <option value="oldest">الأقدم أولاً</option>
@@ -181,7 +181,7 @@ export default function HighlightsPage() {
             {selectMode && (
                 <div className="flex items-center gap-3 mb-4 p-3 bg-surface border border-line rounded-xl">
                     <span className="text-sm text-inksoft">{selectedIds.size} selected</span>
-                    <button onClick={selectAll} className={`text-xs font-medium text-accent hover:text-accentstrong transition-colors ${btnBase}`}>Select All</button>
+                    <button onClick={selectAll} className={`text-xs font-medium text-violet-500 hover:text-accentstrong transition-colors ${btnBase}`}>Select All</button>
                     <button onClick={deselectAll} className={`text-xs font-medium text-inkmute hover:text-ink transition-colors ${btnBase}`}>Deselect All</button>
                     <div className="flex-1" />
                     <button
@@ -213,7 +213,7 @@ export default function HighlightsPage() {
                     <Video className="w-10 h-10 mx-auto mb-3 text-inkmute/40" />
                     <p className="text-sm text-inksoft mb-1">No highlights found</p>
                     <p className="text-xs text-inkmute mb-4">Click &quot;Add Highlight&quot; to create one</p>
-                    <Link href="/highlights/new" className={`inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accentstrong transition-colors ${btnBase}`}>
+                    <Link href="/highlights/new" className={`inline-flex items-center gap-2 text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors ${btnBase}`}>
                         <Plus className="w-4 h-4" /> Add your first highlight
                     </Link>
                 </div>
@@ -221,7 +221,7 @@ export default function HighlightsPage() {
                 <div className="text-center py-20 bg-surface border border-line rounded-2xl">
                     <Video className="w-10 h-10 mx-auto mb-3 text-inkmute/40" />
                     <p className="text-sm text-inksoft mb-3">No matching highlights</p>
-                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-accent hover:text-accentstrong transition-colors ${btnBase}`}>
+                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors ${btnBase}`}>
                         Clear filters
                     </button>
                 </div>
@@ -248,15 +248,15 @@ export default function HighlightsPage() {
                                         className={`absolute top-3 left-3 z-30 p-1 rounded-lg bg-surface border border-line shadow-sm ${btnBase}`}
                                     >
                                         {selectedIds.has(item.id) ? (
-                                            <CheckSquare className="w-5 h-5 text-accent" />
+                                            <CheckSquare className="w-5 h-5 text-violet-500" />
                                         ) : (
                                             <Square className="w-5 h-5 text-inkmute" />
                                         )}
                                     </button>
                                 )}
                                 <div className={`bg-surface border rounded-2xl overflow-hidden transition-all duration-200 ${selectedIds.has(item.id)
-                                    ? 'border-accent bg-accentsoft/50'
-                                    : 'border-line hover:border-accent/40 hover:shadow-cardhover'}`}
+                                    ? 'border-violet-500 bg-violet-500/10'
+                                    : 'border-line hover:border-violet-500/40 hover:shadow-cardhover'}`}
                                 >
                                     {/* Thumbnail */}
                                     <div className="relative h-48 bg-surface2 overflow-hidden">
@@ -302,7 +302,7 @@ export default function HighlightsPage() {
 
                                             <button
                                                 onClick={(e) => handleDuplicate(e, item.id)}
-                                                className={`p-2 rounded-lg text-inkmute hover:text-accent hover:bg-accentsoft transition-colors ${btnBase}`}
+                                                className={`p-2 rounded-lg text-inkmute hover:text-violet-500 hover:bg-violet-500/10 transition-colors ${btnBase}`}
                                                 title="Duplicate"
                                             >
                                                 <Copy className="w-4 h-4" />

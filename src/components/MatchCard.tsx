@@ -63,8 +63,8 @@ export default function MatchCard({ match, onClick, selected }: MatchCardProps) 
             onClick={onClick}
             className={`rounded-2xl p-4 md:p-5 cursor-pointer border transition-all duration-200 ${
                 selected
-                    ? 'border-accent bg-accentsoft/50'
-                    : 'bg-surface border-line hover:border-accent/40 hover:shadow-cardhover'
+                    ? 'border-violet-500 bg-violet-500/10'
+                    : 'bg-surface border-line hover:border-violet-500/40 hover:shadow-cardhover'
             }`}
         >
             <div className="flex items-center gap-2 mb-3 md:mb-4">
@@ -100,7 +100,7 @@ export default function MatchCard({ match, onClick, selected }: MatchCardProps) 
             </div>
 
             <div className="mt-3 md:mt-4 flex justify-center">
-                <span className="inline-flex items-center gap-1.5 bg-accentsoft text-accentstrong rounded-full px-3 py-1.5 text-sm md:text-base font-semibold tabular-nums">
+                <span className="inline-flex items-center gap-1.5 bg-violet-500/10 text-accentstrong rounded-full px-3 py-1.5 text-sm md:text-base font-semibold tabular-nums">
                     <Clock className="w-4 h-4" />
                     {formatTime(match.match_time)}
                 </span>

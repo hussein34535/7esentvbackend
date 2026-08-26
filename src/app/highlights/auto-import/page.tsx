@@ -6,8 +6,8 @@ import { scrapeBeinGoal, createHighlight } from '@/app/actions';
 import { ArrowLeft, Sparkles, Send, RefreshCw, Star, Play, Check } from 'lucide-react';
 import Link from 'next/link';
 
-const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const inputSkin = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
+const btnBase = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
+const inputSkin = `w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
 const fieldLabel = 'block text-xs font-semibold text-inksoft mb-1.5';
 
 export default function AutoImportHighlight() {
@@ -114,7 +114,7 @@ export default function AutoImportHighlight() {
                 </Link>
                 <div>
                     <h1 className="text-xl md:text-2xl font-bold text-gradient-brand tracking-tight flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-accent shrink-0" />
+                        <Sparkles className="w-5 h-5 text-violet-500 shrink-0" />
                         جلب وإضافة المباريات الكاملة تلقائياً
                     </h1>
                     <p className="text-sm text-inksoft mt-1">أدخل روابط beIN Sports لتعبئة وحفظ تفاصيل المباراة الكاملة فوراً</p>
@@ -167,7 +167,7 @@ export default function AutoImportHighlight() {
                 {/* Message */}
                 {message && (
                     <div className={`p-4 rounded-xl flex items-start gap-3 border ${message.type === 'success'
-                        ? 'bg-accentsoft border-accentline text-accentstrong'
+                        ? 'bg-violet-500/10 border-violet-500/20 text-violet-600'
                         : message.type === 'error'
                             ? 'bg-dangersoft border-danger/20 text-danger'
                             : 'bg-infosoft border-info/20 text-info'
@@ -198,7 +198,7 @@ export default function AutoImportHighlight() {
                                 <img src={scrapedData.thumbnail} alt="Match Thumbnail" className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-ink/30 flex items-center justify-center">
                                     <span className="p-3 rounded-full bg-surface/90 shadow-cardhover flex items-center justify-center">
-                                        <Play className="w-8 h-8 text-accent fill-current" />
+                                        <Play className="w-8 h-8 text-violet-500 fill-current" />
                                     </span>
                                 </div>
                             </div>
@@ -253,7 +253,7 @@ export default function AutoImportHighlight() {
                                 <button
                                     type="button"
                                     onClick={() => setIsPublished(!isPublished)}
-                                    className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-accent/50' : 'border-line'} ${btnBase}`}
+                                    className={`flex items-center gap-3 p-4 bg-surface2/50 border rounded-xl cursor-pointer text-left transition-colors duration-200 active:scale-[0.98] ${isPublished ? 'border-violet-500/50' : 'border-line'} ${btnBase}`}
                                 >
                                     <span className={`w-10 h-6 rounded-full p-1 transition-colors shrink-0 flex items-center ${isPublished ? 'bg-gradient-red' : 'bg-line'}`}>
                                         <span className={`w-4 h-4 bg-surface rounded-full shadow-sm transition-transform duration-200 ${isPublished ? 'translate-x-4' : 'translate-x-0'}`} />

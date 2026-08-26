@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { getPromoCodes, createPromoCode, updatePromoCode, deletePromoCode } from '@/app/actions';
 import { Plus, Edit, Trash2, Tag, Check, Search, ArrowUpDown, ChevronDown, XSquare } from 'lucide-react';
 
-const btnBase = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
-const inputSkin = `w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
+const btnBase = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
+const inputSkin = `w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`;
 const fieldLabel = 'block text-sm font-medium text-ink mb-1.5';
 
 type SortOption = 'code-asc' | 'discount-desc' | 'uses-desc';
@@ -139,7 +139,7 @@ export default function Coupons() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search by code…"
-                        className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`}
+                        className={`w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${btnBase}`}
                     />
                     {search && (
                         <button
@@ -157,7 +157,7 @@ export default function Coupons() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
-                        className={`appearance-none bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto ${btnBase}`}
+                        className={`appearance-none bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink outline-none transition-colors cursor-pointer w-full sm:w-auto ${btnBase}`}
                     >
                         <option value="code-asc">Code A → Z</option>
                         <option value="discount-desc">Discount high → low</option>
@@ -178,7 +178,7 @@ export default function Coupons() {
                     <Tag className="w-10 h-10 mx-auto mb-3 text-inkmute/40" />
                     <p className="text-sm text-inksoft mb-1">No promo codes found</p>
                     <p className="text-xs text-inkmute mb-4">Create your first discount code to get started</p>
-                    <button onClick={resetForm} className={`inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accentstrong transition-colors ${btnBase}`}>
+                    <button onClick={resetForm} className={`inline-flex items-center gap-2 text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors ${btnBase}`}>
                         <Plus className="w-4 h-4" /> Create Code
                     </button>
                 </div>
@@ -186,7 +186,7 @@ export default function Coupons() {
                 <div className="text-center py-20 bg-surface border border-line rounded-2xl">
                     <Tag className="w-10 h-10 mx-auto mb-3 text-inkmute/40" />
                     <p className="text-sm text-inksoft mb-3">No matching codes</p>
-                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-accent hover:text-accentstrong transition-colors ${btnBase}`}>
+                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-violet-500 hover:text-accentstrong transition-colors ${btnBase}`}>
                         Clear filters
                     </button>
                 </div>
@@ -196,7 +196,7 @@ export default function Coupons() {
                         const expired = isExpired(coupon);
 
                         return (
-                            <div key={coupon.code} className="bg-surface border border-line rounded-2xl p-4 md:p-5 transition-all duration-200 hover:border-accent/40 hover:shadow-cardhover flex flex-col">
+                            <div key={coupon.code} className="bg-surface border border-line rounded-2xl p-4 md:p-5 transition-all duration-200 hover:border-violet-500/40 hover:shadow-cardhover flex flex-col">
                                 <div className="flex justify-between items-start mb-4 gap-2">
                                     <span className="font-mono bg-surface2 border border-line px-2 py-0.5 rounded-md text-ink text-base font-semibold tracking-wide break-all">
                                         {coupon.code}
@@ -312,7 +312,7 @@ export default function Coupons() {
                                     type="checkbox"
                                     checked={formData.is_active}
                                     onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-4 h-4 rounded accent-accent focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none cursor-pointer"
+                                    className="w-4 h-4 rounded accent-accent focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none cursor-pointer"
                                 />
                                 <span className="text-sm text-ink">Active</span>
                             </label>

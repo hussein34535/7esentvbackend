@@ -24,7 +24,7 @@ const getImgUrl = (img: NewsItem['image']): string | null => {
     return single.secure_url || single.url || null;
 };
 
-const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none';
+const FOCUS_RING = 'focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none';
 
 export default function NewsPage() {
     const router = useRouter();
@@ -130,7 +130,7 @@ export default function NewsPage() {
                     <button
                         onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
                         className={`flex items-center gap-2 rounded-[10px] px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] shadow-sm ${FOCUS_RING} ${selectMode
-                            ? 'bg-accent border border-accent text-white hover:bg-accentstrong'
+                            ? 'bg-violet-500 border border-violet-500 text-white hover:bg-accentstrong'
                             : 'bg-surface border border-line hover:bg-surface2 text-ink'
                             }`}
                     >
@@ -165,7 +165,7 @@ export default function NewsPage() {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search by title or ID..."
-                        className={`w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`}
+                        className={`w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-8 py-2 text-sm text-ink placeholder:text-inkmute outline-none transition-colors ${FOCUS_RING}`}
                     />
                     {search && (
                         <button
@@ -183,7 +183,7 @@ export default function NewsPage() {
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortOption)}
                         aria-label="Sort items"
-                        className={`appearance-none w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer ${FOCUS_RING}`}
+                        className={`appearance-none w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-3 pr-9 py-2 text-sm text-ink outline-none transition-colors cursor-pointer ${FOCUS_RING}`}
                     >
                         <option value="newest">Newest first</option>
                         <option value="oldest">Oldest first</option>
@@ -197,7 +197,7 @@ export default function NewsPage() {
             {selectMode && (
                 <div className="flex items-center gap-3 mb-4 p-3 bg-surface border border-line rounded-2xl shadow-card">
                     <span className="text-sm text-inksoft font-medium tabular-nums">{selectedIds.size} selected</span>
-                    <button onClick={selectAll} className={`text-xs font-medium text-accent hover:text-accentstrong transition-colors rounded ${FOCUS_RING}`}>Select All</button>
+                    <button onClick={selectAll} className={`text-xs font-medium text-violet-500 hover:text-accentstrong transition-colors rounded ${FOCUS_RING}`}>Select All</button>
                     <button onClick={deselectAll} className={`text-xs font-medium text-inksoft hover:text-ink transition-colors rounded ${FOCUS_RING}`}>Deselect All</button>
                     <div className="flex-1" />
                     <button
@@ -240,7 +240,7 @@ export default function NewsPage() {
                 <div className="bg-surface border border-line rounded-2xl px-6 py-16 text-center">
                     <Search className="w-10 h-10 text-inkmute/40 mx-auto mb-3" />
                     <p className="text-sm text-inksoft mb-4">No matching items</p>
-                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-accent hover:text-accentstrong underline underline-offset-4 transition-colors rounded ${FOCUS_RING}`}>
+                    <button onClick={() => setSearch('')} className={`text-sm font-medium text-violet-500 hover:text-accentstrong underline underline-offset-4 transition-colors rounded ${FOCUS_RING}`}>
                         Clear filters
                     </button>
                 </div>
@@ -258,7 +258,7 @@ export default function NewsPage() {
                                         className={`absolute top-2 left-2 z-30 p-1.5 rounded-lg bg-surface/95 border border-line shadow-sm transition-colors ${FOCUS_RING}`}
                                     >
                                         {selectedIds.has(item.id) ? (
-                                            <CheckSquare className="w-5 h-5 text-accent" />
+                                            <CheckSquare className="w-5 h-5 text-violet-500" />
                                         ) : (
                                             <Square className="w-5 h-5 text-inkmute" />
                                         )}
@@ -268,8 +268,8 @@ export default function NewsPage() {
                                     href={selectMode ? '#' : `/news/${item.id}`}
                                     onClick={selectMode ? (e) => { e.preventDefault(); toggleSelect(item.id); } : undefined}
                                     className={`block group bg-surface border rounded-2xl overflow-hidden shadow-card transition-all duration-200 ${!item.is_published ? 'opacity-60 grayscale-[0.5]' : ''} ${selectedIds.has(item.id)
-                                        ? 'border-accent bg-accentsoft/50'
-                                        : 'border-line hover:border-accent/40 hover:shadow-cardhover'
+                                        ? 'border-violet-500 bg-violet-500/10'
+                                        : 'border-line hover:border-violet-500/40 hover:shadow-cardhover'
                                         }`}
                                 >
                                     <div className="relative aspect-video bg-surface2 overflow-hidden">

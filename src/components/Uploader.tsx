@@ -81,7 +81,7 @@ export default function Uploader({ label, value, onChange }: UploaderProps) {
                         type="button"
                         onClick={() => onChange(null)}
                         aria-label="Remove image"
-                        className="absolute -top-2 -right-2 p-1 rounded-full bg-surface border border-line text-inkmute hover:text-danger hover:border-danger/40 shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                        className="absolute -top-2 -right-2 p-1 rounded-full bg-surface border border-line text-inkmute hover:text-danger hover:border-danger/40 shadow-card transition-colors focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                     >
                         <X className="w-3 h-3" />
                     </button>
@@ -98,10 +98,10 @@ export default function Uploader({ label, value, onChange }: UploaderProps) {
                     />
                     <label
                         htmlFor={`upload-${label}`}
-                        className={`block border-2 border-dashed border-line hover:border-accent/40 rounded-2xl bg-surface2/50 p-8 text-center transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-accent/40 outline-none ${loading ? 'pointer-events-none' : ''}`}
+                        className={`block border-2 border-dashed border-line hover:border-violet-500/40 rounded-2xl bg-surface2/50 p-8 text-center transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-violet-500/40 outline-none ${loading ? 'pointer-events-none' : ''}`}
                     >
                         {loading ? (
-                            <Loader2 className="w-6 h-6 mx-auto text-accent animate-spin" />
+                            <Loader2 className="w-6 h-6 mx-auto text-violet-500 animate-spin" />
                         ) : (
                             <Upload className="w-6 h-6 mx-auto text-inkmute" />
                         )}
@@ -113,7 +113,7 @@ export default function Uploader({ label, value, onChange }: UploaderProps) {
                         )}
                         {loading && (
                             <div className="mt-3 h-1.5 w-40 mx-auto bg-surface rounded-full overflow-hidden pointer-events-none">
-                                <div className="h-full w-1/2 bg-accent rounded-full animate-pulse" />
+                                <div className="h-full w-1/2 bg-violet-500 rounded-full animate-pulse" />
                             </div>
                         )}
                     </label>

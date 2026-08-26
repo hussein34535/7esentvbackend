@@ -83,7 +83,7 @@ export default function Sidebar() {
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-line p-4 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2 text-lg font-bold text-ink">
                     <img src="/logo.png" alt="7esen TV" className="w-7 h-7 rounded-[8px] object-cover" />
-                    <span>7esen <span className="text-accent">TV</span></span>
+                    <span>7esen <span className="text-violet-500">TV</span></span>
                 </Link>
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -105,7 +105,7 @@ export default function Sidebar() {
                 <div className="hidden md:flex items-center h-16 px-6 border-b border-line shrink-0">
                     <Link href="/" className="flex items-center gap-3 text-xl font-bold text-ink">
                         <img src="/logo.png" alt="7esen TV" className="w-8 h-8 rounded-[9px] object-cover" />
-                        <span>7esen <span className="text-accent">TV</span></span>
+                        <span>7esen <span className="text-violet-500">TV</span></span>
                     </Link>
                 </div>
 
@@ -139,9 +139,9 @@ export default function Sidebar() {
                                                 }
                                             `}
                                         >
-                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-accent' : 'text-inkmute'}`} />
+                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-violet-500' : 'text-inkmute'}`} />
                                             <span className="truncate">{item.name}</span>
-                                            {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent shrink-0" />}
+                                            {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />}
                                         </Link>
                                     );
                                 })}

@@ -183,8 +183,8 @@ export default function Users() {
         { key: 'banned', label: 'محظور' },
     ];
 
-    const inputSkin = "w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
-    const btnFocus = "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none";
+    const inputSkin = "w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
+    const btnFocus = "focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none";
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8" dir="rtl">
@@ -215,7 +215,7 @@ export default function Users() {
                     placeholder="ابحث عن مستخدمين بالبريد الإلكتروني أو المعرّف..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pr-9 pl-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                    className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pr-9 pl-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                 />
                 {searchTerm && (
                     <button
@@ -270,7 +270,7 @@ export default function Users() {
                         const initial = (user.email || '?').charAt(0).toUpperCase();
 
                         return (
-                            <div key={user.id} className="bg-surface border border-line rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-accent/40 hover:shadow-cardhover transition-all duration-200">
+                            <div key={user.id} className="bg-surface border border-line rounded-2xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-violet-500/40 hover:shadow-cardhover transition-all duration-200">
                                 <div className="flex items-center gap-3 w-full md:w-auto min-w-0">
                                     {user.photo_url ? (
                                         <img
@@ -283,7 +283,7 @@ export default function Users() {
                                             }}
                                         />
                                     ) : (
-                                        <div className="w-10 h-10 rounded-full bg-accentsoft text-accentstrong font-semibold flex items-center justify-center shrink-0">
+                                        <div className="w-10 h-10 rounded-full bg-violet-500/10 text-accentstrong font-semibold flex items-center justify-center shrink-0">
                                             {initial}
                                         </div>
                                     )}
@@ -335,7 +335,7 @@ export default function Users() {
                                         {isBanned ? (
                                             <button
                                                 onClick={() => handleStatusChange(user.id, 'active')}
-                                                className={`p-2 rounded-lg text-accentstrong hover:bg-accentsoft transition-colors ${btnFocus}`}
+                                                className={`p-2 rounded-lg text-accentstrong hover:bg-violet-500/10 transition-colors ${btnFocus}`}
                                                 title="إلغاء الحظر"
                                             >
                                                 <RefreshCw className="w-[18px] h-[18px]" />
@@ -484,7 +484,7 @@ export default function Users() {
                                                     setDaysModifier('');
                                                 }
                                             }}
-                                            className={`px-3 rounded-[10px] bg-surface2 border border-line hover:border-accent/60 text-accentstrong text-xs font-medium transition-colors ${btnFocus}`}
+                                            className={`px-3 rounded-[10px] bg-surface2 border border-line hover:border-violet-500/60 text-accentstrong text-xs font-medium transition-colors ${btnFocus}`}
                                             title="تعيين تاريخ انتهاء الباقة الافتراضي"
                                         >
                                             تطبيق المدة
@@ -520,7 +520,7 @@ export default function Users() {
                                         <button
                                             type="button"
                                             onClick={() => adjustDays(30)}
-                                            className={`px-3 bg-accentsoft hover:bg-accentline text-accentstrong rounded-[10px] text-xs font-semibold transition-colors ${btnFocus}`}
+                                            className={`px-3 bg-violet-500/10 hover:bg-accentline text-accentstrong rounded-[10px] text-xs font-semibold transition-colors ${btnFocus}`}
                                         >
                                             +30 يوم
                                         </button>

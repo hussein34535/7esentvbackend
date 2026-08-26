@@ -106,8 +106,8 @@ export default function Packages() {
         pkg.name && pkg.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const inputSkin = "w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
-    const btnFocus = "focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none";
+    const inputSkin = "w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] px-3 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors";
+    const btnFocus = "focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none";
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -137,7 +137,7 @@ export default function Packages() {
                     placeholder="Search packages..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-surface2 border border-line focus:border-accent/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                    className="w-full bg-surface2 border border-line focus:border-violet-500/60 focus:bg-surface rounded-[10px] pl-9 pr-9 py-2.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
                 />
                 {searchTerm && (
                     <button
@@ -172,7 +172,7 @@ export default function Packages() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {filteredPackages.map((pkg) => (
-                        <div key={pkg.id} className="bg-surface border border-line rounded-2xl p-4 md:p-5 flex flex-col hover:border-accent/40 hover:shadow-cardhover transition-all duration-200">
+                        <div key={pkg.id} className="bg-surface border border-line rounded-2xl p-4 md:p-5 flex flex-col hover:border-violet-500/40 hover:shadow-cardhover transition-all duration-200">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="space-y-1">
                                     <h3 className="text-lg font-semibold text-ink">{pkg.name}</h3>
@@ -209,7 +209,7 @@ export default function Packages() {
                             <ul className="space-y-2 mb-5 text-sm text-inksoft">
                                 {Array.isArray(pkg.features) && pkg.features.map((feat: string, i: number) => (
                                     <li key={i} className="flex items-center gap-2">
-                                        <Check className="w-4 h-4 text-accent shrink-0" />
+                                        <Check className="w-4 h-4 text-violet-500 shrink-0" />
                                         {feat}
                                     </li>
                                 ))}
@@ -317,7 +317,7 @@ export default function Packages() {
                                     type="checkbox"
                                     checked={formData.is_active}
                                     onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-4 h-4 accent-accent focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:outline-none"
+                                    className="w-4 h-4 accent-accent focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:outline-none"
                                 />
                                 <span className="text-sm text-inksoft">Active (Visible to users)</span>
                             </label>
