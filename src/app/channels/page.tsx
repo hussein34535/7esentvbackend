@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { getChannelsWithCategories, deleteChannel, bulkDeleteChannels, duplicateChannel, getCategories, ChannelWithCategories } from '@/app/actions';
+import { getChannelsWithCategories, deleteChannel, bulkDeleteChannels, duplicateChannel, getCategoriesWithCounts, ChannelWithCategories, CategoryWithCount } from '@/app/actions';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
-import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, X, ChevronDown, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Tv, Hash, CheckSquare, Square, XSquare, Copy, Search, ArrowUpDown, Tag, ChevronLeft, ChevronRight, X, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Category = Database['public']['Tables']['channel_categories']['Row'];
@@ -17,7 +17,7 @@ const UNCATEGORIZED = -1;
 export default function ChannelsPage() {
     const router = useRouter();
     const [channels, setChannels] = useState<ChannelWithCategories[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryWithCount[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [selectMode, setSelectMode] = useState(false);
@@ -33,7 +33,7 @@ export default function ChannelsPage() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const [chData, catData] = await Promise.all([getChannelsWithCategories(), getCategories()]);
+            const [chData, catData] = await Promise.all([getChannelsWithCategories(), getCategoriesWithCounts()]);
             setChannels(chData || []);
             setCategories(catData || []);
         } catch (e) {
@@ -212,7 +212,7 @@ export default function ChannelsPage() {
                                 : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                 }`}
                         >
-                            {cat.name}
+                            {cat.name} <span className={`ml-1 text-[10px] px-1 py-0 rounded-full ${categoryFilter===cat.id ? 'bg-white/20 text-white' : 'bg-ink/[0.06] text-inkmute'}`}>{cat.channels_count}</span>
                         </button>
                     ))}
                     {uncategorizedCount > 0 && (
