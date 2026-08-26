@@ -132,15 +132,14 @@ export default function Sidebar() {
                                             href={item.href}
                                             onClick={() => setIsOpen(false)}
                                             className={`
-                                                relative flex items-center gap-3 px-3 py-2 rounded-[10px] text-sm font-medium transition-all duration-200 overflow-hidden
+                                                flex items-center gap-3 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200
                                                 ${isActive
-                                                    ? 'bg-violet-500/10 text-ink font-semibold'
-                                                    : 'text-inksoft hover:bg-surface2/60 hover:text-ink'
+                                                    ? 'bg-ink/[0.07] dark:bg-white/10 text-ink'
+                                                    : 'text-inksoft hover:bg-ink/[0.04] dark:hover:bg-white/[0.06] hover:text-ink'
                                                 }
                                             `}
                                         >
-                                            {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-violet-500 rounded-full" />}
-                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-violet-500' : 'text-inkmute'}`} />
+                                            <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? 'text-ink' : 'text-inkmute'}`} />
                                             <span className="truncate">{item.name}</span>
                                         </Link>
                                     );
