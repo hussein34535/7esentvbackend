@@ -70,7 +70,7 @@
 
 .btn-gradient-red {
     background-image: linear-gradient(135deg, #ff2749 0%, #e50f3c 60%, #c40833 100%);
-    box-shadow: 0 4px 14px rgb(240 19 67 / 0.35);
+    box-shadow: 0 2px 10px rgb(124 58 237 / 0.18);
 }
 
 /* Gradient fill without glow — for small interactive elements (chips, toggles, pagination) */
@@ -84,7 +84,7 @@
 
 .btn-gradient-violet {
     background-image: linear-gradient(135deg, #8b5cf6 0%, #d946ef 55%, #ec4899 100%);
-    box-shadow: 0 4px 14px rgb(168 85 247 / 0.35);
+    box-shadow: 0 2px 10px rgb(124 58 237 / 0.16);
 }
 
 .btn-gradient-violet:hover {
