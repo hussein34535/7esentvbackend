@@ -196,23 +196,25 @@ export default function ChannelsPage() {
                     <Tag className="w-3.5 h-3.5 text-inkmute shrink-0" />
                     <button
                         onClick={() => setCategoryFilter(null)}
-                        className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === null
-                            ? 'bg-gradient-red border-transparent text-white'
+                        className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 ${categoryFilter === null
+                            ? 'bg-violet-600 border-violet-600 text-white shadow-md shadow-violet-500/20'
                             : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                             }`}
                     >
-                        All ({channels.length})
+                        All <span className={`text-[10px] px-1.5 py-0 rounded-full font-bold ${categoryFilter===null ? 'bg-white text-violet-600' : 'bg-ink/[0.06] text-inkmute'}`}>{channels.length}</span>
                     </button>
                     {categories.map((cat) => (
                         <button
                             key={cat.id}
                             onClick={() => setCategoryFilter(categoryFilter === cat.id ? null : cat.id)}
-                            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === cat.id
-                                ? 'bg-gradient-red border-transparent text-white'
-                                : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
+                            className={`shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 ${categoryFilter === cat.id
+                                ? 'bg-violet-600 border-violet-600 text-white shadow-md shadow-violet-500/20'
+                                : cat.channels_count === 0
+                                    ? 'bg-surface border-line text-inkmute/50 opacity-60'
+                                    : 'bg-surface border-line text-inksoft hover:border-inkmute/40 hover:text-ink'
                                 }`}
                         >
-                            {cat.name} <span className={`ml-1 text-[10px] px-1 py-0 rounded-full ${categoryFilter===cat.id ? 'bg-white/20 text-white' : 'bg-ink/[0.06] text-inkmute'}`}>{cat.channels_count}</span>
+                            {cat.name} <span className={`text-[10px] px-1.5 py-0 rounded-full font-bold ${categoryFilter===cat.id ? 'bg-white text-violet-600' : cat.channels_count===0 ? 'bg-ink/[0.04] text-inkmute/50' : 'bg-ink/[0.06] text-inkmute'}`}>{cat.channels_count}</span>
                         </button>
                     ))}
                     {uncategorizedCount > 0 && (
