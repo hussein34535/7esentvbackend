@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import sql from '@/lib/db';
 import { processStreams, StreamAccessLevel } from '@/lib/stream-utils';
 
-const DEBUG_SECRET = '7esen';
+// Debug secret is rotatable via env; '7esen' kept as fallback for backward compatibility
+const DEBUG_SECRET = process.env.MOBILE_DEBUG_SECRET || '7esen';
 
 // GET /api/mobile/matches
 // Add ?secret=... to bypass premium protection (for debugging)

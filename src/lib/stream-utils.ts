@@ -1,3 +1,21 @@
+/**
+ * Stream access control utility.
+ *
+ * Every stream item carries an `is_premium` flag, and `processStreams()` filters
+ * payloads according to one of three access levels:
+ *
+ * - 'public'  → free anonymous access: premium stream URLs are omitted entirely
+ *               (only `name` + `is_premium: true` are returned). Used by the
+ *               unauthenticated reads of /api/mobile/channels and /api/mobile/matches.
+ * - 'user'    → logged-in but not subscribed: identical filtering to 'public'
+ *               (premium URLs hidden, free URLs returned). Used by
+ *               /api/mobile/premium when the verified Firebase user has no
+ *               active subscription.
+ * - 'premium' → full access: all URLs (free + premium) are returned. Used by
+ *               /api/mobile/premium for active subscribers, and by
+ *               /api/mobile/channels & /api/mobile/matches when the (rotatable,
+ *               env-configurable) debug secret is supplied.
+ */
 
 export interface StreamItem {
     name: string;

@@ -1,15 +1,37 @@
 import { NextResponse } from 'next/server';
 import sql from '@/lib/db';
+import { auth } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
     try {
+        // Auth required: only the owner may read their own status.
+        // The Flutter app already sends: Authorization: Bearer <firebaseIdToken>
+        const authHeader = request.headers.get('authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        let verifiedUid: string;
+        try {
+            const idToken = authHeader.slice('Bearer '.length).trim();
+            const decoded = await auth.verifyIdToken(idToken);
+            verifiedUid = decoded.uid;
+        } catch {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const uid = searchParams.get('uid');
 
         if (!uid) {
             return NextResponse.json({ error: 'UID is required' }, { status: 400 });
+        }
+
+        // Verified uid must match the requested uid
+        if (verifiedUid !== uid) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
         const rows = await sql`
