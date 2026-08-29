@@ -10,7 +10,7 @@ import { auth } from '@/lib/firebase-admin';
 // (uid, deviceId) plus a single active sessionId. The app then builds the
 // stream URL as:
 //
-//   <esenkoBase>/api/stream/<category>/<id>?tk=<token>&sid=<sessionId>
+//   <esenkoBase>/api/stream/<category>/<id>?tk=<token>&sid=<sessionId>&dv=<deviceId>
 //
 // 7esenlink validates the token (HMAC + day window) and the session freshness
 // via the internal /api/internal/session-check endpoint on this backend.
@@ -54,14 +54,17 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
-        if (type !== 'channel') {
-            // Matches/premium content can be added later; channel is the only
-            // content that plays through 7esenlink stream URLs today.
+        if (type !== 'channel' && type !== 'match') {
+            // Ticketed content types today: channels and matches, both played
+            // through 7esenlink stream URLs. Goals/highlights use direct video
+            // URLs and are never ticketed.
             return NextResponse.json(
                 { success: false, error: 'Unsupported type' },
                 { status: 400 }
             );
         }
+        // Content identity used for the same-channel takeover rule.
+        const channelKey = `${type}:${id}`;
 
         // 3. Load user row
         const [user] = await sql`SELECT * FROM users WHERE id = ${uid}`;
@@ -80,37 +83,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 5. Device registry + multi-account ban
-        const [device] = await sql`SELECT account_count, uids FROM devices WHERE device_id = ${deviceId}`;
+        // 5. Device registry — informational only. Multiple accounts on one
+        //    device are allowed; blocking happens at registration time
+        //    (register route). Existing accounts are never banned here.
+        const [device] = await sql`SELECT uids FROM devices WHERE device_id = ${deviceId}`;
         const existingUids: string[] = device?.uids && Array.isArray(device.uids) ? device.uids : [];
         const allUids = existingUids.includes(uid) ? existingUids : [...existingUids, uid];
 
-        if (device && allUids.length > 1) {
-            // Same device used by a 2nd account → ban every account on it.
-            const reason = 'MULTI_ACCOUNTS_SAME_DEVICE';
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await sql.begin(async (tx: any) => {
-                for (const u of allUids) {
-                    await tx`
-                        UPDATE users SET banned = true, ban_reason = ${reason} WHERE id = ${u}
-                    `;
-                }
-                await tx`
-                    INSERT INTO devices (device_id, account_count, uids, updated_at)
-                    VALUES (${deviceId}, ${allUids.length}, ${JSON.stringify(allUids)}::jsonb, now())
-                    ON CONFLICT (device_id) DO UPDATE SET
-                        account_count = EXCLUDED.account_count,
-                        uids = EXCLUDED.uids,
-                        updated_at = now()
-                `;
-            });
-            return NextResponse.json(
-                { success: false, error: 'MULTI_ACCOUNTS_BANNED' },
-                { status: 403 }
-            );
-        }
-
-        // Record/refresh the device row (single-account case).
         await sql`
             INSERT INTO devices (device_id, account_count, uids, updated_at)
             VALUES (${deviceId}, ${allUids.length}, ${JSON.stringify(allUids)}::jsonb, now())
@@ -145,8 +124,8 @@ export async function POST(request: NextRequest) {
         const token = `${b64url(uid)}.${b64url(deviceId)}.${issuedDay}.${hmacHex}`;
 
         // 8. Session handling — multi-device friendly. Concurrent streams on
-        //    the same account (different devices) are ALLOWED; nothing is ever
-        //    killed here. Same device re-requesting a ticket the same day gets
+        //    the same account (different devices, different channels) are
+        //    ALLOWED. Same device re-requesting a ticket the same day gets
         //    its SAME live sessionId back instead of a new session.
         const today = Math.floor(Date.now() / DAY_MS);
         const hoursRemaining = Math.max(0, ((today + 1) * DAY_MS - Date.now()) / 3600000);
@@ -181,13 +160,23 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // No live session for this token yet → register a fresh one (no kills).
+        // No live session for this token yet → register a fresh one.
+        // Same-channel takeover: one account may watch a given channel on a
+        // single device at a time. Creating a session for a channel kills any
+        // live session of the SAME channel held by another token (another
+        // device) of the same account. Other channels stay untouched.
         const sessionId = crypto.randomUUID();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await sql.begin(async (tx: any) => {
             await tx`
-                INSERT INTO stream_sessions (session_id, token, uid, device_id, last_heartbeat)
-                VALUES (${sessionId}, ${token}, ${uid}, ${deviceId}, now())
+                UPDATE stream_sessions
+                SET killed = true, killed_reason = 'SAME_CHANNEL_NEW_DEVICE'
+                WHERE uid = ${uid} AND token != ${token}
+                  AND channel_key = ${channelKey} AND killed = false
+            `;
+            await tx`
+                INSERT INTO stream_sessions (session_id, token, uid, device_id, channel_key, last_heartbeat)
+                VALUES (${sessionId}, ${token}, ${uid}, ${deviceId}, ${channelKey}, now())
             `;
             await tx`
                 INSERT INTO stream_tokens (token, uid, device_id, issued_day, active_session_id, last_seen_at)

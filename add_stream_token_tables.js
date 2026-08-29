@@ -48,6 +48,10 @@ async function migrate() {
     `;
         console.log('Created stream_sessions table.');
 
+        console.log('Adding channel_key column to stream_sessions...');
+        await sql`alter table stream_sessions add column if not exists channel_key text`;
+        console.log('channel_key column ready.');
+
         console.log('Adding device/ban columns to users...');
         await sql`alter table users add column if not exists active_device_id text`;
         await sql`alter table users add column if not exists device_changed_at timestamptz`;
@@ -83,11 +87,20 @@ async function migrate() {
     `;
         results.userColumnsAdded = userCols.length;
 
+        const sessionCols = await sql`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'stream_sessions'
+          AND column_name = 'channel_key'
+    `;
+        results.channelKeyAdded = sessionCols.length;
+
         console.log('--- SUCCESS ---');
         console.log(`Tables present (expect 3): ${results.tablesCreated} [${tables.map(t => t.table_name).join(', ')}]`);
         console.log(`users columns present (expect 4): ${results.userColumnsAdded} [${userCols.map(c => c.column_name).join(', ')}]`);
-        if (results.tablesCreated !== 3 || results.userColumnsAdded !== 4) {
-            console.error('Verification FAILED: expected 3 tables and 4 user columns.');
+        console.log(`stream_sessions channel_key present (expect 1): ${results.channelKeyAdded}`);
+        if (results.tablesCreated !== 3 || results.userColumnsAdded !== 4 || results.channelKeyAdded !== 1) {
+            console.error('Verification FAILED: expected 3 tables, 4 user columns and channel_key on stream_sessions.');
             process.exitCode = 1;
         }
     } catch (err) {
