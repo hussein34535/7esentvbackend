@@ -89,3 +89,77 @@ environment variables too** (they are only in `.env.local` locally).
   schema — verify/add it or the field will be undefined in responses.
 - Brute-force protection is per-instance in memory (see above); move to a
   shared store (e.g. Upstash Redis / Supabase) for a global limit.
+
+## Stream Token System (2026-08-29)
+
+Locks 7esenlink stream URLs (`/api/stream/<category>/<id>`) behind a per-user,
+per-device, 24-hour token with single-session enforcement and multi-account
+device bans. 7esen (this backend) ISSUES tokens; 7esenlink VALIDATES them —
+neither project needs access to the other's database.
+
+### Token format & algorithm
+
+```
+token  = b64url(uid) + '.' + b64url(deviceId) + '.' + issuedDay + '.' + hmacHex
+hmacHex= HMAC-SHA256(secret = STREAM_TOKEN_SECRET, msg = uid + '.' + deviceId + '.' + issuedDay)
+issuedDay = floor(now_ms / 86400000)          # UTC day
+```
+
+- **24h rotation**: validation rejects any token whose `issuedDay != today`,
+  so every token dies at UTC midnight and the app mints a new one.
+- **Integrity**: changing any field invalidates the HMAC (timing-safe compare).
+- `uid`/`deviceId` are base64url-encoded (no padding).
+
+### Single-session enforcement (one token = one viewer)
+
+- `stream_tokens` row holds `active_session_id` for the token.
+- `POST /api/mobile/stream-ticket` kills all live `stream_sessions` rows for
+  the token (`killed=true, killed_reason='NEW_LOGIN'`) before registering the
+  new session → last login wins, the previous viewer gets 403.
+- `GET /api/internal/session-check?tk=&sid=` (7esenlink → 7esen, header
+  `x-internal-secret`) is called on EVERY stream URL request and doubles as
+  the heartbeat: `last_heartbeat` is refreshed on each call; if the last
+  heartbeat is older than **120s** the session is killed
+  (`HEARTBEAT_TIMEOUT`) and validation returns `SESSION_TIMEOUT`.
+- ⚠️ App contract: while playing, the app must re-request the stream URL
+  (or re-resolve it) at least every ~60s, otherwise the session times out
+  after 2 minutes of playback.
+
+### Device binding + multi-account ban
+
+- `users` gains `active_device_id`, `device_changed_at`, `banned`, `ban_reason`.
+  The first stream ticket binds the account to its device; afterwards a
+  different device is rejected with `DEVICE_MISMATCH` unless the last change
+  is older than **7 days** (one device change per week), which re-binds.
+- `devices` registry: `device_id → {account_count, uids[]}`. A second account
+  on the same device sets `banned=true, ban_reason='MULTI_ACCOUNTS_SAME_DEVICE'`
+  on **all** accounts of that device (current one included) and returns
+  `MULTI_ACCOUNTS_BANNED`. Unban is manual (DB/admin) only.
+- Banned / unsubscribed accounts get `ACCOUNT_BANNED` / `SUBSCRIPTION_REQUIRED`
+  before any token is minted.
+
+### Environment variables
+
+| Variable (7esen)          | Purpose                                                    |
+|---------------------------|------------------------------------------------------------|
+| `STREAM_TOKEN_SECRET`     | HMAC key for minting tokens (missing → endpoint returns `TOKEN_SYSTEM_DISABLED`, tokens never minted) |
+| `INTERNAL_SESSION_SECRET` | Shared secret for the internal session-check endpoint (missing → endpoint 404s, stays closed) |
+
+Companion variables on the 7esenlink side: `STREAM_TOKEN_SECRET` (same value),
+`INTERNAL_SESSION_SECRET` (same value), `INTERNAL_CHECK_BASE` (base URL of
+this backend, e.g. `https://<7esen-vercel-domain>`).
+
+**Rollout**: 7esenlink ignores the token gate until its `STREAM_TOKEN_SECRET`
+is set — links stay open with zero regression. Setting it (plus the two
+companions) locks the links instantly; old app versions without ticket
+support will get `403 TOKEN-MISSING` until they update. Rotate by changing
+`STREAM_TOKEN_SECRET` in both projects (invalidates all tokens immediately).
+
+### Error contract (app maps these to Arabic messages)
+
+- From `/api/mobile/stream-ticket`: `ACCOUNT_BANNED` (+`reason`),
+  `DEVICE_MISMATCH`, `MULTI_ACCOUNTS_BANNED`, `SUBSCRIPTION_REQUIRED`,
+  `TOKEN_SYSTEM_DISABLED`, 401 invalid Firebase token.
+- From 7esenlink stream URLs: HTTP 403 with body `TOKEN-<REASON>` where
+  REASON ∈ `MISSING`, `MALFORMED`, `BAD-SIGNATURE`, `EXPIRED`,
+  `SESSION-KILLED`, `SESSION-TIMEOUT`, `SESSION-MISMATCH`, `SESSION-INVALID`.
