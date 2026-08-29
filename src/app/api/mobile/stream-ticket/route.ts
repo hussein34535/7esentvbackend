@@ -80,31 +80,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 5. Device binding: allow at most 1 device change per 7 days
-        if (user.active_device_id && user.active_device_id !== deviceId) {
-            const changedAt = user.device_changed_at ? new Date(user.device_changed_at).getTime() : 0;
-            const withinSevenDays = Date.now() - changedAt < 7 * DAY_MS;
-            if (withinSevenDays) {
-                return NextResponse.json(
-                    { success: false, error: 'DEVICE_MISMATCH' },
-                    { status: 403 }
-                );
-            }
-            await sql`
-                UPDATE users
-                SET active_device_id = ${deviceId}, device_changed_at = now()
-                WHERE id = ${uid}
-            `;
-        } else if (!user.active_device_id) {
-            // First time this account binds to a device — record it.
-            await sql`
-                UPDATE users
-                SET active_device_id = ${deviceId}, device_changed_at = now()
-                WHERE id = ${uid}
-            `;
-        }
-
-        // 6. Device registry + multi-account ban
+        // 5. Device registry + multi-account ban
         const [device] = await sql`SELECT account_count, uids FROM devices WHERE device_id = ${deviceId}`;
         const existingUids: string[] = device?.uids && Array.isArray(device.uids) ? device.uids : [];
         const allUids = existingUids.includes(uid) ? existingUids : [...existingUids, uid];
@@ -144,7 +120,7 @@ export async function POST(request: NextRequest) {
                 updated_at = now()
         `;
 
-        // 7. Subscription check (same logic as the premium route)
+        // 6. Subscription check (same logic as the premium route)
         const subEnd = user.subscription_end ? new Date(user.subscription_end).getTime() : 0;
         if (subEnd <= Date.now()) {
             return NextResponse.json(
@@ -153,7 +129,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 8. Token mint: <uid-b64>.<deviceId-b64>.<issuedDay>.<hmac-sha256-hex>
+        // 7. Token mint: <uid-b64>.<deviceId-b64>.<issuedDay>.<hmac-sha256-hex>
         const tokenSecret = process.env.STREAM_TOKEN_SECRET;
         if (!tokenSecret) {
             return NextResponse.json(
@@ -168,19 +144,47 @@ export async function POST(request: NextRequest) {
             .digest('hex');
         const token = `${b64url(uid)}.${b64url(deviceId)}.${issuedDay}.${hmacHex}`;
 
-        // 9. Single-session: kill any older active session for this token,
-        //    then register the new one. All in one transaction.
+        // 8. Session handling — multi-device friendly. Concurrent streams on
+        //    the same account (different devices) are ALLOWED; nothing is ever
+        //    killed here. Same device re-requesting a ticket the same day gets
+        //    its SAME live sessionId back instead of a new session.
+        const today = Math.floor(Date.now() / DAY_MS);
+        const hoursRemaining = Math.max(0, ((today + 1) * DAY_MS - Date.now()) / 3600000);
+        const esenkoBase = process.env.NEXT_PUBLIC_ESENLINKS_URL || 'https://7esenlink.vercel.app';
+
+        // Reuse path: token minted today and not revoked → if its active
+        // session is still live, return the same sessionId (heartbeat refresh).
+        const [tokenRow] = await sql`
+            SELECT active_session_id FROM stream_tokens
+            WHERE token = ${token} AND issued_day = ${today} AND revoked = false
+        `;
+        if (tokenRow?.active_session_id) {
+            const [live] = await sql`
+                SELECT session_id FROM stream_sessions
+                WHERE session_id = ${tokenRow.active_session_id} AND killed = false
+            `;
+            if (live) {
+                await sql`
+                    UPDATE stream_sessions SET last_heartbeat = now()
+                    WHERE session_id = ${live.session_id}
+                `;
+                await sql`
+                    UPDATE stream_tokens SET last_seen_at = now() WHERE token = ${token}
+                `;
+                return NextResponse.json({
+                    success: true,
+                    sessionId: live.session_id,
+                    token,
+                    expiresInHours: Math.round(hoursRemaining * 10) / 10,
+                    esenkoBase,
+                });
+            }
+        }
+
+        // No live session for this token yet → register a fresh one (no kills).
         const sessionId = crypto.randomUUID();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await sql.begin(async (tx: any) => {
-            await tx`
-                UPDATE stream_sessions
-                SET killed = true, killed_reason = 'NEW_LOGIN'
-                WHERE token = ${token} AND killed = false
-            `;
-            await tx`
-                UPDATE stream_tokens SET active_session_id = null WHERE token = ${token}
-            `;
             await tx`
                 INSERT INTO stream_sessions (session_id, token, uid, device_id, last_heartbeat)
                 VALUES (${sessionId}, ${token}, ${uid}, ${deviceId}, now())
@@ -197,10 +201,7 @@ export async function POST(request: NextRequest) {
             `;
         });
 
-        // 10. Response — the app builds the final stream URL itself.
-        const hoursRemaining = Math.max(0, ((Math.floor(Date.now() / DAY_MS) + 1) * DAY_MS - Date.now()) / 3600000);
-        const esenkoBase = process.env.NEXT_PUBLIC_ESENLINKS_URL || 'https://7esenlink.vercel.app';
-
+        // 9. Response — the app builds the final stream URL itself.
         return NextResponse.json({
             success: true,
             sessionId,

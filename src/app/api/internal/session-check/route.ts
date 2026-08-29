@@ -2,17 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
 import sql from '@/lib/db';
 
-// Internal heartbeat + session validation endpoint.
+// Internal session validation endpoint.
 //
 // Called ONLY by the 7esenlink stream validator on every stream URL request:
-//   GET /api/internal/session-check?tk=<token>&sid=<sessionId>
+//   GET /api/internal/session-check?tk=<token>&sid=<sessionId>&dv=<deviceId>
 //   Header: x-internal-secret: <INTERNAL_SESSION_SECRET>
 //
 // Each call acts as a heartbeat for the session (last_heartbeat = now).
-// A session whose last heartbeat is older than 120s is killed as timed out,
-// which is what makes "one token = one viewer" enforceable over time.
+// There is NO timeout kill: sessions stay alive until UTC midnight token
+// rotation (or manual revocation). If the request carries a `dv` (deviceId)
+// that differs from the session's device, validation fails without killing
+// the session.
 
-const HEARTBEAT_WINDOW_MS = 120000; // 120 seconds
 const DAY_MS = 86400000;
 
 export async function GET(request: NextRequest) {
@@ -36,6 +37,7 @@ export async function GET(request: NextRequest) {
 
     const tk = request.nextUrl.searchParams.get('tk');
     const sid = request.nextUrl.searchParams.get('sid');
+    const dv = request.nextUrl.searchParams.get('dv');
     if (!tk || !sid) {
         return NextResponse.json(
             { active: false, reason: 'TOKEN_EXPIRED' },
@@ -57,7 +59,7 @@ export async function GET(request: NextRequest) {
 
         // 2. Session lookup
         const [sessionRow] = await sql`
-            SELECT session_id, token, killed, last_heartbeat
+            SELECT session_id, token, device_id, killed, last_heartbeat
             FROM stream_sessions WHERE session_id = ${sid}
         `;
         if (!sessionRow || sessionRow.killed) {
@@ -67,17 +69,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ active: false, reason: 'SESSION_MISMATCH' });
         }
 
-        // 3. Heartbeat freshness (this call IS the heartbeat)
-        const lastHeartbeat = sessionRow.last_heartbeat
-            ? new Date(sessionRow.last_heartbeat).getTime()
-            : 0;
-        if (Date.now() - lastHeartbeat > HEARTBEAT_WINDOW_MS) {
-            await sql`
-                UPDATE stream_sessions
-                SET killed = true, killed_reason = 'HEARTBEAT_TIMEOUT'
-                WHERE session_id = ${sid}
-            `;
-            return NextResponse.json({ active: false, reason: 'SESSION_TIMEOUT' });
+        // 3. Device match: the forwarded dv (deviceId) must equal the
+        //    session's device. Rejected WITHOUT killing the session.
+        if (sessionRow.device_id && dv !== sessionRow.device_id) {
+            return NextResponse.json({ active: false, reason: 'SESSION_DEVICE_MISMATCH' });
         }
 
         await sql`

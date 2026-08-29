@@ -93,8 +93,8 @@ environment variables too** (they are only in `.env.local` locally).
 ## Stream Token System (2026-08-29)
 
 Locks 7esenlink stream URLs (`/api/stream/<category>/<id>`) behind a per-user,
-per-device, 24-hour token with single-session enforcement and multi-account
-device bans. 7esen (this backend) ISSUES tokens; 7esenlink VALIDATES them —
+per-device, 24-hour token with device-bound sessions and multi-account device
+bans. 7esen (this backend) ISSUES tokens; 7esenlink VALIDATES them —
 neither project needs access to the other's database.
 
 ### Token format & algorithm
@@ -110,29 +110,34 @@ issuedDay = floor(now_ms / 86400000)          # UTC day
 - **Integrity**: changing any field invalidates the HMAC (timing-safe compare).
 - `uid`/`deviceId` are base64url-encoded (no padding).
 
-### Single-session enforcement (one token = one viewer)
+### Session model (multi-device allowed)
 
-- `stream_tokens` row holds `active_session_id` for the token.
-- `POST /api/mobile/stream-ticket` kills all live `stream_sessions` rows for
-  the token (`killed=true, killed_reason='NEW_LOGIN'`) before registering the
-  new session → last login wins, the previous viewer gets 403.
-- `GET /api/internal/session-check?tk=&sid=` (7esenlink → 7esen, header
-  `x-internal-secret`) is called on EVERY stream URL request and doubles as
-  the heartbeat: `last_heartbeat` is refreshed on each call; if the last
-  heartbeat is older than **120s** the session is killed
-  (`HEARTBEAT_TIMEOUT`) and validation returns `SESSION_TIMEOUT`.
-- ⚠️ App contract: while playing, the app must re-request the stream URL
-  (or re-resolve it) at least every ~60s, otherwise the session times out
-  after 2 minutes of playback.
+- **One account MAY be logged in / watching on multiple devices
+  simultaneously.** Concurrent streams on the same account are allowed and the
+  first stream is NEVER killed when another session starts — there are no
+  `NEW_LOGIN` kills and no heartbeat-timeout kills.
+- **One token per device**: the token embeds the deviceId, so each device mints
+  its own token and holds its own session (`stream_tokens.active_session_id`).
+- `POST /api/mobile/stream-ticket`: if the token was minted today, is not
+  revoked, and its active session is still live, the SAME sessionId is returned
+  (heartbeat refreshed) — same device re-requesting a ticket the same day does
+  not create a new session. Only when no live session exists is a new one
+  registered.
+- `GET /api/internal/session-check?tk=&sid=&dv=` (7esenlink → 7esen, header
+  `x-internal-secret`) is called on EVERY stream URL request and doubles as the
+  heartbeat: `last_heartbeat` is refreshed on each call. There is NO 120s
+  timeout — sessions live until UTC midnight token rotation or manual
+  revocation. If `dv` (deviceId forwarded by 7esenlink) differs from the
+  session's device, validation returns `SESSION_DEVICE_MISMATCH` without
+  killing the session.
 
-### Device binding + multi-account ban
+### Device registry + multi-account ban
 
-- `users` gains `active_device_id`, `device_changed_at`, `banned`, `ban_reason`.
-  The first stream ticket binds the account to its device; afterwards a
-  different device is rejected with `DEVICE_MISMATCH` unless the last change
-  is older than **7 days** (one device change per week), which re-binds.
-- `devices` registry: `device_id → {account_count, uids[]}`. A second account
-  on the same device sets `banned=true, ban_reason='MULTI_ACCOUNTS_SAME_DEVICE'`
+- `users` keeps `active_device_id`, `device_changed_at`, `banned`, `ban_reason`
+  (the device-binding columns are now unused — an account may use any number of
+  devices, no `DEVICE_MISMATCH` restriction and no 7-day device-change window).
+- `devices` registry: `device_id → {account_count, uids[]}`. A second ACCOUNT
+  on the same DEVICE sets `banned=true, ban_reason='MULTI_ACCOUNTS_SAME_DEVICE'`
   on **all** accounts of that device (current one included) and returns
   `MULTI_ACCOUNTS_BANNED`. Unban is manual (DB/admin) only.
 - Banned / unsubscribed accounts get `ACCOUNT_BANNED` / `SUBSCRIPTION_REQUIRED`
@@ -158,8 +163,9 @@ support will get `403 TOKEN-MISSING` until they update. Rotate by changing
 ### Error contract (app maps these to Arabic messages)
 
 - From `/api/mobile/stream-ticket`: `ACCOUNT_BANNED` (+`reason`),
-  `DEVICE_MISMATCH`, `MULTI_ACCOUNTS_BANNED`, `SUBSCRIPTION_REQUIRED`,
-  `TOKEN_SYSTEM_DISABLED`, 401 invalid Firebase token.
+  `MULTI_ACCOUNTS_BANNED`, `SUBSCRIPTION_REQUIRED`, `TOKEN_SYSTEM_DISABLED`,
+  401 invalid Firebase token.
 - From 7esenlink stream URLs: HTTP 403 with body `TOKEN-<REASON>` where
   REASON ∈ `MISSING`, `MALFORMED`, `BAD-SIGNATURE`, `EXPIRED`,
-  `SESSION-KILLED`, `SESSION-TIMEOUT`, `SESSION-MISMATCH`, `SESSION-INVALID`.
+  `SESSION-KILLED`, `SESSION-MISMATCH`, `SESSION-DEVICE-MISMATCH`,
+  `SESSION-INVALID`.
