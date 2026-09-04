@@ -99,13 +99,38 @@ export async function POST(request: NextRequest) {
                 updated_at = now()
         `;
 
-        // 6. Subscription check (same logic as the premium route)
-        const subEnd = user.subscription_end ? new Date(user.subscription_end).getTime() : 0;
-        if (subEnd <= Date.now()) {
-            return NextResponse.json(
-                { success: false, error: 'SUBSCRIPTION_REQUIRED' },
-                { status: 403 }
-            );
+        // 6. Subscription check — ONLY for premium content. Free channels
+        //    (no premium category) and free matches play for every logged-in
+        //    user without a subscription.
+        let contentIsPremium = false;
+        try {
+            if (type === 'channel') {
+                const rows = await sql`
+                    SELECT 1 FROM _rel_channels_categories rel
+                    JOIN channel_categories cat ON rel.category_id = cat.id
+                    WHERE rel.channel_id = ${id} AND cat.is_premium = true
+                    LIMIT 1
+                `;
+                contentIsPremium = rows.length > 0;
+            } else if (type === 'match') {
+                const [row] = await sql`
+                    SELECT is_premium FROM matches WHERE id = ${id}
+                `;
+                contentIsPremium = row?.is_premium === true;
+            }
+        } catch (error) {
+            console.error('Stream ticket premium lookup error:', error);
+            // Fail open: an unknown lookup must not block playback.
+            contentIsPremium = false;
+        }
+        if (contentIsPremium) {
+            const subEnd = user.subscription_end ? new Date(user.subscription_end).getTime() : 0;
+            if (subEnd <= Date.now()) {
+                return NextResponse.json(
+                    { success: false, error: 'SUBSCRIPTION_REQUIRED' },
+                    { status: 403 }
+                );
+            }
         }
 
         // 7. Token mint: <uid-b64>.<deviceId-b64>.<issuedDay>.<hmac-sha256-hex>
