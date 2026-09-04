@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getChannel, updateChannel, getCategories } from '@/app/actions';
-import { Save, ArrowLeft, Tv, Plus, Trash2, Wand2, Star, Sparkles } from 'lucide-react';
+import { Save, ArrowLeft, Tv, Plus, Trash2, Wand2, Star, Sparkles, Play } from 'lucide-react';
 import { Database } from '@/types/database.types';
 import Link from 'next/link';
 import { extractStreamsFromData, StreamItem } from '@/lib/stream-utils';
@@ -28,6 +28,40 @@ export default function EditChannel() {
     const [selectedCats, setSelectedCats] = useState<number[]>([]);
     const [showAllCats, setShowAllCats] = useState(false);
     const [isEsenlinksOpen, setIsEsenlinksOpen] = useState(false);
+    const [playingIdx, setPlayingIdx] = useState<number | null>(null);
+
+    const handlePlayWithToken = async (streamUrl: string, idx: number) => {
+        if (!streamUrl || !streamUrl.includes('7esenlink.vercel.app')) {
+            window.open(streamUrl, '_blank');
+            return;
+        }
+        setPlayingIdx(idx);
+        try {
+            const url = new URL(streamUrl);
+            const parts = url.pathname.split('/').filter(Boolean);
+            // parts: ['api','stream','CATEGORY','ID'] -> channelKey is CATEGORY/ID
+            const channelKey = parts.length >= 4 ? `${decodeURIComponent(parts[2])}/${decodeURIComponent(parts[3])}` : streamUrl;
+            const res = await fetch('/api/admin/stream-test-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ channelKey }),
+            });
+            const data = await res.json();
+            if (data.success && data.token && data.sessionId) {
+                const sep = streamUrl.includes('?') ? '&' : '?';
+                const full = `${streamUrl}${sep}tk=${encodeURIComponent(data.token)}&sid=${encodeURIComponent(data.sessionId)}&dv=dashboard-test-device`;
+                window.open(full, '_blank');
+            } else {
+                alert('فشل إنشاء توكن الاختبار: ' + (data.error || 'غير معروف'));
+                window.open(streamUrl, '_blank');
+            }
+        } catch (e) {
+            console.error(e);
+            window.open(streamUrl, '_blank');
+        } finally {
+            setPlayingIdx(null);
+        }
+    };
 
     const handleAddEsenlinks = (importedStreams: StreamItem[]) => {
         if (streams.length === 1 && streams[0].url.trim() === '') {
@@ -274,13 +308,24 @@ export default function EditChannel() {
                                         {/* URL */}
                                         <div className="md:col-span-6">
                                             <label className="text-xs font-medium text-inksoft mb-1 block">Stream URL</label>
-                                            <input
-                                                type="text"
-                                                placeholder="https://..."
-                                                className="w-full bg-surface border border-line focus:border-violet-500/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
-                                                value={stream.url}
-                                                onChange={e => handleStreamChange(idx, 'url', e.target.value)}
-                                            />
+                                            <div className="flex gap-1.5">
+                                                <input
+                                                    type="text"
+                                                    placeholder="https://..."
+                                                    className="flex-1 min-w-0 bg-surface border border-line focus:border-violet-500/60 rounded-[10px] px-2.5 py-1.5 text-sm text-ink placeholder:text-inkmute outline-none transition-colors"
+                                                    value={stream.url}
+                                                    onChange={e => handleStreamChange(idx, 'url', e.target.value)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handlePlayWithToken(stream.url, idx)}
+                                                    disabled={!stream.url || playingIdx === idx}
+                                                    title="تشغيل تجريبي مع توكن"
+                                                    className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-[10px] bg-violet-500/10 border border-violet-500/20 text-violet-600 hover:bg-violet-500 hover:text-white disabled:opacity-40 transition-colors"
+                                                >
+                                                    <Play className={`w-3.5 h-3.5 ${playingIdx === idx ? 'animate-pulse' : ''} ${playingIdx !== idx ? 'ml-0.5' : ''}`} />
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Premium Toggle */}
